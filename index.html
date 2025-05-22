@@ -298,7 +298,7 @@
           div.innerHTML = `<span><strong>${c.name}</strong>: ${c.text}</span>`;
           listEl.append(div);
         });
-        toggleBtn.style.display = comments.length > 5 ? 'block' : 'none';
+        toggleBtn.style.display = comments.length > 3 ? 'block' : 'none';
         toggleBtn.textContent = showAll
           ? 'ซ่อนคอมเมนต์'
           : `ดูคอมเมนต์ทั้งหมด (${comments.length})`;
