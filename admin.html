@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - User Management</title>
+    <style>
+        body { font-family: sans-serif; padding: 40px; }
+        .form-box { max-width: 400px; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+        input, select, button { width: 100%; padding: 10px; margin: 10px 0; box-sizing: border-box; }
+        .back-btn { background: #666; color: white; border: none; }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="location.href='dashboard.html'">← กลับหน้าหลัก</button>
+    <h2>ระบบจัดการผู้ใช้งาน</h2>
+    
+    <div class="form-box">
+        <h3>เพิ่มผู้ใช้งานใหม่</h3>
+        <input type="text" id="newU" placeholder="Username">
+        <input type="text" id="newP" placeholder="Password">
+        <input type="text" id="newN" placeholder="ชื่อ-นามสกุล">
+        <select id="newR">
+            <option value="Admin">Admin</option>
+            <option value="User">User</option>
+        </select>
+        <button onclick="handleAddUser()" style="background: green; color: white; border: none;">เพิ่มลงในระบบ</button>
+    </div>
+
+    <script>
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzmZ7PtLEt3ESXpAl3n8i_zoYiOxd4zIMB6TgA5mriTR1FECeGrZR-lWfIbRWpPD3l3bg/exec";
+
+        async function handleAddUser() {
+            const payload = {
+                action: "addUser",
+                newUsername: document.getElementById('newU').value,
+                newPassword: document.getElementById('newP').value,
+                newName: document.getElementById('newN').value,
+                newRole: document.getElementById('newR').value
+            };
+
+            const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
+            const result = await response.json();
+            
+            if (result.status === "added") {
+                alert("เพิ่มข้อมูลสำเร็จ!");
+                location.reload(); // รีเฟรชหน้า
+            }
+        }
+    </script>
+</body>
+</html>
