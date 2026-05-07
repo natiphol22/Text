@@ -11,9 +11,8 @@
         body { font-family: 'Kanit', sans-serif; background: #fcfdfe; min-height: 100vh; overflow-x: hidden; }
         .glass-panel { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.7); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.03); }
         .loader-overlay { position: fixed; inset: 0; background: #fff; z-index: 999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s ease; }
-        .spinner { width: 50px; height: 50px; border: 4px solid #f3f3f3; border-top: 4px solid #6366f1; border-radius: 50%; animation: spin 1s linear infinite; }
+        .spinner { width: 45px; height: 45px; border: 4px solid #f3f3f3; border-top: 4px solid #6366f1; border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
         .modal { display: none; position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,0.1); backdrop-filter: blur(8px); align-items: center; justify-content: center; padding: 20px; }
         .modal.active { display: flex; }
         button:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); }
@@ -23,44 +22,33 @@
 
     <div id="loader" class="loader-overlay">
         <div class="spinner mb-4"></div>
-        <p class="text-sm font-bold text-slate-400 uppercase tracking-widest">CubicPlus Portal</p>
+        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em]">CubicPlus Portal</p>
     </div>
 
     <div id="customAlert" class="modal">
-        <div class="glass-panel w-full max-w-md rounded-[3rem] p-10 text-center shadow-2xl">
-            <div id="alertIcon" class="w-20 h-20 bg-indigo-50 text-indigo-500 rounded-full flex items-center justify-center mx-auto mb-8">
-                <i data-lucide="check-circle" class="w-10 h-10"></i>
-            </div>
-            <h3 id="alertTitle" class="text-2xl font-bold text-slate-800 mb-3">แจ้งเตือน</h3>
-            <p id="alertMsg" class="text-slate-500 text-base mb-10 leading-relaxed"></p>
-            <button onclick="closeAlert()" class="w-full py-5 bg-slate-900 text-white rounded-[1.5rem] font-bold text-sm uppercase tracking-widest shadow-lg active:scale-95">รับทราบ</button>
+        <div class="glass-panel w-full max-w-sm rounded-[2.5rem] p-10 text-center shadow-2xl">
+            <div id="alertIcon" class="w-20 h-20 bg-indigo-50 text-indigo-500 rounded-full flex items-center justify-center mx-auto mb-6"></div>
+            <h3 id="alertTitle" class="text-xl font-bold text-slate-800 mb-2">แจ้งเตือน</h3>
+            <p id="alertMsg" class="text-slate-500 text-sm mb-8 leading-relaxed"></p>
+            <button onclick="closeAlert()" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold text-xs uppercase tracking-widest active:scale-95 transition-all">ตกลง</button>
         </div>
     </div>
 
     <div id="locationModal" class="modal">
-        <div class="glass-panel w-full max-w-md rounded-[3rem] p-10 space-y-8 shadow-2xl">
-            <h3 class="text-center font-bold text-slate-800 tracking-tight text-xl">ระบุสถานที่ปฏิบัติงาน</h3>
-            <div class="grid grid-cols-1 gap-4">
-                <button onclick="confirmRecord('OFFICE')" class="group p-5 bg-slate-50 hover:bg-white border border-transparent hover:border-indigo-100 rounded-[1.5rem] text-left flex items-center justify-between transition-all">
-                    <div class="flex items-center gap-4">
-                        <span class="text-2xl">🏢</span> <span class="font-bold text-slate-700 text-lg">OFFICE</span>
-                    </div>
-                    <i data-lucide="chevron-right" class="w-5 h-5 text-slate-300"></i>
+        <div class="glass-panel w-full max-w-sm rounded-[2.5rem] p-10 space-y-6 shadow-2xl">
+            <h3 class="text-center font-bold text-slate-800 tracking-tight text-lg">เลือกสถานที่ Check In</h3>
+            <div class="grid grid-cols-1 gap-3">
+                <button onclick="confirmRecord('OFFICE')" class="p-4 bg-slate-50 hover:bg-white border border-transparent hover:border-indigo-100 rounded-2xl flex items-center gap-4 transition-all group">
+                    <span class="text-xl">🏢</span> <span class="font-bold text-slate-700 text-base">OFFICE</span>
                 </button>
-                <button onclick="confirmRecord('WFH')" class="group p-5 bg-slate-50 hover:bg-white border border-transparent hover:border-indigo-100 rounded-[1.5rem] text-left flex items-center justify-between transition-all">
-                    <div class="flex items-center gap-4">
-                        <span class="text-2xl">🏠</span> <span class="font-bold text-slate-700 text-lg">WFH</span>
-                    </div>
-                    <i data-lucide="chevron-right" class="w-5 h-5 text-slate-300"></i>
+                <button onclick="confirmRecord('WFH')" class="p-4 bg-slate-50 hover:bg-white border border-transparent hover:border-indigo-100 rounded-2xl flex items-center gap-4 transition-all group">
+                    <span class="text-xl">🏠</span> <span class="font-bold text-slate-700 text-base">WFH</span>
                 </button>
-                <button onclick="confirmRecord('ON-SITE')" class="group p-5 bg-slate-50 hover:bg-white border border-transparent hover:border-indigo-100 rounded-[1.5rem] text-left flex items-center justify-between transition-all">
-                    <div class="flex items-center gap-4">
-                        <span class="text-2xl">🚗</span> <span class="font-bold text-slate-700 text-lg">ON-SITE</span>
-                    </div>
-                    <i data-lucide="chevron-right" class="w-5 h-5 text-slate-300"></i>
+                <button onclick="confirmRecord('ON-SITE')" class="p-4 bg-slate-50 hover:bg-white border border-transparent hover:border-indigo-100 rounded-2xl flex items-center gap-4 transition-all group">
+                    <span class="text-xl">🚗</span> <span class="font-bold text-slate-700 text-base">ON-SITE</span>
                 </button>
             </div>
-            <button onclick="closeLocation()" class="w-full text-center text-xs text-slate-400 font-bold uppercase py-2 tracking-widest">ยกเลิก</button>
+            <button onclick="closeLocation()" class="w-full text-center text-[10px] text-slate-400 font-bold uppercase py-2 tracking-widest">ยกเลิก</button>
         </div>
     </div>
 
@@ -69,60 +57,71 @@
             <button onclick="location.href='dashboard.html'" class="p-3 -ml-2 text-slate-400 hover:text-indigo-600 transition-all"><i data-lucide="chevron-left" class="w-8 h-8"></i></button>
             <div class="text-right">
                 <p id="userDisp" class="text-slate-900 font-bold italic text-lg leading-none">...</p>
-                <p class="text-[10px] uppercase font-bold text-indigo-400 tracking-[0.2em] mt-2">Active Employee</p>
+                <p class="text-[10px] uppercase font-bold text-indigo-400 tracking-[0.2em] mt-2 leading-none">Employee Presence</p>
             </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
             <div class="lg:col-span-7 space-y-8">
-                <div class="glass-panel rounded-[3.5rem] p-10 md:p-16 text-center border-b-[12px] border-indigo-500/10">
-                    <div id="todayDate" class="text-[11px] uppercase tracking-[0.6em] text-indigo-400 font-bold mb-6"></div>
-                    <div id="clock" class="text-8xl md:text-9xl font-extralight text-slate-800 tracking-tighter mb-12 leading-none">00:00:00</div>
+                <div class="glass-panel rounded-[3.5rem] p-10 md:p-14 text-center border-b-[10px] border-indigo-500/10">
+                    <div id="todayDate" class="text-[10px] uppercase tracking-[0.5em] text-indigo-400 font-bold mb-4"></div>
+                    <div id="clock" class="text-6xl md:text-7xl font-extralight text-slate-800 tracking-tighter mb-10 leading-none">00:00:00</div>
                     
-                    <div class="space-y-8">
-                        <div class="grid grid-cols-2 gap-5">
-                            <button id="inBtn" onclick="openLocationModal('Check In')" class="py-7 bg-slate-900 text-white rounded-[2rem] font-bold text-sm uppercase tracking-widest shadow-2xl active:scale-95">
-                                Check In
-                            </button>
-                            <button id="outBtn" onclick="confirmRecord('-')" class="py-7 bg-white text-slate-900 border border-slate-200 rounded-[2rem] font-bold text-sm uppercase tracking-widest shadow-sm active:scale-95">
-                                Check Out
-                            </button>
+                    <div class="space-y-6">
+                        <div class="grid grid-cols-2 gap-4">
+                            <button id="inBtn" onclick="openLocationModal('Check In')" class="py-6 bg-slate-900 text-white rounded-[1.8rem] font-bold text-xs uppercase tracking-widest shadow-2xl active:scale-95 transition-all">Check In</button>
+                            <button id="outBtn" onclick="confirmRecord('-')" class="py-6 bg-white text-slate-900 border border-slate-200 rounded-[1.8rem] font-bold text-xs uppercase tracking-widest active:scale-95 transition-all">Check Out</button>
                         </div>
-                        <div class="text-left bg-white/60 p-8 rounded-[2.5rem] border border-white">
-                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-3 block mb-4 tracking-widest">Daily Summary (เลิกงาน)</label>
-                            <textarea id="memo" rows="3" class="w-full bg-transparent border-none text-base font-normal focus:ring-0 placeholder:text-slate-300 p-2" placeholder="สรุปงานสั้นๆ วันนี้ทำอะไรไปบ้าง..."></textarea>
+                        <div class="text-left bg-white/60 p-6 rounded-[2rem] border border-white">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-2 block mb-3 tracking-widest">Daily Summary (บันทึกตอนเลิกงาน)</label>
+                            <textarea id="memo" rows="3" class="w-full bg-transparent border-none text-base font-normal focus:ring-0 placeholder:text-slate-200 p-2" placeholder="สรุปงานสั้นๆ..."></textarea>
                         </div>
                     </div>
                 </div>
 
-                <div class="px-4">
+                <div class="px-2">
                     <h4 class="text-xs font-bold text-slate-400 uppercase tracking-[0.3em] mb-6 flex items-center gap-3">
-                        <i data-lucide="history" class="w-4 h-4 text-indigo-400"></i> My Timeline
+                        <i data-lucide="history" class="w-4 h-4 text-indigo-400"></i> My Activities
                     </h4>
-                    <div id="myHistoryBody" class="space-y-4"></div>
+                    <div id="myHistoryGrid" class="grid grid-cols-2 gap-4">
+                        <div class="glass-panel p-6 rounded-[2rem] border-l-4 border-emerald-500 relative overflow-hidden group">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="p-2 bg-emerald-50 text-emerald-500 rounded-xl"><i data-lucide="log-in" class="w-4 h-4"></i></div>
+                                <span class="text-[9px] font-bold text-slate-300 uppercase tracking-widest">Start Work</span>
+                            </div>
+                            <p id="inTimeText" class="text-2xl font-bold text-slate-700 tracking-tighter">-:-</p>
+                            <p id="inLocText" class="text-[10px] text-slate-400 font-medium mt-1">N/A</p>
+                        </div>
+                        <div class="glass-panel p-6 rounded-[2rem] border-l-4 border-rose-500 relative overflow-hidden group">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="p-2 bg-rose-50 text-rose-500 rounded-xl"><i data-lucide="log-out" class="w-4 h-4"></i></div>
+                                <span class="text-[9px] font-bold text-slate-300 uppercase tracking-widest">End Work</span>
+                            </div>
+                            <p id="outTimeText" class="text-2xl font-bold text-slate-700 tracking-tighter">-:-</p>
+                            <p id="outLocText" class="text-[10px] text-slate-400 font-medium mt-1">N/A</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <div class="lg:col-span-5 space-y-8">
                 <div class="glass-panel rounded-[3rem] p-10">
                     <div class="flex justify-between items-center mb-8">
-                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-3">
-                            <i data-lucide="users" class="w-4 h-4 text-indigo-400"></i> Team Presence
-                        </h4>
-                        <span id="activeCount" class="text-[11px] font-bold text-emerald-500 bg-emerald-50 px-4 py-2 rounded-full">0 ACTIVE</span>
+                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-3"><i data-lucide="users" class="w-4 h-4 text-indigo-400"></i> Team Presence</h4>
+                        <span id="activeCount" class="text-[11px] font-bold text-emerald-500 bg-emerald-50 px-4 py-2 rounded-full uppercase">0 ACTIVE</span>
                     </div>
-                    <div id="colleagueStatus" class="space-y-4 max-h-[350px] overflow-y-auto pr-2"></div>
+                    <div id="colleagueStatus" class="space-y-3 max-h-[300px] overflow-y-auto pr-2"></div>
                 </div>
 
                 <div class="glass-panel rounded-[3rem] p-10">
                     <div class="flex justify-between items-center mb-8">
                         <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Reports</h4>
-                        <div class="flex bg-slate-100 p-1.5 rounded-2xl">
+                        <div class="flex bg-slate-100 p-1.5 rounded-2xl scale-90">
                             <button onclick="updateRange(7)" id="btn7" class="px-5 py-2 rounded-xl font-bold text-xs transition-all bg-white shadow-sm text-indigo-600">7D</button>
                             <button onclick="updateRange(30)" id="btn30" class="px-5 py-2 rounded-xl font-bold text-xs transition-all text-slate-400">30D</button>
                         </div>
                     </div>
-                    <div id="historyTable" class="space-y-2"></div>
+                    <div id="historyTable" class="space-y-1"></div>
                 </div>
             </div>
         </div>
@@ -132,46 +131,48 @@
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzehwXrrfuioHK68BXQGLpKyBPM5ElXZKgRm0o55yzwXgtx_YGkItjkM090zceA_t7Jcg/exec";
         const user = sessionStorage.getItem("userName") || sessionStorage.getItem("username");
         const name = sessionStorage.getItem("userName") || "พนักงาน";
-        let pendingType = '';
         let globalData = [];
+        let pendingType = '';
 
         document.getElementById('userDisp').innerText = name;
+
+        // 2. Dynamic Time Logic (Before Noon: Delay 30s | After Noon: Speed 30s)
+        function updateClock() {
+            const now = new Date();
+            const hours = now.getHours();
+            
+            if (hours < 12) {
+                // ก่อนเที่ยง: หน่วงเวลา 30 วินาที
+                now.setSeconds(now.getSeconds() - 30);
+            } else {
+                // หลังเที่ยง: เร่งเวลา 30 วินาที
+                now.setSeconds(now.getSeconds() + 30);
+            }
+            
+            document.getElementById('clock').innerText = now.toLocaleTimeString('th-TH');
+            document.getElementById('todayDate').innerText = now.toLocaleDateString('th-TH', { weekday: 'long', day: 'numeric', month: 'long' });
+        }
+        setInterval(updateClock, 1000);
 
         function showCustomAlert(title, msg, icon = "check-circle", color = "indigo") {
             const modal = document.getElementById('customAlert');
             document.getElementById('alertTitle').innerText = title;
             document.getElementById('alertMsg').innerText = msg;
             const iconBox = document.getElementById('alertIcon');
-            iconBox.className = `w-20 h-20 bg-${color}-50 text-${color}-500 rounded-full flex items-center justify-center mx-auto mb-8`;
+            iconBox.className = `w-20 h-20 bg-${color}-50 text-${color}-500 rounded-full flex items-center justify-center mx-auto mb-6`;
             iconBox.innerHTML = `<i data-lucide="${icon}" class="w-10 h-10"></i>`;
             lucide.createIcons();
             modal.classList.add('active');
         }
 
         function closeAlert() { document.getElementById('customAlert').classList.remove('active'); }
-
-        function updateClock() {
-            const now = new Date();
-            now.setSeconds(now.getSeconds() - 30);
-            document.getElementById('clock').innerText = now.toLocaleTimeString('th-TH');
-            document.getElementById('todayDate').innerText = now.toLocaleDateString('th-TH', { weekday: 'long', day: 'numeric', month: 'long' });
-        }
-        setInterval(updateClock, 1000);
-
-        function openLocationModal(type) {
-            pendingType = type;
-            document.getElementById('locationModal').classList.add('active');
-        }
-
+        function openLocationModal(type) { pendingType = type; document.getElementById('locationModal').classList.add('active'); }
         function closeLocation() { document.getElementById('locationModal').classList.remove('active'); }
 
         async function confirmRecord(loc) {
             closeLocation();
-            
-            // If loc is '-' it means it's a Check out (No modal)
             const typeToSend = (loc === '-') ? 'Check Out' : 'Check In';
             const btn = typeToSend === 'Check In' ? document.getElementById('inBtn') : document.getElementById('outBtn');
-            
             btn.disabled = true;
             btn.innerText = "WAIT...";
 
@@ -186,7 +187,7 @@
 
             try {
                 await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
-                showCustomAlert("สำเร็จ", `บันทึก ${typeToSend} เรียบร้อยแล้ว`, "check-circle", "emerald");
+                showCustomAlert("Success", `บันทึก ${typeToSend} สำเร็จ`, "check-circle", "emerald");
                 if(typeToSend === 'Check Out') document.getElementById('memo').value = "";
                 await loadData();
             } catch(e) {
@@ -205,13 +206,26 @@
                 setTimeout(() => document.getElementById('loader').style.display = 'none', 500);
 
                 const today = new Date().toLocaleDateString();
-                const myLogsToday = globalData.filter(d => (d.Username === user || d.Name === name) && new Date(d.Timestamp).toLocaleDateString() === today);
+                const myToday = globalData.filter(d => (d.Username === user || d.Name === name) && new Date(d.Timestamp).toLocaleDateString() === today);
 
-                const hasIn = myLogsToday.some(d => d.Type === "Check In");
-                const hasOut = myLogsToday.some(d => d.Type === "Check Out");
+                const hasIn = myToday.some(d => d.Type === "Check In");
+                const hasOut = myToday.some(d => d.Type === "Check Out");
                 
                 document.getElementById('inBtn').disabled = hasIn;
                 document.getElementById('outBtn').disabled = !hasIn || hasOut;
+
+                // 3. Update Timeline Blocks
+                const inLog = myToday.find(d => d.Type === "Check In");
+                const outLog = myToday.find(d => d.Type === "Check Out");
+
+                if(inLog) {
+                    document.getElementById('inTimeText').innerText = new Date(inLog.Timestamp).toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'});
+                    document.getElementById('inLocText').innerText = inLog.Location;
+                }
+                if(outLog) {
+                    document.getElementById('outTimeText').innerText = new Date(outLog.Timestamp).toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'});
+                    document.getElementById('outLocText').innerText = "DONE TODAY";
+                }
 
                 renderUI();
                 lucide.createIcons();
@@ -219,25 +233,6 @@
         }
 
         function renderUI() {
-            const historyBox = document.getElementById("myHistoryBody");
-            historyBox.innerHTML = "";
-            globalData.filter(d => d.Username === user || d.Name === name).reverse().slice(0, 3).forEach(d => {
-                const time = new Date(d.Timestamp).toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'});
-                historyBox.innerHTML += `
-                <div class="glass-panel p-6 rounded-[1.5rem] flex justify-between items-center border border-white">
-                    <div class="flex items-center gap-5">
-                        <div class="w-10 h-10 rounded-full ${d.Type === 'Check In' ? 'bg-emerald-50 text-emerald-500' : 'bg-rose-50 text-rose-500'} flex items-center justify-center">
-                            <i data-lucide="${d.Type === 'Check In' ? 'log-in' : 'log-out'}" class="w-5 h-5"></i>
-                        </div>
-                        <div>
-                            <p class="font-bold text-slate-800 text-sm tracking-wide uppercase">${d.Type}</p>
-                            <p class="text-xs text-slate-400 font-medium">${d.Location || 'No location'}</p>
-                        </div>
-                    </div>
-                    <span class="font-bold text-slate-700 bg-white px-4 py-2 rounded-full text-sm shadow-sm">${time} น.</span>
-                </div>`;
-            });
-
             const colleagueBox = document.getElementById("colleagueStatus");
             colleagueBox.innerHTML = "";
             const today = new Date().toLocaleDateString();
@@ -250,20 +245,15 @@
                 if(isOnline) activeCount++;
                 const locIcon = v.Location === 'OFFICE' ? '🏢' : v.Location === 'WFH' ? '🏠' : v.Location === 'ON-SITE' ? '🚗' : '🕒';
                 colleagueBox.innerHTML += `
-                <div class="flex items-center justify-between p-5 bg-white/40 rounded-[2rem] border border-white transition-all hover:bg-white/80">
-                    <div class="flex items-center gap-4">
-                        <div class="relative">
-                            <div class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-sm font-bold border-2 border-white shadow-sm">${k.charAt(0)}</div>
-                            <div class="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white ${isOnline ? 'bg-emerald-500' : 'bg-slate-300'}"></div>
-                        </div>
+                <div class="flex items-center justify-between p-4 bg-white/40 rounded-[1.5rem] border border-white">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-sm font-bold border-2 border-white shadow-sm">${k.charAt(0)}</div>
                         <div>
-                            <p class="font-bold text-slate-700 text-sm">${k}</p>
-                            <p class="text-[10px] text-slate-400 flex items-center gap-1">${locIcon} ${v.Location || '-'}</p>
+                            <p class="font-bold text-slate-700 text-xs">${k}</p>
+                            <p class="text-[9px] text-slate-400 font-medium">${locIcon} ${v.Location || '-'}</p>
                         </div>
                     </div>
-                    <span class="px-4 py-1.5 rounded-xl font-bold text-[10px] tracking-tight ${isOnline ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-50 text-slate-400'} uppercase">
-                        ${v.Type.replace('Check ', '')}
-                    </span>
+                    <div class="w-2.5 h-2.5 rounded-full ${isOnline ? 'bg-emerald-500 animate-pulse' : 'bg-slate-200'}"></div>
                 </div>`;
             });
             document.getElementById('activeCount').innerText = `${activeCount} ACTIVE`;
@@ -291,11 +281,11 @@
             Array.from(reportMap.keys()).reverse().forEach(date => {
                 const v = reportMap.get(date);
                 table.innerHTML += `
-                <div class="flex justify-between items-center p-4 hover:bg-white/50 rounded-2xl transition-colors text-xs font-bold border-b border-slate-50/50">
-                    <span class="text-slate-400 tracking-tighter w-12">${date}</span>
-                    <div class="flex gap-8">
-                        <span class="text-emerald-500 w-10 text-center">${v.in}</span>
-                        <span class="text-rose-400 w-10 text-center">${v.out}</span>
+                <div class="flex justify-between items-center p-4 bg-white/30 rounded-2xl mb-1 text-[11px] font-bold border border-slate-50">
+                    <span class="text-slate-400 w-12 tracking-tight">${date}</span>
+                    <div class="flex gap-6">
+                        <span class="text-emerald-500 w-8 text-center">${v.in}</span>
+                        <span class="text-rose-400 w-8 text-center">${v.out}</span>
                     </div>
                 </div>`;
             });
