@@ -7,284 +7,238 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@200;300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <style>
-        :root { --primary: #6366f1; --emerald: #10b981; --rose: #f43f5e; }
-        body { font-family: 'Kanit', sans-serif; background: #f8fafc; overflow-x: hidden; }
+        body { 
+            font-family: 'Kanit', sans-serif; 
+            background-color: #fcfdfe;
+            background-image: radial-gradient(circle at top right, #f0f7ff, transparent),
+                              radial-gradient(circle at bottom left, #f5f3ff, transparent);
+            min-height: 100-screen;
+        }
         
-        #mainLoader {
-            position: fixed; inset: 0; z-index: 100; background: #ffffff;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: opacity 0.6s ease;
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.04);
+            border-radius: 2.5rem;
         }
 
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.75);
-            backdrop-filter: blur(20px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.03);
+        .btn-luxury {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
-        .aura-bg {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: -1;
-            background: radial-gradient(circle at 0% 0%, #eff6ff 0%, transparent 40%),
-                        radial-gradient(circle at 100% 100%, #f5f3ff 0%, transparent 40%);
-        }
-
-        .pulse-emerald { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); animation: pulse-e 2s infinite; }
-        @keyframes pulse-e { 70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
         
-        .swal2-popup { border-radius: 2.5rem !important; font-family: 'Kanit', sans-serif !important; }
+        .btn-luxury:active { transform: scale(0.95); }
+
+        select, textarea {
+            appearance: none;
+            background: rgba(248, 250, 252, 0.8);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s;
+        }
+
+        select:focus, textarea:focus {
+            background: #fff;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+            outline: none;
+        }
+
+        .status-dot {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+            100% { opacity: 1; transform: scale(1); }
+        }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center p-6 md:p-12">
+<body class="p-4 md:p-8">
 
-    <div id="mainLoader">
-        <div class="w-12 h-12 border-4 border-slate-100 border-t-indigo-500 rounded-full animate-spin mb-4"></div>
-        <p class="text-slate-400 text-xs font-medium tracking-widest uppercase">CubicPlus Loading</p>
+<div class="max-w-2xl mx-auto space-y-6">
+    <div class="flex justify-between items-center mb-8 px-4">
+        <button onclick="location.href='dashboard.html'" class="flex items-center gap-2 text-slate-400 hover:text-indigo-600 transition-colors text-sm">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i> กลับหน้าหลัก
+        </button>
+        <div class="text-right">
+            <p class="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold">System Status</p>
+            <div class="flex items-center gap-2 justify-end">
+                <span class="text-xs font-medium text-slate-600">Connected</span>
+                <div class="w-2 h-2 bg-emerald-500 rounded-full status-dot"></div>
+            </div>
+        </div>
     </div>
 
-    <div class="aura-bg"></div>
-
-    <div class="w-full max-w-xl space-y-8">
-        <div class="flex justify-between items-end px-2">
-            <div>
-                <button onclick="location.href='dashboard.html'" class="text-slate-400 text-xs mb-2 flex items-center gap-1 hover:text-indigo-500 transition-colors">
-                    <i data-lucide="chevron-left" class="w-3 h-3"></i> กลับหน้าหลัก
-                </button>
-                <p id="greetingText" class="text-slate-400 text-sm font-light italic">Welcome back,</p>
-                <h1 id="userDisp" class="text-3xl font-semibold text-slate-800 tracking-tight leading-none">พนักงาน</h1>
-            </div>
-            <div class="text-right">
-                <div class="inline-flex items-center gap-2 bg-white/80 px-4 py-2 rounded-2xl glass-panel shadow-sm border border-white">
-                    <div id="statusIndicator" class="w-2.5 h-2.5 rounded-full bg-slate-300"></div>
-                    <span id="statusText" class="text-xs font-bold text-slate-500 uppercase tracking-widest text-[10px]">Checking...</span>
-                </div>
+    <div class="glass-card p-10 text-center relative overflow-hidden">
+        <div class="relative z-10">
+            <div id="todayDate" class="text-xs uppercase tracking-[0.3em] text-indigo-500 font-semibold mb-2"></div>
+            <div id="clock" class="text-6xl md:text-7xl font-extralight text-slate-800 mb-6 tracking-tighter">00:00:00</div>
+            <div class="inline-block px-6 py-2 bg-white rounded-full shadow-sm border border-slate-50">
+                <p class="text-slate-600 font-light">สวัสดีคุณ, <span id="userDisp" class="font-semibold text-slate-900">พนักงาน</span></p>
             </div>
         </div>
+    </div>
 
-        <div class="glass-panel rounded-[3.5rem] p-12 text-center relative overflow-hidden border border-white/50 shadow-2xl shadow-indigo-100/20">
-            <h2 id="clock" class="text-7xl md:text-8xl font-extralight text-slate-800 tracking-tighter mb-4">00:00:00</h2>
-            <p id="todayDate" class="text-indigo-500/80 font-medium tracking-[0.3em] uppercase text-[10px] mb-10"></p>
-
-            <div class="space-y-6">
-                <div class="max-w-xs mx-auto">
-                    <label class="text-[10px] uppercase font-bold text-slate-400 mb-2 block tracking-widest">Work Location</label>
-                    <select id="location" class="w-full bg-white/50 border border-slate-100 rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all">
-                        <option value="OFFICE">🏢 OFFICE</option>
-                        <option value="WFH">🏠 WFH</option>
-                        <option value="ON-SITE">🚗 ON-SITE</option>
-                    </select>
-                </div>
-
-                <div class="flex gap-4 justify-center">
-                    <button onclick="record('Check In')" class="w-full max-w-[160px] py-6 bg-slate-900 text-white rounded-[2rem] shadow-xl hover:-translate-y-1 transition-all active:scale-95 flex flex-col items-center gap-2">
-                        <i data-lucide="shield-check" class="w-6 h-6 text-emerald-400"></i>
-                        <span class="text-[10px] font-bold uppercase tracking-widest">Check In</span>
-                    </button>
-                    <button onclick="record('Check Out')" class="w-full max-w-[160px] py-6 bg-white text-slate-900 border border-slate-100 rounded-[2rem] shadow-lg hover:-translate-y-1 transition-all active:scale-95 flex flex-col items-center gap-2">
-                        <i data-lucide="log-out" class="w-6 h-6 text-rose-500"></i>
-                        <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Check Out</span>
-                    </button>
-                </div>
+    <div class="glass-card p-8 space-y-6">
+        <div class="flex items-center gap-3 mb-2">
+            <div class="w-8 h-8 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center">
+                <i data-lucide="map-pin" class="w-4 h-4"></i>
             </div>
+            <h4 class="font-semibold text-slate-700">บันทึกเวลาทำงาน</h4>
         </div>
 
-        <div class="glass-panel p-6 rounded-[2.5rem] space-y-4 shadow-sm border border-white">
-            <div class="flex items-center gap-2 px-2">
-                <i data-lucide="pen-tool" class="w-4 h-4 text-indigo-500"></i>
-                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest">Daily Journal / Memo</h3>
+        <div class="grid grid-cols-1 gap-4">
+            <div class="relative">
+                <select id="location" class="w-full p-4 rounded-2xl text-slate-700 font-medium cursor-pointer">
+                    <option value="OFFICE">🏢 OFFICE</option>
+                    <option value="WFH">🏠 WFH</option>
+                    <option value="ON-SITE">🚗 ON-SITE</option>
+                </select>
+                <i data-lucide="chevron-down" class="absolute right-4 top-4 text-slate-400 pointer-events-none w-5 h-5"></i>
             </div>
-            <textarea id="memo" rows="2" class="w-full bg-white/40 border border-slate-100 rounded-[1.5rem] p-4 text-sm outline-none focus:ring-2 focus:ring-indigo-500/10 transition-all" placeholder="วันนี้ทำอะไรไปบ้าง..."></textarea>
-            <button onclick="record('Memo')" class="w-full py-3 bg-slate-100 text-slate-600 rounded-2xl text-[10px] font-bold uppercase tracking-widest hover:bg-slate-200 transition-colors">
-                บันทึก Memo ระหว่างวัน
+
+            <textarea id="memo" rows="3" class="w-full p-5 rounded-3xl text-sm placeholder:text-slate-400" placeholder="สรุปงานสั้นๆ หรือสิ่งที่ทำในวันนี้..."></textarea>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+            <button onclick="record('Check In')" class="btn-luxury py-5 bg-slate-900 text-white rounded-[1.8rem] font-bold text-xs uppercase tracking-widest hover:bg-indigo-600 hover:shadow-lg hover:shadow-indigo-200">
+                Check In
+            </button>
+            <button onclick="record('Check Out')" class="btn-luxury py-5 bg-white text-slate-900 border border-slate-200 rounded-[1.8rem] font-bold text-xs uppercase tracking-widest hover:border-rose-500 hover:text-rose-500">
+                Check Out
+            </button>
+            <button onclick="record('Memo')" class="btn-luxury col-span-2 py-4 bg-slate-100 text-slate-500 rounded-2xl font-bold text-[10px] uppercase tracking-[0.2em] hover:bg-slate-200">
+                Update Memo
             </button>
         </div>
-
-        <div class="space-y-4">
-            <div class="flex items-center justify-between px-4">
-                <div class="flex items-center gap-2">
-                    <i data-lucide="users" class="w-4 h-4 text-indigo-400"></i>
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Team Presence</h3>
-                </div>
-                <span id="teamCount" class="text-[10px] bg-indigo-50 text-indigo-500 px-2 py-0.5 rounded-full font-bold uppercase">0 Active</span>
-            </div>
-            <div id="colleagueStatus" class="flex flex-wrap gap-2 px-2"></div>
-        </div>
-
-        <div class="space-y-4 pt-4">
-            <div class="flex justify-between items-center px-4">
-                <h3 class="text-lg font-semibold text-slate-800 tracking-tight">Today's Timeline</h3>
-                <button onclick="loadData()" class="p-2 hover:bg-white rounded-full transition-all text-indigo-500">
-                    <i data-lucide="refresh-cw" class="w-4 h-4"></i>
-                </button>
-            </div>
-            <div id="myHistoryList" class="space-y-3 px-2"></div>
-        </div>
     </div>
 
-    <script>
-        // ใช้ URL เดิมของคุณ
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzehwXrrfuioHK68BXQGLpKyBPM5ElXZKgRm0o55yzwXgtx_YGkItjkM090zceA_t7Jcg/exec";
-        
-        const user = sessionStorage.getItem("username") || "Guest";
-        const name = sessionStorage.getItem("userName") || sessionStorage.getItem("name") || "พนักงาน";
-        document.getElementById('userDisp').innerText = name;
+    <div class="glass-card p-8">
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-3">
+                <i data-lucide="users" class="w-5 h-5 text-slate-400"></i>
+                <h4 class="font-semibold text-slate-700">Team Presence</h4>
+            </div>
+            <span class="text-[10px] bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full font-bold uppercase tracking-wider">Today</span>
+        </div>
+        <div id="colleagueStatus" class="flex flex-wrap gap-2"></div>
+    </div>
 
-        // Clock & Greeting
-        setInterval(() => {
-            const now = new Date();
-            document.getElementById('clock').innerText = now.toLocaleTimeString('th-TH', { hour12: false });
-            const h = now.getHours();
-            document.getElementById('greetingText').innerText = h < 12 ? "Good Morning," : h < 17 ? "Good Afternoon," : "Good Evening,";
-        }, 1000);
-        document.getElementById('todayDate').innerText = new Date().toLocaleDateString('th-TH', { weekday: 'long', day: 'numeric', month: 'long' });
+    <div class="glass-card p-8">
+        <div class="flex items-center gap-3 mb-6">
+            <i data-lucide="calendar-days" class="w-5 h-5 text-slate-400"></i>
+            <h4 class="font-semibold text-slate-700">My Timeline</h4>
+        </div>
+        <div class="overflow-hidden">
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="text-[10px] uppercase tracking-widest text-slate-400 border-b border-slate-50">
+                        <th class="pb-4 font-bold">Time</th>
+                        <th class="pb-4 font-bold">Activity</th>
+                        <th class="pb-4 font-bold">Location</th>
+                    </tr>
+                </thead>
+                <tbody id="myHistoryBody" class="text-sm">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
-        // ฟังก์ชันบันทึกเวลา (ปรับให้เสถียรที่สุด)
-        async function record(type) {
-            if(!user || user === "Guest") return Swal.fire('Oops!', 'กรุณาเข้าสู่ระบบก่อน', 'warning');
+<script>
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzehwXrrfuioHK68BXQGLpKyBPM5ElXZKgRm0o55yzwXgtx_YGkItjkM090zceA_t7Jcg/exec";
+    
+    const user = sessionStorage.getItem("username") || "Guest";
+    const name = sessionStorage.getItem("userName") || sessionStorage.getItem("name") || "พนักงาน";
+    document.getElementById('userDisp').innerText = name;
 
-            const memoVal = document.getElementById('memo').value;
-            const locVal = document.getElementById('location').value;
+    // Clock
+    setInterval(() => {
+        document.getElementById('clock').innerText = new Date().toLocaleTimeString('th-TH');
+    }, 1000);
+    document.getElementById('todayDate').innerText = new Date().toLocaleDateString('th-TH', { weekday: 'long', day: 'numeric', month: 'long' });
 
-            Swal.fire({
-                title: 'Processing...',
-                text: 'กำลังบันทึกลงฐานข้อมูล',
-                allowOutsideClick: false,
-                didOpen: () => Swal.showLoading()
+    async function record(type) {
+        if(!user || user === "Guest") return alert("กรุณาเข้าสู่ระบบก่อนบันทึก");
+
+        // UI Feedback
+        const originalText = type;
+        const payload = {
+            action: "recordTime",
+            username: user,
+            name: name,
+            type: type,
+            location: document.getElementById('location').value,
+            memo: document.getElementById('memo').value
+        };
+
+        try {
+            // ใช้โครงสร้างการส่งแบบเดิมที่คุณยืนยันว่าเวิร์ก
+            const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
+            const result = await res.json();
+            
+            if(result.status === "success") {
+                alert("บันทึก " + type + " สำเร็จ");
+                document.getElementById('memo').value = "";
+                loadData();
+            }
+        } catch(e) {
+            alert("การเชื่อมต่อขัดข้อง ลองใหม่อีกครั้ง");
+        }
+    }
+
+    async function loadData() {
+        try {
+            const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({action: "fetchData"}) });
+            const data = await res.json();
+            const today = new Date().toLocaleDateString();
+
+            // 1. Colleague Status
+            const colleagueBox = document.getElementById('colleagueStatus');
+            colleagueBox.innerHTML = "";
+            const latest = new Map();
+            
+            data.forEach(d => {
+                if(new Date(d.Timestamp).toLocaleDateString() === today) {
+                    latest.set(d.Name, { loc: d.Location, type: d.Type });
+                }
+            });
+            
+            latest.forEach((val, key) => {
+                if(val.type !== "Check Out") {
+                    colleagueBox.innerHTML += `
+                        <div class="flex items-center gap-2 bg-white border border-slate-100 px-4 py-2 rounded-2xl shadow-sm">
+                            <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
+                            <span class="text-xs font-medium text-slate-700">${key}</span>
+                            <span class="text-[9px] bg-slate-50 text-slate-400 px-1.5 py-0.5 rounded font-bold">${val.loc}</span>
+                        </div>`;
+                }
             });
 
-            // ส่งข้อมูลแบบ POST Body (แบบที่หน้าสีฟ้าใช้)
-            const payload = {
-                action: "recordTime",
-                username: user,
-                name: name,
-                type: type,
-                location: locVal,
-                memo: memoVal
-            };
-
-            try {
-                // ลองส่งแบบ POST ปกติก่อน
-                const response = await fetch(WEB_APP_URL, {
-                    method: 'POST',
-                    body: JSON.stringify(payload)
-                });
-                const result = await response.json();
+            // 2. Personal History
+            const tbody = document.getElementById("myHistoryBody");
+            tbody.innerHTML = "";
+            data.filter(d => d.Username === user).reverse().slice(0, 10).forEach(d => {
+                const row = tbody.insertRow();
+                const time = new Date(d.Timestamp).toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'});
                 
-                if(result.status === "success") {
-                    Swal.fire({ icon: 'success', title: 'สำเร็จ', text: `บันทึก ${type} เรียบร้อย`, timer: 1500, showConfirmButton: false });
-                    document.getElementById('memo').value = "";
-                    loadData();
-                } else {
-                    throw new Error("API Error");
-                }
-            } catch(e) {
-                console.warn("Retrying with Query Params...");
-                // ถ้า POST ติดปัญหา ลองใช้ Query Params (Fallback)
-                try {
-                    const q = new URLSearchParams(payload).toString();
-                    const resBackup = await fetch(`${WEB_APP_URL}?${q}`);
-                    const resJson = await resBackup.json();
-                    if(resJson.status === "success") {
-                        Swal.fire({ icon: 'success', title: 'สำเร็จ', timer: 1500, showConfirmButton: false });
-                        document.getElementById('memo').value = "";
-                        loadData();
-                    }
-                } catch(err2) {
-                    Swal.fire('Error', 'ไม่สามารถบันทึกได้ กรุณาแจ้งผู้ดูแล', 'error');
-                }
-            }
-        }
+                row.className = "border-b border-slate-50 hover:bg-slate-50/50 transition-colors";
+                row.insertCell(0).innerHTML = `<span class="font-medium text-slate-900">${time}</span>`;
+                row.insertCell(1).innerHTML = `<span class="font-bold ${d.Type === 'Check In' ? 'text-emerald-500' : d.Type === 'Check Out' ? 'text-rose-500' : 'text-slate-500'}">${d.Type}</span>`;
+                row.insertCell(2).innerHTML = `<span class="text-slate-400 text-xs">${d.Location}</span>`;
+            });
+        } catch(e) { console.log("Load error"); }
+    }
 
-        // ฟังก์ชันดึงข้อมูล
-        async function loadData() {
-            try {
-                const res = await fetch(WEB_APP_URL, { 
-                    method: 'POST', 
-                    body: JSON.stringify({action: "fetchData"}) 
-                });
-                const data = await res.json();
-                const todayStr = new Date().toLocaleDateString();
-
-                // 1. เพื่อนร่วมงาน
-                const colleagueBox = document.getElementById('colleagueStatus');
-                colleagueBox.innerHTML = "";
-                const latest = new Map();
-                data.forEach(d => {
-                    if(new Date(d.Timestamp).toLocaleDateString() === todayStr) {
-                        latest.set(d.Name, { loc: d.Location, type: d.Type });
-                    }
-                });
-
-                let activeCount = 0;
-                latest.forEach((val, key) => {
-                    if(val.type !== "Check Out") {
-                        activeCount++;
-                        colleagueBox.innerHTML += `
-                            <div class="flex items-center gap-2 bg-white/60 border border-white px-3 py-1.5 rounded-full shadow-sm">
-                                <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 pulse-emerald"></div>
-                                <span class="text-[11px] font-medium text-slate-600">${key}</span>
-                                <span class="text-[9px] px-1.5 py-0.5 bg-indigo-50 text-indigo-500 rounded-md font-black uppercase">${val.loc}</span>
-                            </div>`;
-                    }
-                });
-                document.getElementById('teamCount').innerText = `${activeCount} Active`;
-
-                // 2. ประวัติส่วนตัว
-                const historyList = document.getElementById('myHistoryList');
-                historyList.innerHTML = "";
-                const myHistory = data.filter(d => d.Username === user).reverse().slice(0, 5);
-                
-                if(myHistory.length === 0) {
-                    historyList.innerHTML = `<p class="text-center py-6 text-slate-300 text-[10px] uppercase tracking-widest">No entries yet</p>`;
-                } else {
-                    myHistory.forEach(d => {
-                        const isIn = d.Type === 'Check In';
-                        const isOut = d.Type === 'Check Out';
-                        const timeStr = new Date(d.Timestamp).toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'});
-                        historyList.innerHTML += `
-                            <div class="glass-panel p-4 rounded-[2rem] flex justify-between items-center border border-white">
-                                <div class="flex items-center gap-4">
-                                    <div class="w-10 h-10 rounded-2xl ${isIn ? 'bg-emerald-50 text-emerald-500' : isOut ? 'bg-rose-50 text-rose-500' : 'bg-slate-50 text-slate-500'} flex items-center justify-center">
-                                        <i data-lucide="${isIn ? 'log-in' : isOut ? 'log-out' : 'sticky-note'}" class="w-4 h-4"></i>
-                                    </div>
-                                    <div>
-                                        <h4 class="font-bold text-slate-700 text-sm">${d.Type}</h4>
-                                        <p class="text-[10px] text-indigo-400 font-medium uppercase tracking-tighter">${d.Location || 'General'} ${d["WorkSummary/Memo"] ? '• ' + d["WorkSummary/Memo"] : ''}</p>
-                                    </div>
-                                </div>
-                                <p class="text-lg font-bold text-slate-800">${timeStr}</p>
-                            </div>`;
-                    });
-
-                    // อัปเดตเม็ดไฟ Status บนหัว
-                    const statusInd = document.getElementById('statusIndicator');
-                    const statusTxt = document.getElementById('statusText');
-                    const lastAction = myHistory.find(h => h.Type === 'Check In' || h.Type === 'Check Out');
-                    
-                    if(lastAction && lastAction.Type === 'Check In') {
-                        statusInd.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 pulse-emerald";
-                        statusTxt.innerText = "Online - Working";
-                        statusTxt.className = "text-xs font-bold text-emerald-500 uppercase tracking-widest text-[10px]";
-                    } else {
-                        statusInd.className = "w-2.5 h-2.5 rounded-full bg-slate-300";
-                        statusTxt.innerText = "Offline";
-                        statusTxt.className = "text-xs font-bold text-slate-500 uppercase tracking-widest text-[10px]";
-                    }
-                }
-                lucide.createIcons();
-            } catch(e) { console.error("Load error", e); }
-        }
-
-        window.onload = async () => {
-            await loadData();
-            document.getElementById('mainLoader').style.opacity = '0';
-            setTimeout(() => document.getElementById('mainLoader').style.display = 'none', 600);
-            lucide.createIcons();
-        };
-    </script>
+    // Initialize Icons & Data
+    window.onload = () => {
+        lucide.createIcons();
+        loadData();
+    };
+</script>
 
 </body>
 </html>
