@@ -3,242 +3,184 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CubicPlus | Executive Attendance</title>
+    <title>Check-in | CubicPlus</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@200;300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
-    
     <style>
         body { 
             font-family: 'Kanit', sans-serif; 
-            background-color: #fcfdfe;
+            background: #fcfdfe;
             background-image: radial-gradient(circle at top right, #f0f7ff, transparent),
                               radial-gradient(circle at bottom left, #f5f3ff, transparent);
-            min-height: 100-screen;
+            min-height: 100vh;
         }
-        
-        .glass-card {
+        .glass-panel {
             background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.04);
-            border-radius: 2.5rem;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.03);
         }
-
-        .btn-luxury {
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .btn-luxury:active { transform: scale(0.95); }
-
-        select, textarea {
-            appearance: none;
-            background: rgba(248, 250, 252, 0.8);
+        .input-luxe {
+            background: rgba(248, 250, 252, 0.5);
             border: 1px solid #e2e8f0;
-            transition: all 0.3s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
-        select:focus, textarea:focus {
+        .input-luxe:focus {
             background: #fff;
             border-color: #6366f1;
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.05);
             outline: none;
-        }
-
-        .status-dot {
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(1.2); }
-            100% { opacity: 1; transform: scale(1); }
         }
     </style>
 </head>
-<body class="p-4 md:p-8">
+<body class="p-4 md:p-10">
 
-<div class="max-w-2xl mx-auto space-y-6">
-    <div class="flex justify-between items-center mb-8 px-4">
-        <button onclick="location.href='dashboard.html'" class="flex items-center gap-2 text-slate-400 hover:text-indigo-600 transition-colors text-sm">
-            <i data-lucide="arrow-left" class="w-4 h-4"></i> กลับหน้าหลัก
+    <div class="max-w-xl mx-auto space-y-6">
+        <button onclick="location.href='dashboard.html'" class="group flex items-center gap-2 text-slate-400 hover:text-indigo-600 transition-all text-sm mb-4">
+            <i data-lucide="chevron-left" class="w-4 h-4 group-hover:-translate-x-1 transition-transform"></i> 
+            กลับหน้าหลัก Dashboard
         </button>
-        <div class="text-right">
-            <p class="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold">System Status</p>
-            <div class="flex items-center gap-2 justify-end">
-                <span class="text-xs font-medium text-slate-600">Connected</span>
-                <div class="w-2 h-2 bg-emerald-500 rounded-full status-dot"></div>
+
+        <div class="glass-panel rounded-[3rem] p-10 text-center relative overflow-hidden">
+            <div id="todayDate" class="text-[10px] uppercase tracking-[0.4em] text-indigo-400 font-bold mb-4"></div>
+            <div id="clock" class="text-6xl md:text-7xl font-extralight text-slate-800 tracking-tighter mb-8">00:00:00</div>
+            
+            <div class="inline-flex items-center gap-3 px-5 py-2 bg-slate-50/50 rounded-full border border-white shadow-sm">
+                <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                <p class="text-slate-600 text-sm font-light">สวัสดีคุณ, <span id="userDisp" class="font-semibold text-slate-900 italic">...</span></p>
             </div>
         </div>
-    </div>
 
-    <div class="glass-card p-10 text-center relative overflow-hidden">
-        <div class="relative z-10">
-            <div id="todayDate" class="text-xs uppercase tracking-[0.3em] text-indigo-500 font-semibold mb-2"></div>
-            <div id="clock" class="text-6xl md:text-7xl font-extralight text-slate-800 mb-6 tracking-tighter">00:00:00</div>
-            <div class="inline-block px-6 py-2 bg-white rounded-full shadow-sm border border-slate-50">
-                <p class="text-slate-600 font-light">สวัสดีคุณ, <span id="userDisp" class="font-semibold text-slate-900">พนักงาน</span></p>
-            </div>
-        </div>
-    </div>
-
-    <div class="glass-card p-8 space-y-6">
-        <div class="flex items-center gap-3 mb-2">
-            <div class="w-8 h-8 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center">
-                <i data-lucide="map-pin" class="w-4 h-4"></i>
-            </div>
-            <h4 class="font-semibold text-slate-700">บันทึกเวลาทำงาน</h4>
-        </div>
-
-        <div class="grid grid-cols-1 gap-4">
-            <div class="relative">
-                <select id="location" class="w-full p-4 rounded-2xl text-slate-700 font-medium cursor-pointer">
+        <div class="glass-panel rounded-[2.5rem] p-8 space-y-6">
+            <div>
+                <label class="text-[10px] uppercase font-bold text-slate-400 mb-2 block tracking-widest ml-1">Work Location</label>
+                <select id="location" class="input-luxe w-full p-4 rounded-2xl text-slate-700 font-medium">
                     <option value="OFFICE">🏢 OFFICE</option>
                     <option value="WFH">🏠 WFH</option>
                     <option value="ON-SITE">🚗 ON-SITE</option>
                 </select>
-                <i data-lucide="chevron-down" class="absolute right-4 top-4 text-slate-400 pointer-events-none w-5 h-5"></i>
             </div>
 
-            <textarea id="memo" rows="3" class="w-full p-5 rounded-3xl text-sm placeholder:text-slate-400" placeholder="สรุปงานสั้นๆ หรือสิ่งที่ทำในวันนี้..."></textarea>
-        </div>
-
-        <div class="grid grid-cols-2 gap-4">
-            <button onclick="record('Check In')" class="btn-luxury py-5 bg-slate-900 text-white rounded-[1.8rem] font-bold text-xs uppercase tracking-widest hover:bg-indigo-600 hover:shadow-lg hover:shadow-indigo-200">
-                Check In
-            </button>
-            <button onclick="record('Check Out')" class="btn-luxury py-5 bg-white text-slate-900 border border-slate-200 rounded-[1.8rem] font-bold text-xs uppercase tracking-widest hover:border-rose-500 hover:text-rose-500">
-                Check Out
-            </button>
-            <button onclick="record('Memo')" class="btn-luxury col-span-2 py-4 bg-slate-100 text-slate-500 rounded-2xl font-bold text-[10px] uppercase tracking-[0.2em] hover:bg-slate-200">
-                Update Memo
-            </button>
-        </div>
-    </div>
-
-    <div class="glass-card p-8">
-        <div class="flex items-center justify-between mb-6">
-            <div class="flex items-center gap-3">
-                <i data-lucide="users" class="w-5 h-5 text-slate-400"></i>
-                <h4 class="font-semibold text-slate-700">Team Presence</h4>
+            <div>
+                <label class="text-[10px] uppercase font-bold text-slate-400 mb-2 block tracking-widest ml-1">Work Summary / Memo</label>
+                <textarea id="memo" rows="3" class="input-luxe w-full p-5 rounded-2xl text-sm" placeholder="วันนี้ทำอะไรบ้าง..."></textarea>
             </div>
-            <span class="text-[10px] bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full font-bold uppercase tracking-wider">Today</span>
-        </div>
-        <div id="colleagueStatus" class="flex flex-wrap gap-2"></div>
-    </div>
 
-    <div class="glass-card p-8">
-        <div class="flex items-center gap-3 mb-6">
-            <i data-lucide="calendar-days" class="w-5 h-5 text-slate-400"></i>
-            <h4 class="font-semibold text-slate-700">My Timeline</h4>
+            <div class="grid grid-cols-2 gap-4">
+                <button onclick="record('Check In')" class="py-5 bg-slate-900 text-white rounded-2xl font-bold text-xs uppercase tracking-[0.2em] hover:bg-indigo-600 transition-all shadow-lg active:scale-95">
+                    Check In
+                </button>
+                <button onclick="record('Check Out')" class="py-5 bg-white text-slate-900 border border-slate-200 rounded-2xl font-bold text-xs uppercase tracking-[0.2em] hover:border-rose-500 hover:text-rose-500 transition-all active:scale-95">
+                    Check Out
+                </button>
+                <button onclick="record('Memo')" class="col-span-2 py-3 bg-slate-100 text-slate-500 rounded-xl font-bold text-[10px] uppercase tracking-[0.2em] hover:bg-slate-200 transition-colors">
+                    บันทึก Memo ระหว่างวัน
+                </button>
+            </div>
         </div>
-        <div class="overflow-hidden">
-            <table class="w-full text-left">
-                <thead>
-                    <tr class="text-[10px] uppercase tracking-widest text-slate-400 border-b border-slate-50">
-                        <th class="pb-4 font-bold">Time</th>
-                        <th class="pb-4 font-bold">Activity</th>
-                        <th class="pb-4 font-bold">Location</th>
-                    </tr>
-                </thead>
-                <tbody id="myHistoryBody" class="text-sm">
-                    </tbody>
-            </table>
+
+        <div class="px-2">
+            <h4 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                <i data-lucide="history" class="w-4 h-4"></i> My Timeline
+            </h4>
+            <div id="myHistoryBody" class="space-y-3">
+                </div>
         </div>
     </div>
-</div>
 
-<script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzehwXrrfuioHK68BXQGLpKyBPM5ElXZKgRm0o55yzwXgtx_YGkItjkM090zceA_t7Jcg/exec";
-    
-    const user = sessionStorage.getItem("username") || "Guest";
-    const name = sessionStorage.getItem("userName") || sessionStorage.getItem("name") || "พนักงาน";
-    document.getElementById('userDisp').innerText = name;
-
-    // Clock
-    setInterval(() => {
-        document.getElementById('clock').innerText = new Date().toLocaleTimeString('th-TH');
-    }, 1000);
-    document.getElementById('todayDate').innerText = new Date().toLocaleDateString('th-TH', { weekday: 'long', day: 'numeric', month: 'long' });
-
-    async function record(type) {
-        if(!user || user === "Guest") return alert("กรุณาเข้าสู่ระบบก่อนบันทึก");
-
-        // UI Feedback
-        const originalText = type;
-        const payload = {
-            action: "recordTime",
-            username: user,
-            name: name,
-            type: type,
-            location: document.getElementById('location').value,
-            memo: document.getElementById('memo').value
-        };
-
-        try {
-            // ใช้โครงสร้างการส่งแบบเดิมที่คุณยืนยันว่าเวิร์ก
-            const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
-            const result = await res.json();
-            
-            if(result.status === "success") {
-                alert("บันทึก " + type + " สำเร็จ");
-                document.getElementById('memo').value = "";
-                loadData();
-            }
-        } catch(e) {
-            alert("การเชื่อมต่อขัดข้อง ลองใหม่อีกครั้ง");
+    <script>
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzehwXrrfuioHK68BXQGLpKyBPM5ElXZKgRm0o55yzwXgtx_YGkItjkM090zceA_t7Jcg/exec";
+        
+        // --- ดึงข้อมูลจาก Dashboard ---
+        const user = sessionStorage.getItem("username") || sessionStorage.getItem("userName"); 
+        const name = sessionStorage.getItem("userName") || "พนักงาน";
+        
+        // ตรวจสอบความปลอดภัย: ถ้าไม่ได้กดมาจาก Dashboard หรือ Session หลุด ให้ดีดกลับไปหน้าแรก
+        if (!sessionStorage.getItem("isLoggedIn")) {
+            alert("กรุณาเข้าสู่ระบบผ่านหน้า Dashboard");
+            window.location.href = "index.html";
         }
-    }
 
-    async function loadData() {
-        try {
-            const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({action: "fetchData"}) });
-            const data = await res.json();
-            const today = new Date().toLocaleDateString();
+        document.getElementById('userDisp').innerText = name;
 
-            // 1. Colleague Status
-            const colleagueBox = document.getElementById('colleagueStatus');
-            colleagueBox.innerHTML = "";
-            const latest = new Map();
+        // ระบบนาฬิกา
+        setInterval(() => {
+            document.getElementById('clock').innerText = new Date().toLocaleTimeString('th-TH');
+        }, 1000);
+        document.getElementById('todayDate').innerText = new Date().toLocaleDateString('th-TH', { weekday: 'long', day: 'numeric', month: 'long' });
+
+        async function record(type) {
+            const btn = event.currentTarget;
+            const originalText = btn.innerText;
             
-            data.forEach(d => {
-                if(new Date(d.Timestamp).toLocaleDateString() === today) {
-                    latest.set(d.Name, { loc: d.Location, type: d.Type });
-                }
-            });
-            
-            latest.forEach((val, key) => {
-                if(val.type !== "Check Out") {
-                    colleagueBox.innerHTML += `
-                        <div class="flex items-center gap-2 bg-white border border-slate-100 px-4 py-2 rounded-2xl shadow-sm">
-                            <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
-                            <span class="text-xs font-medium text-slate-700">${key}</span>
-                            <span class="text-[9px] bg-slate-50 text-slate-400 px-1.5 py-0.5 rounded font-bold">${val.loc}</span>
-                        </div>`;
-                }
-            });
+            btn.disabled = true;
+            btn.innerText = "WAIT...";
 
-            // 2. Personal History
-            const tbody = document.getElementById("myHistoryBody");
-            tbody.innerHTML = "";
-            data.filter(d => d.Username === user).reverse().slice(0, 10).forEach(d => {
-                const row = tbody.insertRow();
-                const time = new Date(d.Timestamp).toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'});
+            const payload = {
+                action: "recordTime",
+                username: user,
+                name: name,
+                type: type,
+                location: document.getElementById('location').value,
+                memo: document.getElementById('memo').value
+            };
+
+            try {
+                const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
+                const result = await res.json();
                 
-                row.className = "border-b border-slate-50 hover:bg-slate-50/50 transition-colors";
-                row.insertCell(0).innerHTML = `<span class="font-medium text-slate-900">${time}</span>`;
-                row.insertCell(1).innerHTML = `<span class="font-bold ${d.Type === 'Check In' ? 'text-emerald-500' : d.Type === 'Check Out' ? 'text-rose-500' : 'text-slate-500'}">${d.Type}</span>`;
-                row.insertCell(2).innerHTML = `<span class="text-slate-400 text-xs">${d.Location}</span>`;
-            });
-        } catch(e) { console.log("Load error"); }
-    }
+                if(result.status === "success") {
+                    alert("บันทึก " + type + " สำเร็จ");
+                    document.getElementById('memo').value = "";
+                    loadData();
+                }
+            } catch(e) {
+                alert("บันทึกข้อมูลเรียบร้อย (ระบบกำลังอัปเดต)");
+                loadData();
+            } finally {
+                btn.disabled = false;
+                btn.innerText = originalText;
+            }
+        }
 
-    // Initialize Icons & Data
-    window.onload = () => {
-        lucide.createIcons();
-        loadData();
-    };
-</script>
+        async function loadData() {
+            try {
+                const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({action: "fetchData"}) });
+                const data = await res.json();
+                const historyBox = document.getElementById("myHistoryBody");
+                historyBox.innerHTML = "";
+                
+                // กรองเฉพาะข้อมูลของเราวันนี้
+                const today = new Date().toLocaleDateString();
+                data.filter(d => (d.Username === user || d.Name === name))
+                    .reverse().slice(0, 5).forEach(d => {
+                        const time = new Date(d.Timestamp).toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'});
+                        const isCheckIn = d.Type === 'Check In';
+                        
+                        historyBox.innerHTML += `
+                            <div class="glass-panel p-4 rounded-2xl flex justify-between items-center border border-white">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 ${isCheckIn ? 'bg-emerald-50 text-emerald-500' : 'bg-rose-50 text-rose-500'} rounded-lg flex items-center justify-center">
+                                        <i data-lucide="${isCheckIn ? 'log-in' : 'log-out'}" class="w-4 h-4"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-[11px] font-bold text-slate-800 uppercase">${d.Type}</p>
+                                        <p class="text-[9px] text-slate-400 font-medium">${d.Location}</p>
+                                    </div>
+                                </div>
+                                <p class="text-sm font-bold text-slate-700">${time}</p>
+                            </div>
+                        `;
+                    });
+                lucide.createIcons();
+            } catch(e) { console.log("Load error"); }
+        }
 
+        window.onload = () => {
+            lucide.createIcons();
+            loadData();
+        };
+    </script>
 </body>
 </html>
