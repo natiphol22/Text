@@ -3,103 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Business Portal</title>
+    <title>Dashboard | CubicPlus Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            margin: 0; padding: 40px; background-color: #f8f9fa; color: #333;
+            font-family: 'Kanit', sans-serif; 
+            background: #f8fafc;
+            background-image: radial-gradient(circle at top right, #eff6ff, transparent),
+                              radial-gradient(circle at bottom left, #f5f3ff, transparent);
+            min-height: 100vh;
         }
-        .header { 
-            display: flex; justify-content: space-between; align-items: center; 
-            margin-bottom: 30px; border-bottom: 2px solid #eee; padding-bottom: 20px;
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.03);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        h1 { margin: 0; color: #2c3e50; }
-        .user-info { text-align: right; }
-        
-        .logout-btn { 
-            background-color: #e74c3c; color: white; border: none; padding: 8px 15px; 
-            border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 5px;
+        .menu-card:hover {
+            transform: translateY(-8px);
+            background: #ffffff;
+            box-shadow: 0 30px 60px -12px rgba(99, 102, 241, 0.1);
+            border-color: #6366f1;
         }
-        .logout-btn:hover { background-color: #c0392b; }
-
-        .menu-grid { 
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; 
+        .admin-card {
+            background: linear-gradient(135deg, #fff5f5 0%, #ffffff 100%);
+            border: 1px dashed #feb2b2 !important;
         }
-        
-        .card { 
-            background: white; padding: 40px 20px; border-radius: 12px; text-align: center; 
-            text-decoration: none; color: #2c3e50; font-weight: 600;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: all 0.3s ease; border: 1px solid #efefef;
-        }
-        .card:hover { 
-            transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); border-color: #3498db; 
-        }
-        
-        #adminMenu { display: none; background-color: #fff5f5; border: 1px dashed #ff7675; }
-        #adminMenu:hover { border-style: solid; background-color: #ffeaea; }
-        .admin-text { color: #d63031; font-size: 1.1rem; }
-
-        /* ส่วนแสดงสถานะด่วน */
-        .status-summary {
-            background: #e3f2fd; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 0.9rem;
+        .admin-card:hover {
+            border-style: solid !important;
+            border-color: #f56565 !important;
         }
     </style>
 </head>
-<body>
+<body class="p-6 md:p-12">
 
-    <div class="header">
+    <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
         <div>
-            <h1>Business Portal</h1>
-            <p>ระบบจัดการหลังบ้านบริษัท</p>
+            <h1 class="text-4xl font-semibold text-slate-800 tracking-tight">CubicPlus <span class="font-light text-indigo-500">Business</span></h1>
+            <p class="text-slate-400 font-light mt-1">ระบบจัดการหลังบ้านและทรัพยากรองค์กร</p>
         </div>
-        <div class="user-info">
-            <p>ยินดีต้อนรับ: <strong id="displayName">กำลังโหลด...</strong></p>
-            <button class="logout-btn" onclick="logout()">ออกจากระบบ</button>
+        <div class="glass-card px-6 py-4 rounded-[2rem] flex items-center gap-4 border border-white">
+            <div class="text-right">
+                <p class="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Logged in as</p>
+                <p id="displayName" class="text-slate-700 font-semibold italic">กำลังโหลด...</p>
+            </div>
+            <button onclick="logout()" class="w-10 h-10 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center hover:bg-rose-500 hover:text-white transition-all shadow-sm">
+                <i data-lucide="log-out" class="w-4 h-4"></i>
+            </button>
         </div>
     </div>
 
-    <div class="status-summary" id="statusSummary">
-        <strong>สถานะเพื่อนร่วมงานวันนี้:</strong> กำลังโหลดข้อมูล...
-    </div>
+    <div class="max-w-6xl mx-auto space-y-8">
+        <div id="statusSummary" class="glass-card p-6 rounded-[2rem] flex items-center gap-4 border-l-4 border-l-indigo-500">
+            <div class="w-10 h-10 bg-indigo-50 text-indigo-500 rounded-2xl flex items-center justify-center animate-pulse">
+                <i data-lucide="radio" class="w-5 h-5"></i>
+            </div>
+            <div class="text-sm">
+                <span class="text-slate-400">สถานะทีมวันนี้:</span>
+                <span id="statusText" class="text-slate-600 font-medium ml-1 italic text-xs">กำลังเชื่อมต่อข้อมูลล่าสุด...</span>
+            </div>
+        </div>
 
-    <div class="menu-grid">
-        <a href="checkin.html" class="card">
-            <div>📍 Check-in /ลงเวลาเข้างาน</div>
-        </a>
-        
-        <a href="#" class="card">
-            <div>💰 แจ้งเบิกค่าใช้จ่าย</div>
-        </a>
-        
-        <a href="#" class="card">
-            <div>📄 PDF to JPG Converter</div>
-        </a>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <a href="checkin.html" class="glass-card menu-card p-10 rounded-[3rem] group">
+                <div class="w-14 h-14 bg-emerald-50 text-emerald-500 rounded-[1.5rem] flex items-center justify-center mb-6 group-hover:bg-emerald-500 group-hover:text-white transition-all">
+                    <i data-lucide="map-pin" class="w-6 h-6"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-slate-800 mb-2">Check-in</h3>
+                <p class="text-slate-400 text-sm font-light">ลงเวลาเข้า-ออกงาน และบันทึกสถานที่ทำงานรายวัน</p>
+            </a>
 
-        <a href="admin.html" id="adminMenu" class="card">
-            <div class="admin-text">⚙️ ระบบจัดการผู้ใช้งาน & รายงาน (Admin)</div>
-        </a>
+            <a href="#" class="glass-card menu-card p-10 rounded-[3rem] group">
+                <div class="w-14 h-14 bg-indigo-50 text-indigo-500 rounded-[1.5rem] flex items-center justify-center mb-6 group-hover:bg-indigo-500 group-hover:text-white transition-all">
+                    <i data-lucide="wallet" class="w-6 h-6"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-slate-800 mb-2">แจ้งเบิกค่าใช้จ่าย</h3>
+                <p class="text-slate-400 text-sm font-light">ส่งคำขอเบิกค่าใช้จ่ายบริษัท และติดตามสถานะการอนุมัติ</p>
+            </a>
+
+            <a href="#" class="glass-card menu-card p-10 rounded-[3rem] group">
+                <div class="w-14 h-14 bg-amber-50 text-amber-500 rounded-[1.5rem] flex items-center justify-center mb-6 group-hover:bg-amber-500 group-hover:text-white transition-all">
+                    <i data-lucide="file-type-2" class="w-6 h-6"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-slate-800 mb-2">PDF to JPG</h3>
+                <p class="text-slate-400 text-sm font-light">เครื่องมือจัดการเอกสาร แปลงไฟล์ออนไลน์ได้ทันที</p>
+            </a>
+
+            <a href="admin.html" id="adminMenu" class="glass-card menu-card admin-card p-10 rounded-[3rem] group hidden">
+                <div class="w-14 h-14 bg-rose-50 text-rose-500 rounded-[1.5rem] flex items-center justify-center mb-6 group-hover:bg-rose-500 group-hover:text-white transition-all">
+                    <i data-lucide="settings-2" class="w-6 h-6"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-slate-800 mb-2">Admin Panel</h3>
+                <p class="text-slate-400 text-sm font-light">ระบบจัดการสมาชิก แก้ไขข้อมูล และเรียกดูรายงานสรุป</p>
+            </a>
+        </div>
     </div>
 
     <script>
+        // ใช้ URL เดียวกันทั้งหมดเพื่อความแม่นยำ
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzmZ7PtLEt3ESXpAl3n8i_zoYiOxd4zIMB6TgA5mriTR1FECeGrZR-lWfIbRWpPD3l3bg/exec";
 
         window.onload = function() {
+            lucide.createIcons();
+            
             const isLoggedIn = sessionStorage.getItem("isLoggedIn");
-            const role = sessionStorage.getItem("userRole");
+            const role = sessionStorage.getItem("userRole") || sessionStorage.getItem("role");
             const name = sessionStorage.getItem("userName");
 
+            // ตรวจสอบความปลอดภัย
             if (isLoggedIn !== "true") {
                 window.location.href = "index.html"; 
                 return;
             }
 
-            document.getElementById("displayName").innerText = name ? name : "User";
+            // แสดงชื่อผู้ใช้
+            document.getElementById("displayName").innerText = name ? name : "User Account";
 
-            if (role && role.trim().toLowerCase() === "admin") {
-                document.getElementById("adminMenu").style.display = "block";
+            // ตรวจสอบสิทธิ์ Admin (ปรับให้รองรับตัวเล็กตัวใหญ่)
+            if (role && role.toLowerCase().trim() === "admin") {
+                const adminBtn = document.getElementById("adminMenu");
+                adminBtn.classList.remove("hidden");
+                adminBtn.classList.add("block");
             }
 
-            // เรียกโหลดสถานะเพื่อนร่วมงาน (โจทย์ข้อ 4)
             fetchColleagueStatus();
         };
 
@@ -112,23 +141,34 @@
                 const data = await response.json();
                 
                 const today = new Date().toLocaleDateString();
-                // กรองเฉพาะ Check-in ของวันนี้
-                const onlineUsers = data.filter(d => d.Date === today && d.Type === "Check In");
+                // กรองเอาเฉพาะคนที่ Check In และยังไม่ Check Out ในวันนี้
+                const latestStatus = new Map();
+                data.forEach(d => {
+                    if (new Date(d.Timestamp).toLocaleDateString() === today) {
+                        latestStatus.set(d.Name, { type: d.Type, loc: d.Location });
+                    }
+                });
+
+                const onlineUsers = [];
+                latestStatus.forEach((val, key) => {
+                    if (val.type === "Check In") onlineUsers.push(`${key} (${val.loc})`);
+                });
                 
-                const summaryDiv = document.getElementById("statusSummary");
+                const statusText = document.getElementById("statusText");
                 if (onlineUsers.length > 0) {
-                    const names = onlineUsers.map(u => `${u.Name} (${u.Location})`).join(", ");
-                    summaryDiv.innerHTML = `<strong>วันนี้มีคนเข้างานแล้ว:</strong> ${names}`;
+                    statusText.innerText = `มีคนเข้างานแล้ว: ${onlineUsers.join(", ")}`;
+                    statusText.classList.add("text-indigo-600");
                 } else {
-                    summaryDiv.innerHTML = `<strong>วันนี้ยังไม่มีใคร Check-in</strong>`;
+                    statusText.innerText = "ยังไม่มีเพื่อนร่วมงาน Check-in ในขณะนี้";
                 }
             } catch (e) {
-                document.getElementById("statusSummary").innerHTML = ""; // ถ้าโหลดไม่ได้ก็ซ่อนไปก่อน
+                console.error("Status error", e);
+                document.getElementById("statusSummary").style.display = "none";
             }
         }
 
         function logout() {
-            if (confirm("คุณต้องการออกจากระบบใช่หรือไม่?")) {
+            if (confirm("ต้องการออกจากระบบใช่หรือไม่?")) {
                 sessionStorage.clear();
                 window.location.href = "index.html";
             }
