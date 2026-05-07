@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>Employee Portal - Time Tracking</title>
+    <style>
+        .section { border: 1px solid #ccc; padding: 15px; margin-bottom: 10px; border-radius: 8px; }
+        .timer { font-size: 24px; font-weight: bold; color: #007bff; }
+    </style>
+</head>
+<body>
+    <button onclick="location.href='dashboard.html'">กลับหน้าหลัก</button>
+    <h2>ระบบลงเวลาพนักงาน</h2>
+    
+    <div class="section">
+        <div id="clock" class="timer">00:00:00</div>
+        <p>วันนี้วันที่: <span id="todayDate"></span></p>
+    </div>
+
+    <div class="section">
+        <h3>ลงเวลาทำงาน</h3>
+        <select id="location">
+            <option value="OFFICE">OFFICE</option>
+            <option value="WFH">WFH</option>
+            <option value="ON-SITE">ON-SITE</option>
+        </select>
+        <button onclick="record('Check In')">Check In</button>
+        <hr>
+        <textarea id="memo" placeholder="สรุปงาน / Memo"></textarea><br>
+        <button onclick="record('Check Out')">Check Out</button>
+        <button onclick="record('Memo')">บันทึก Memo ระหว่างวัน</button>
+    </div>
+
+    <div class="section">
+        <h3>สถานะเพื่อนร่วมงานวันนี้</h3>
+        <ul id="colleagueStatus"></ul>
+    </div>
+
+    <div class="section">
+        <h3>ประวัติของฉัน (สัปดาห์นี้)</h3>
+        <table border="1" id="myHistory">
+            <thead><tr><th>วันที่</th><th>ประเภท</th><th>สถานที่</th><th>Memo</th></tr></thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <script>
+        const WEB_APP_URL = "YOUR_GAS_URL";
+        const username = sessionStorage.getItem("username"); // ดึงจาก session ที่คุณทำไว้
+        const name = sessionStorage.getItem("userName");
+
+        // แสดงเวลา Real-time
+        setInterval(() => {
+            document.getElementById('clock').innerText = new Date().toLocaleTimeString();
+        }, 1000);
+        document.getElementById('todayDate').innerText = new Date().toLocaleDateString();
+
+        async function record(type) {
+            const payload = {
+                action: "recordTime",
+                username: username,
+                name: name,
+                type: type,
+                location: document.getElementById('location').value,
+                memo: document.getElementById('memo').value
+            };
+            const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
+            const data = await res.json();
+            if(data.status === "success") { 
+                alert("บันทึก " + type + " สำเร็จ"); 
+                loadData(); // โหลดข้อมูลใหม่
+            }
+        }
+
+        async function loadData() {
+            const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({action: "fetchData"}) });
+            const allData = await res.json();
+            
+            // 4. ดูสถานะว่าใครอยู่ที่ไหน
+            const statusList = document.getElementById('colleagueStatus');
+            statusList.innerHTML = "";
+            const todayStr = new Date().toLocaleDateString();
+            
+            // Filter เฉพาะวันนี้และ Check In ล่าสุดของแต่ละคน
+            const todayData = allData.filter(d => d.Date === todayStr);
+            todayData.forEach(d => {
+                if(d.Type === "Check In") {
+                    statusList.innerHTML += `<li>${d.Name}: ${d.Location}</li>`;
+                }
+            });
+
+            // 7. ประวัติส่วนตัว
+            const historyTable = document.getElementById('myHistory').getElementsByTagName('tbody')[0];
+            historyTable.innerHTML = "";
+            allData.filter(d => d.Username === username).forEach(d => {
+                let row = historyTable.insertRow();
+                row.insertCell(0).innerText = d.Date;
+                row.insertCell(1).innerText = d.Type;
+                row.insertCell(2).innerText = d.Location;
+                row.insertCell(3).innerText = d.WorkSummary;
+            });
+        }
+        loadData();
+    </script>
+</body>
+</html>
