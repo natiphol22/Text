@@ -7,67 +7,42 @@
     <style>
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            margin: 0; 
-            padding: 40px; 
-            background-color: #f8f9fa; 
-            color: #333;
+            margin: 0; padding: 40px; background-color: #f8f9fa; color: #333;
         }
         .header { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            margin-bottom: 30px; 
-            border-bottom: 2px solid #eee; 
-            padding-bottom: 20px;
+            display: flex; justify-content: space-between; align-items: center; 
+            margin-bottom: 30px; border-bottom: 2px solid #eee; padding-bottom: 20px;
         }
         h1 { margin: 0; color: #2c3e50; }
         .user-info { text-align: right; }
         
         .logout-btn { 
-            background-color: #e74c3c; 
-            color: white; 
-            border: none; 
-            padding: 8px 15px; 
-            border-radius: 5px; 
-            cursor: pointer; 
-            font-weight: bold;
-            margin-top: 5px;
+            background-color: #e74c3c; color: white; border: none; padding: 8px 15px; 
+            border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 5px;
         }
         .logout-btn:hover { background-color: #c0392b; }
 
         .menu-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
-            gap: 20px; 
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; 
         }
         
         .card { 
-            background: white; 
-            padding: 40px 20px; 
-            border-radius: 12px; 
-            text-align: center; 
-            text-decoration: none; 
-            color: #2c3e50; 
-            font-weight: 600;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
-            transition: all 0.3s ease;
-            border: 1px solid #efefef;
+            background: white; padding: 40px 20px; border-radius: 12px; text-align: center; 
+            text-decoration: none; color: #2c3e50; font-weight: 600;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: all 0.3s ease; border: 1px solid #efefef;
         }
         .card:hover { 
-            transform: translateY(-5px); 
-            box-shadow: 0 8px 15px rgba(0,0,0,0.1); 
-            border-color: #3498db; 
+            transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); border-color: #3498db; 
         }
         
-        /* สไตล์พิเศษสำหรับเมนู Admin */
-        #adminMenu { 
-            display: none; /* ซ่อนเป็นค่าเริ่มต้น */
-            background-color: #fff5f5;
-            border: 1px dashed #ff7675;
-        }
+        #adminMenu { display: none; background-color: #fff5f5; border: 1px dashed #ff7675; }
         #adminMenu:hover { border-style: solid; background-color: #ffeaea; }
         .admin-text { color: #d63031; font-size: 1.1rem; }
 
+        /* ส่วนแสดงสถานะด่วน */
+        .status-summary {
+            background: #e3f2fd; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
@@ -83,9 +58,13 @@
         </div>
     </div>
 
+    <div class="status-summary" id="statusSummary">
+        <strong>สถานะเพื่อนร่วมงานวันนี้:</strong> กำลังโหลดข้อมูล...
+    </div>
+
     <div class="menu-grid">
-        <a href="#" class="card">
-            <div>📍 Check-in เข้างาน</div>
+        <a href="checkin.html" class="card">
+            <div>📍 Check-in /ลงเวลาเข้างาน</div>
         </a>
         
         <a href="#" class="card">
@@ -97,40 +76,61 @@
         </a>
 
         <a href="admin.html" id="adminMenu" class="card">
-            <div class="admin-text">⚙️ ระบบจัดการผู้ใช้งาน (Admin)</div>
+            <div class="admin-text">⚙️ ระบบจัดการผู้ใช้งาน & รายงาน (Admin)</div>
         </a>
     </div>
 
     <script>
-        // ฟังก์ชันทำงานเมื่อโหลดหน้าเว็บ
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzmZ7PtLEt3ESXpAl3n8i_zoYiOxd4zIMB6TgA5mriTR1FECeGrZR-lWfIbRWpPD3l3bg/exec";
+
         window.onload = function() {
-            // 1. ดึงข้อมูลจาก sessionStorage
             const isLoggedIn = sessionStorage.getItem("isLoggedIn");
             const role = sessionStorage.getItem("userRole");
             const name = sessionStorage.getItem("userName");
 
-            // 2. ตรวจสอบว่ามีการ Login หรือไม่
             if (isLoggedIn !== "true") {
-                // ถ้ายังไม่ได้ Login ให้ส่งกลับไปหน้า index.html
                 window.location.href = "index.html"; 
                 return;
             }
 
-            // 3. แสดงชื่อผู้ใช้บนหน้าจอ
             document.getElementById("displayName").innerText = name ? name : "User";
 
-            // 4. ตรวจสอบสิทธิ์ Admin เพื่อเปิดเมนูพิเศษ
-            // ใช้ .trim() เพื่อป้องกันช่องว่างจาก Google Sheets และใช้ .toLowerCase() เพื่อความแม่นยำ
             if (role && role.trim().toLowerCase() === "admin") {
                 document.getElementById("adminMenu").style.display = "block";
             }
+
+            // เรียกโหลดสถานะเพื่อนร่วมงาน (โจทย์ข้อ 4)
+            fetchColleagueStatus();
         };
 
-        // ฟังก์ชัน Logout
+        async function fetchColleagueStatus() {
+            try {
+                const response = await fetch(WEB_APP_URL, { 
+                    method: 'POST', 
+                    body: JSON.stringify({ action: "fetchData" }) 
+                });
+                const data = await response.json();
+                
+                const today = new Date().toLocaleDateString();
+                // กรองเฉพาะ Check-in ของวันนี้
+                const onlineUsers = data.filter(d => d.Date === today && d.Type === "Check In");
+                
+                const summaryDiv = document.getElementById("statusSummary");
+                if (onlineUsers.length > 0) {
+                    const names = onlineUsers.map(u => `${u.Name} (${u.Location})`).join(", ");
+                    summaryDiv.innerHTML = `<strong>วันนี้มีคนเข้างานแล้ว:</strong> ${names}`;
+                } else {
+                    summaryDiv.innerHTML = `<strong>วันนี้ยังไม่มีใคร Check-in</strong>`;
+                }
+            } catch (e) {
+                document.getElementById("statusSummary").innerHTML = ""; // ถ้าโหลดไม่ได้ก็ซ่อนไปก่อน
+            }
+        }
+
         function logout() {
             if (confirm("คุณต้องการออกจากระบบใช่หรือไม่?")) {
-                sessionStorage.clear(); // ล้างข้อมูลการ Login ทั้งหมด
-                window.location.href = "index.html"; // กลับหน้า Login
+                sessionStorage.clear();
+                window.location.href = "index.html";
             }
         }
     </script>
