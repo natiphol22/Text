@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <style>
+        body { font-family: sans-serif; padding: 40px; background: #fafafa; }
+        .menu-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 20px; }
+        .card { padding: 30px; background: white; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); text-align: center; cursor: pointer; text-decoration: none; color: #333; border: 1px solid #eee; }
+        .card:hover { border-color: #007bff; }
+        #adminMenu { display: none; } /* ซ่อนไว้ก่อน เช็ค Role แล้วค่อยเปิด */
+    </style>
+</head>
+<body>
+    <h1>Business Portal</h1>
+    <p>ยินดีต้อนรับคุณ: <strong id="displayName"></strong></p>
+    <button onclick="logout()">Logout</button>
+
+    <div class="menu-container">
+        <a href="#" class="card"><div>Check-in</div></a>
+        <a href="#" class="card"><div>Expense Reimbursement</div></a>
+        <a href="#" class="card"><div>PDF to JPG</div></a>
+        
+        <a href="admin.html" id="adminMenu" class="card" style="background: #fff4f4;">
+            <div style="color: red; font-weight: bold;">User Management (Admin)</div>
+        </a>
+    </div>
+
+    <script>
+        window.onload = function() {
+            const isLoggedIn = sessionStorage.getItem("isLoggedIn");
+            const role = sessionStorage.getItem("userRole");
+            const name = sessionStorage.getItem("userName");
+
+            if (isLoggedIn !== "true") {
+                window.location.href = "index.html"; // ถ้าไม่ได้ Login ให้เด้งกลับ
+            }
+
+            document.getElementById("displayName").innerText = name;
+
+            if (role === "Admin") {
+                document.getElementById("adminMenu").style.display = "block";
+            }
+        };
+
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = "index.html";
+        }
+    </script>
+</body>
+</html>
