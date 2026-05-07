@@ -1,142 +1,89 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login</title>
-
-<style>
-
-body{
-  font-family: Arial;
-  background:#f5f5f5;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
-}
-
-.box{
-  background:#fff;
-  padding:30px;
-  width:300px;
-  border-radius:10px;
-  box-shadow:0 0 10px rgba(0,0,0,.1);
-}
-
-input{
-  width:100%;
-  padding:10px;
-  margin-bottom:10px;
-}
-
-button{
-  width:100%;
-  padding:10px;
-  background:#000;
-  color:#fff;
-  border:none;
-  cursor:pointer;
-}
-
-</style>
+    <meta charset="UTF-8">
+    <title>Test Business Portal Connection</title>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; padding: 50px; }
+        .box { border: 1px solid #ccc; padding: 20px; border-radius: 8px; width: 300px; }
+        input, select, button { width: 100%; margin-bottom: 10px; padding: 8px; box-sizing: border-box; }
+        #adminPanel { display: none; margin-top: 20px; border-top: 2px solid #eee; pt: 10px; }
+    </style>
 </head>
 <body>
 
 <div class="box">
+    <div id="loginPanel">
+        <h3>Login Test</h3>
+        <input type="text" id="user" placeholder="Username">
+        <input type="password" id="pass" placeholder="Password">
+        <button onclick="handleLogin()">Login</button>
+    </div>
 
-<h2>Company Login</h2>
-
-<input
-  type="text"
-  id="username"
-  placeholder="Username"
-/>
-
-<input
-  type="password"
-  id="password"
-  placeholder="Password"
-/>
-
-<button onclick="login()">
-Login
-</button>
-
+    <div id="adminPanel">
+        <h3>Admin: Add User</h3>
+        <input type="text" id="newU" placeholder="New Username">
+        <input type="text" id="newP" placeholder="New Password">
+        <input type="text" id="newN" placeholder="Full Name">
+        <select id="newR">
+            <option value="Admin">Admin</option>
+            <option value="User">User</option>
+        </select>
+        <button onclick="handleAddUser()">Add to Sheet</button>
+    </div>
 </div>
 
 <script>
+    // วาง URL ที่ได้จาก Google Apps Script ตรงนี้
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyqvJQR_kcDDHq0g9C0swtYtlK0xcwp4sgZy8rN2e9qvddhUSviNCDxpH2R0ik7MlfaZQ/exec";
 
-const API_URL =
-"https://script.google.com/macros/s/AKfycbw0gQLbTyldRuxYAxPLtdTmu1oBiAqlsbOD_lPxwv9-VSfMefHRAJWjCJlxyDnQzGZAJg/exec";
+    async function handleLogin() {
+        const payload = {
+            action: "login",
+            username: document.getElementById('user').value,
+            password: document.getElementById('pass').value
+        };
 
+        try {
+            const response = await fetch(WEB_APP_URL, {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            });
+            const result = await response.json();
 
-
-async function login() {
-
-  const username =
-    document.getElementById("username")
-    .value
-    .trim();
-
-  const password =
-    document.getElementById("password")
-    .value
-    .trim();
-
-
-  try {
-
-    const response = await fetch(API_URL, {
-
-      method:"POST",
-
-      headers:{
-        "Content-Type":"text/plain;charset=utf-8"
-      },
-
-      body: JSON.stringify({
-
-        action:"login",
-        username:username,
-        password:password
-
-      })
-
-    });
-
-
-    const data =
-      await response.json();
-
-    console.log(data);
-
-
-    if (data.status === "success") {
-
-      localStorage.setItem(
-        "user",
-        JSON.stringify(data)
-      );
-
-      alert("Login Success");
-
-      location.href =
-        "dashboard.html";
-
-    } else {
-
-      alert("Login Failed");
+            if (result.status === "success") {
+                alert("Login สำเร็จ! ยินดีต้อนรับ " + result.name);
+                if (result.role === "Admin") {
+                    document.getElementById('adminPanel').style.display = "block";
+                }
+            } else {
+                alert("Login ไม่ผ่าน!");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("เกิดข้อผิดพลาดในการเชื่อมต่อ");
+        }
     }
 
-  } catch(err) {
+    async function handleAddUser() {
+        const payload = {
+            action: "addUser",
+            newUsername: document.getElementById('newU').value,
+            newPassword: document.getElementById('newP').value,
+            newName: document.getElementById('newN').value,
+            newRole: document.getElementById('newR').value
+        };
 
-    console.error(err);
-
-    alert("Connection Error");
-  }
-}
-
+        const response = await fetch(WEB_APP_URL, {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        });
+        const result = await response.json();
+        
+        if (result.status === "added") {
+            alert("เพิ่มข้อมูลลง Google Sheets เรียบร้อย!");
+        }
+    }
 </script>
 
 </body>
