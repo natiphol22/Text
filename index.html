@@ -2,40 +2,26 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <title>Test Business Portal Connection</title>
+    <title>Login - Business Portal</title>
     <style>
-        body { font-family: sans-serif; display: flex; justify-content: center; padding: 50px; }
-        .box { border: 1px solid #ccc; padding: 20px; border-radius: 8px; width: 300px; }
-        input, select, button { width: 100%; margin-bottom: 10px; padding: 8px; box-sizing: border-box; }
-        #adminPanel { display: none; margin-top: 20px; border-top: 2px solid #eee; pt: 10px; }
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f5f5f5; }
+        .login-box { border: 1px solid #ddd; padding: 30px; border-radius: 12px; width: 320px; background: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        input { width: 100%; margin-bottom: 15px; padding: 12px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px; }
+        button { width: 100%; padding: 12px; background-color: #007bff; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #0056b3; }
     </style>
 </head>
 <body>
 
-<div class="box">
-    <div id="loginPanel">
-        <h3>Login Test</h3>
-        <input type="text" id="user" placeholder="Username">
-        <input type="password" id="pass" placeholder="Password">
-        <button onclick="handleLogin()">Login</button>
-    </div>
-
-    <div id="adminPanel">
-        <h3>Admin: Add User</h3>
-        <input type="text" id="newU" placeholder="New Username">
-        <input type="text" id="newP" placeholder="New Password">
-        <input type="text" id="newN" placeholder="Full Name">
-        <select id="newR">
-            <option value="Admin">Admin</option>
-            <option value="User">User</option>
-        </select>
-        <button onclick="handleAddUser()">Add to Sheet</button>
-    </div>
+<div class="login-box">
+    <h2 style="text-align: center;">Login</h2>
+    <input type="text" id="user" placeholder="Username">
+    <input type="password" id="pass" placeholder="Password">
+    <button onclick="handleLogin()">เข้าสู่ระบบ</button>
 </div>
 
 <script>
-    // วาง URL ที่ได้จาก Google Apps Script ตรงนี้
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyqvJQR_kcDDHq0g9C0swtYtlK0xcwp4sgZy8rN2e9qvddhUSviNCDxpH2R0ik7MlfaZQ/exec";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzmZ7PtLEt3ESXpAl3n8i_zoYiOxd4zIMB6TgA5mriTR1FECeGrZR-lWfIbRWpPD3l3bg/exec"; // วาง URL จาก Google Apps Script
 
     async function handleLogin() {
         const payload = {
@@ -45,46 +31,24 @@
         };
 
         try {
-            const response = await fetch(WEB_APP_URL, {
-                method: 'POST',
-                body: JSON.stringify(payload)
-            });
+            const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
             const result = await response.json();
 
             if (result.status === "success") {
-                alert("Login สำเร็จ! ยินดีต้อนรับ " + result.name);
-                if (result.role === "Admin") {
-                    document.getElementById('adminPanel').style.display = "block";
-                }
+                // เก็บข้อมูลชั่วคราวไว้ใน Browser
+                sessionStorage.setItem("isLoggedIn", "true");
+                sessionStorage.setItem("userName", result.name);
+                sessionStorage.setItem("userRole", result.role);
+                
+                // ย้ายไปหน้า Dashboard
+                window.location.href = "dashboard.html";
             } else {
-                alert("Login ไม่ผ่าน!");
+                alert("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง");
             }
         } catch (err) {
-            console.error(err);
-            alert("เกิดข้อผิดพลาดในการเชื่อมต่อ");
-        }
-    }
-
-    async function handleAddUser() {
-        const payload = {
-            action: "addUser",
-            newUsername: document.getElementById('newU').value,
-            newPassword: document.getElementById('newP').value,
-            newName: document.getElementById('newN').value,
-            newRole: document.getElementById('newR').value
-        };
-
-        const response = await fetch(WEB_APP_URL, {
-            method: 'POST',
-            body: JSON.stringify(payload)
-        });
-        const result = await response.json();
-        
-        if (result.status === "added") {
-            alert("เพิ่มข้อมูลลง Google Sheets เรียบร้อย!");
+            alert("เชื่อมต่อไม่สำเร็จ");
         }
     }
 </script>
-
 </body>
 </html>
