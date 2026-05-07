@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login</title>
+
+<style>
+
+body{
+  font-family: Arial;
+  background:#f5f5f5;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+
+.box{
+  background:#fff;
+  padding:30px;
+  width:300px;
+  border-radius:10px;
+  box-shadow:0 0 10px rgba(0,0,0,.1);
+}
+
+input{
+  width:100%;
+  padding:10px;
+  margin-bottom:10px;
+}
+
+button{
+  width:100%;
+  padding:10px;
+  background:#000;
+  color:#fff;
+  border:none;
+  cursor:pointer;
+}
+
+</style>
+</head>
+<body>
+
+<div class="box">
+
+<h2>Company Login</h2>
+
+<input
+  type="text"
+  id="username"
+  placeholder="Username"
+/>
+
+<input
+  type="password"
+  id="password"
+  placeholder="Password"
+/>
+
+<button onclick="login()">
+Login
+</button>
+
+</div>
+
+<script>
+
+const API_URL =
+"https://script.google.com/macros/s/AKfycbzqhRXm4B-oL52N7lqPVHZdOwEAQJbv7VBLirfE8WHeDfAuQz6Qx0iyo7dGO5tRxpBQkA/exec";
+
+
+
+async function login() {
+
+  const username =
+    document.getElementById("username")
+    .value
+    .trim();
+
+  const password =
+    document.getElementById("password")
+    .value
+    .trim();
+
+
+  try {
+
+    const response = await fetch(API_URL, {
+
+      method:"POST",
+
+      headers:{
+        "Content-Type":"text/plain;charset=utf-8"
+      },
+
+      body: JSON.stringify({
+
+        action:"login",
+        username:username,
+        password:password
+
+      })
+
+    });
+
+
+    const data =
+      await response.json();
+
+    console.log(data);
+
+
+    if (data.status === "success") {
+
+      localStorage.setItem(
+        "user",
+        JSON.stringify(data)
+      );
+
+      alert("Login Success");
+
+      location.href =
+        "dashboard.html";
+
+    } else {
+
+      alert("Login Failed");
+    }
+
+  } catch(err) {
+
+    console.error(err);
+
+    alert("Connection Error");
+  }
+}
+
+</script>
+
+</body>
+</html>
