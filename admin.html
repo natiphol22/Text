@@ -2,33 +2,173 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <title>Admin - User Management</title>
+    <title>Admin Panel - Business Portal</title>
     <style>
-        body { font-family: sans-serif; padding: 40px; }
-        .form-box { max-width: 400px; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
-        input, select, button { width: 100%; padding: 10px; margin: 10px 0; box-sizing: border-box; }
-        .back-btn { background: #666; color: white; border: none; }
+        body { font-family: sans-serif; padding: 20px; background: #f4f7f6; }
+        .nav-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { padding: 10px 20px; cursor: pointer; border: none; border-radius: 5px; background: #ddd; }
+        .tab-btn.active { background: #007bff; color: white; }
+        .tab-content { display: none; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .tab-content.active { display: block; }
+        
+        /* Table Style */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background: #f8f9fa; }
+        
+        /* Filter Bar */
+        .filter-bar { display: flex; flex-wrap: wrap; gap: 10px; background: #eee; padding: 15px; border-radius: 5px; margin-bottom: 15px; }
+        .filter-bar select, .filter-bar input { padding: 5px; }
+        
+        .form-box { max-width: 400px; }
+        input, select, button { width: 100%; padding: 10px; margin: 5px 0; box-sizing: border-box; }
+        .btn-export { background: #28a745; color: white; width: auto; }
     </style>
 </head>
 <body>
-    <button class="back-btn" onclick="location.href='dashboard.html'">← กลับหน้าหลัก</button>
-    <h2>ระบบจัดการผู้ใช้งาน</h2>
-    
-    <div class="form-box">
-        <h3>เพิ่มผู้ใช้งานใหม่</h3>
-        <input type="text" id="newU" placeholder="Username">
-        <input type="text" id="newP" placeholder="Password">
-        <input type="text" id="newN" placeholder="ชื่อ-นามสกุล">
-        <select id="newR">
-            <option value="Admin">Admin</option>
-            <option value="User">User</option>
-        </select>
-        <button onclick="handleAddUser()" style="background: green; color: white; border: none;">เพิ่มลงในระบบ</button>
+
+    <button onclick="location.href='dashboard.html'" style="width: auto; margin-bottom: 20px;">← กลับหน้าหลัก</button>
+    <h2>Admin Management System</h2>
+
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="openTab('userTab')">จัดการผู้ใช้งาน</button>
+        <button class="tab-btn" onclick="openTab('reportTab'); loadReportData();">รายงานเข้า-ออกงาน</button>
+        <button class="tab-btn" onclick="openTab('settingTab')">ตั้งค่าระบบ</button>
+    </div>
+
+    <div id="userTab" class="tab-content active">
+        <div class="form-box">
+            <h3>เพิ่มผู้ใช้งานใหม่</h3>
+            <input type="text" id="newU" placeholder="Username">
+            <input type="text" id="newP" placeholder="Password">
+            <input type="text" id="newN" placeholder="ชื่อ-นามสกุล">
+            <select id="newR">
+                <option value="Admin">Admin</option>
+                <option value="User">User</option>
+            </select>
+            <button onclick="handleAddUser()" style="background: green; color: white; border: none;">เพิ่มลงในระบบ</button>
+        </div>
+    </div>
+
+    <div id="reportTab" class="tab-content">
+        <h3>รายงานการเข้า-ออกงาน</h3>
+        
+        <div class="filter-bar">
+            <input type="text" id="filterName" placeholder="ชื่อพนักงาน..." oninput="applyFilters()">
+            
+            <select id="filterLoc" onchange="applyFilters()">
+                <option value="">ทุกสถานที่</option>
+                <option value="OFFICE">OFFICE</option>
+                <option value="WFH">WFH</option>
+                <option value="ON-SITE">ON-SITE</option>
+            </select>
+            
+            <select id="filterType" onchange="applyFilters()">
+                <option value="">ทั้งหมด</option>
+                <option value="Check In">เข้างาน</option>
+                <option value="Check Out">ออกงาน</option>
+            </select>
+
+            <button class="btn-export" onclick="exportToCSV()">ส่งออกไฟล์ CSV</button>
+        </div>
+
+        <table id="reportTable">
+            <thead>
+                <tr>
+                    <th>วัน/เวลา</th>
+                    <th>ชื่อ</th>
+                    <th>ประเภท</th>
+                    <th>สถานที่</th>
+                    <th>Memo (สรุปงาน)</th>
+                </tr>
+            </thead>
+            <tbody>
+                </tbody>
+        </table>
+    </div>
+
+    <div id="settingTab" class="tab-content">
+        <h3>ตั้งค่าเวลาทำงาน</h3>
+        <p>3. ระบบตั้งเวลาเข้างาน-เลิกงาน</p>
+        <label>เวลาเริ่มงาน:</label>
+        <input type="time" id="startTime" value="09:00" style="width: 150px;">
+        <label>เวลาเลิกงาน:</label>
+        <input type="time" id="endTime" value="18:00" style="width: 150px;">
+        <button onclick="alert('บันทึกการตั้งค่าแล้ว (ทดสอบ)')" style="width: auto;">บันทึกค่า</button>
     </div>
 
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzmZ7PtLEt3ESXpAl3n8i_zoYiOxd4zIMB6TgA5mriTR1FECeGrZR-lWfIbRWpPD3l3bg/exec";
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwZymz5tnyYSJa_rJFXibho1sXzLjo4A3KE3jlkNDarhiennmeY2tZqM-ladRdVZCTJEA/exec";
+        let rawData = []; // เก็บข้อมูลดิบจาก Sheet
 
+        // ฟังก์ชันสลับ Tab
+        function openTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        // 1. ดึงข้อมูลรายงานจาก Sheet
+        async function loadReportData() {
+            const response = await fetch(WEB_APP_URL, { 
+                method: 'POST', 
+                body: JSON.stringify({ action: "fetchData" }) 
+            });
+            rawData = await response.json();
+            applyFilters();
+        }
+
+        // 5-9. ระบบ Filter ข้อมูล
+        function applyFilters() {
+            const nameF = document.getElementById('filterName').value.toLowerCase();
+            const locF = document.getElementById('filterLoc').value;
+            const typeF = document.getElementById('filterType').value;
+
+            const filtered = rawData.filter(d => {
+                return (d.Name.toLowerCase().includes(nameF)) &&
+                       (locF === "" || d.Location === locF) &&
+                       (typeF === "" || d.Type === typeF);
+            });
+
+            renderTable(filtered);
+        }
+
+        function renderTable(data) {
+            const tbody = document.querySelector("#reportTable tbody");
+            tbody.innerHTML = "";
+            data.forEach(d => {
+                let row = tbody.insertRow();
+                row.insertCell(0).innerText = d.Timestamp;
+                row.insertCell(1).innerText = d.Name;
+                row.insertCell(2).innerText = d.Type;
+                row.insertCell(3).innerText = d.Location;
+                // 4. ดู Memo ผ่าน Modal (ใช้ Alert ทดสอบก่อน)
+                let memoCell = row.insertCell(4);
+                memoCell.innerText = d.WorkSummary ? d.WorkSummary.substring(0, 20) + "..." : "-";
+                memoCell.style.cursor = "pointer";
+                memoCell.onclick = () => alert("Memo เต็ม: " + d.WorkSummary);
+            });
+        }
+
+        // 2. ระบบ Export CSV
+        function exportToCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; // ใส่ BOM เพื่อให้อ่านภาษาไทยออก
+            csvContent += "วันเวลา,ชื่อ,ประเภท,สถานที่,Memo\n";
+            
+            rawData.forEach(d => {
+                csvContent += `${d.Timestamp},${d.Name},${d.Type},${d.Location},${d.WorkSummary}\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "report_checkin.csv");
+            document.body.appendChild(link);
+            link.click();
+        }
+
+        // โค้ดเพิ่ม User เดิมของคุณ
         async function handleAddUser() {
             const payload = {
                 action: "addUser",
@@ -37,14 +177,9 @@
                 newName: document.getElementById('newN').value,
                 newRole: document.getElementById('newR').value
             };
-
             const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
             const result = await response.json();
-            
-            if (result.status === "added") {
-                alert("เพิ่มข้อมูลสำเร็จ!");
-                location.reload(); // รีเฟรชหน้า
-            }
+            if (result.status === "added") { alert("เพิ่มข้อมูลสำเร็จ!"); location.reload(); }
         }
     </script>
 </body>
