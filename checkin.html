@@ -2,79 +2,81 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Check-in | CubicPlus</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@200;300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        body { 
-            font-family: 'Kanit', sans-serif; 
-            background: #fcfdfe;
-            background-image: radial-gradient(circle at top right, #f0f7ff, transparent),
-                              radial-gradient(circle at bottom left, #f5f3ff, transparent);
-            min-height: 100vh;
-        }
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.7);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.03);
-        }
-        .input-luxe {
-            background: rgba(248, 250, 252, 0.5);
-            border: 1px solid #e2e8f0;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .input-luxe:focus {
-            background: #fff; border-color: #6366f1;
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.05); outline: none;
-        }
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+        body { font-family: 'Kanit', sans-serif; background: #fcfdfe; min-height: 100vh; overflow-x: hidden; }
+        .glass-panel { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.7); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.03); }
+        .loader-overlay { position: fixed; inset: 0; background: #fff; z-index: 999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s ease; }
+        .spinner { width: 40px; height: 40px; border: 3px solid #f3f3f3; border-top: 3px solid #6366f1; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .modal { display: none; position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,0.2); backdrop-filter: blur(4px); align-items: center; justify-content: center; padding: 20px; }
+        .modal.active { display: flex; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); }
     </style>
 </head>
 <body class="p-4 md:p-8">
 
+    <div id="loader" class="loader-overlay">
+        <div class="spinner mb-4"></div>
+        <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Connecting to CubicPlus...</p>
+    </div>
+
+    <div id="locationModal" class="modal">
+        <div class="glass-panel w-full max-w-sm rounded-[2.5rem] p-8 space-y-6">
+            <h3 class="text-center font-bold text-slate-800">เลือกสถานที่ทำงาน</h3>
+            <div class="grid grid-cols-1 gap-3">
+                <button onclick="confirmRecord('OFFICE')" class="p-4 bg-slate-50 hover:bg-indigo-50 border border-slate-100 rounded-2xl text-left flex items-center gap-3 transition-all">
+                    <span class="text-xl">🏢</span> <span class="font-medium text-slate-700">OFFICE</span>
+                </button>
+                <button onclick="confirmRecord('WFH')" class="p-4 bg-slate-50 hover:bg-indigo-50 border border-slate-100 rounded-2xl text-left flex items-center gap-3 transition-all">
+                    <span class="text-xl">🏠</span> <span class="font-medium text-slate-700">WFH</span>
+                </button>
+                <button onclick="confirmRecord('ON-SITE')" class="p-4 bg-slate-50 hover:bg-indigo-50 border border-slate-100 rounded-2xl text-left flex items-center gap-3 transition-all">
+                    <span class="text-xl">🚗</span> <span class="font-medium text-slate-700">ON-SITE</span>
+                </button>
+            </div>
+            <button onclick="closeModal()" class="w-full text-center text-xs text-slate-400 font-bold uppercase py-2">ยกเลิก</button>
+        </div>
+    </div>
+
     <div class="max-w-6xl mx-auto space-y-6">
-        <div class="flex justify-between items-center">
-            <button onclick="location.href='dashboard.html'" class="group flex items-center gap-2 text-slate-400 hover:text-indigo-600 transition-all text-sm">
-                <i data-lucide="chevron-left" class="w-4 h-4"></i> กลับหน้าหลัก Dashboard
-            </button>
+        <div class="flex justify-between items-center px-2">
+            <button onclick="location.href='dashboard.html'" class="p-2 -ml-2 text-slate-400 hover:text-indigo-600 transition-all"><i data-lucide="chevron-left"></i></button>
             <div class="text-right">
-                <p class="text-[10px] uppercase font-bold text-slate-400 tracking-widest">Active User</p>
-                <p id="userDisp" class="text-slate-900 font-semibold italic">...</p>
+                <p id="userDisp" class="text-slate-900 font-bold italic text-sm">...</p>
+                <p class="text-[9px] uppercase font-bold text-slate-300 tracking-widest">Staff Account</p>
             </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            
             <div class="lg:col-span-7 space-y-6">
-                <div class="glass-panel rounded-[2.5rem] p-8 text-center relative overflow-hidden">
+                <div class="glass-panel rounded-[2.5rem] p-8 text-center border-b-4 border-indigo-500/20">
                     <div id="todayDate" class="text-[10px] uppercase tracking-[0.4em] text-indigo-400 font-bold mb-2"></div>
-                    <div id="clock" class="text-6xl font-extralight text-slate-800 tracking-tighter mb-4">00:00:00</div>
+                    <div id="clock" class="text-6xl font-extralight text-slate-800 tracking-tighter mb-6 leading-none">00:00:00</div>
                     
-                    <div class="space-y-4 text-left mt-6">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <select id="location" class="input-luxe w-full p-4 rounded-2xl text-slate-700 font-medium text-sm">
-                                <option value="OFFICE">🏢 OFFICE</option>
-                                <option value="WFH">🏠 WFH</option>
-                                <option value="ON-SITE">🚗 ON-SITE</option>
-                            </select>
-                            <div class="flex gap-2">
-                                <button onclick="record('Check In')" class="flex-1 py-4 bg-slate-900 text-white rounded-2xl font-bold text-[10px] uppercase tracking-[0.2em] hover:bg-indigo-600 transition-all shadow-lg active:scale-95">Check In</button>
-                                <button onclick="record('Check Out')" class="flex-1 py-4 bg-white text-slate-900 border border-slate-200 rounded-2xl font-bold text-[10px] uppercase tracking-[0.2em] hover:border-rose-500 hover:text-rose-500 transition-all active:scale-95">Check Out</button>
-                            </div>
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <button id="inBtn" onclick="openLocationModal('Check In')" class="py-5 bg-slate-900 text-white rounded-2xl font-bold text-xs uppercase tracking-[0.2em] shadow-xl active:scale-95 disabled:bg-slate-100 disabled:text-slate-300">
+                                Check In
+                            </button>
+                            <button id="outBtn" onclick="openLocationModal('Check Out')" class="py-5 bg-white text-slate-900 border border-slate-200 rounded-2xl font-bold text-xs uppercase tracking-[0.2em] shadow-sm active:scale-95 disabled:bg-slate-50 disabled:text-slate-200">
+                                Check Out
+                            </button>
                         </div>
-                        <textarea id="memo" rows="2" class="input-luxe w-full p-4 rounded-2xl text-sm" placeholder="ระบุรายละเอียดงาน หรือบันทึกช่วยจำ..."></textarea>
+                        <div class="text-left bg-white/40 p-4 rounded-2xl border border-white">
+                            <label class="text-[9px] font-bold text-slate-400 uppercase ml-1 block mb-2">Daily Summary (บันทึกตอนเลิกงานเท่านั้น)</label>
+                            <textarea id="memo" rows="3" class="w-full bg-transparent border-none text-sm focus:ring-0 placeholder:text-slate-300" placeholder="ระบุสิ่งที่ทำในวันนี้ที่นี่..."></textarea>
+                        </div>
                     </div>
                 </div>
 
                 <div class="px-2">
-                    <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-                        <i data-lucide="history" class="w-3 h-3"></i> My Recent Activity
+                    <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2 px-1">
+                        <i data-lucide="history" class="w-3 h-3"></i> My Activity
                     </h4>
                     <div id="myHistoryBody" class="space-y-3"></div>
                 </div>
@@ -83,179 +85,175 @@
             <div class="lg:col-span-5 space-y-6">
                 <div class="glass-panel rounded-[2.5rem] p-6">
                     <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2">
-                        <i data-lucide="users" class="w-3 h-3"></i> Colleague Status (Today)
+                        <i data-lucide="users" class="w-3 h-3"></i> Team Status
                     </h4>
-                    <div id="colleagueStatus" class="space-y-3 max-h-[250px] overflow-y-auto pr-2">
-                        <p class="text-xs text-slate-300 italic">กำลังโหลดข้อมูลทีม...</p>
-                    </div>
+                    <div id="colleagueStatus" class="space-y-2 max-h-[200px] overflow-y-auto pr-1"></div>
                 </div>
 
-                <div class="glass-panel rounded-[2.5rem] p-6">
+                <div class="glass-panel rounded-[2.5rem] p-6 border-t-4 border-indigo-50">
                     <div class="flex justify-between items-center mb-6">
-                        <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                            <i data-lucide="calendar" class="w-3 h-3"></i> Log History
-                        </h4>
-                        <div class="flex bg-slate-100 p-1 rounded-lg">
-                            <button onclick="updateHistoryRange(7)" id="btn7" class="text-[9px] px-3 py-1 rounded-md font-bold transition-all bg-white shadow-sm text-indigo-600">7D</button>
-                            <button onclick="updateHistoryRange(30)" id="btn30" class="text-[9px] px-3 py-1 rounded-md font-bold transition-all text-slate-400">30D</button>
+                        <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Attendance Logs</h4>
+                        <div class="flex bg-slate-100 p-1 rounded-lg scale-90">
+                            <button onclick="updateRange(7)" id="btn7" class="px-3 py-1 rounded-md font-bold transition-all bg-white shadow-sm text-indigo-600 text-[9px]">7D</button>
+                            <button onclick="updateRange(30)" id="btn30" class="px-3 py-1 rounded-md font-bold transition-all text-slate-400 text-[9px]">30D</button>
                         </div>
                     </div>
-                    
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-[10px]">
-                            <thead>
-                                <tr class="text-slate-400 border-b border-slate-50">
-                                    <th class="pb-3 font-medium uppercase tracking-tighter">Date</th>
-                                    <th class="pb-3 font-medium uppercase tracking-tighter text-center">In</th>
-                                    <th class="pb-3 font-medium uppercase tracking-tighter text-center">Out</th>
-                                </tr>
-                            </thead>
-                            <tbody id="historyTableBody" class="text-slate-600">
-                                </tbody>
-                        </table>
-                    </div>
+                    <div id="historyTable" class="space-y-2"></div>
                 </div>
             </div>
-
         </div>
     </div>
 
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzehwXrrfuioHK68BXQGLpKyBPM5ElXZKgRm0o55yzwXgtx_YGkItjkM090zceA_t7Jcg/exec";
-        const user = sessionStorage.getItem("userName") || sessionStorage.getItem("username") || "Guest";
-        const name = sessionStorage.getItem("userName") || sessionStorage.getItem("name") || "พนักงาน";
-        let currentRange = 7;
+        const user = sessionStorage.getItem("userName") || sessionStorage.getItem("username");
+        const name = sessionStorage.getItem("userName") || "Staff";
+        let pendingType = '';
         let globalData = [];
 
         document.getElementById('userDisp').innerText = name;
 
-        setInterval(() => {
-            document.getElementById('clock').innerText = new Date().toLocaleTimeString('th-TH');
-        }, 1000);
-        document.getElementById('todayDate').innerText = new Date().toLocaleDateString('th-TH', { weekday: 'long', day: 'numeric', month: 'long' });
+        // 5. Smart Time Lag (30 Sec Delay)
+        function updateClock() {
+            const now = new Date();
+            now.setSeconds(now.getSeconds() - 30);
+            document.getElementById('clock').innerText = now.toLocaleTimeString('th-TH');
+            document.getElementById('todayDate').innerText = now.toLocaleDateString('th-TH', { weekday: 'long', day: 'numeric', month: 'long' });
+        }
+        setInterval(updateClock, 1000);
 
-        async function record(type) {
-            const btn = event.currentTarget;
+        function openLocationModal(type) {
+            pendingType = type;
+            document.getElementById('locationModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('locationModal').classList.remove('active');
+        }
+
+        async function confirmRecord(loc) {
+            closeModal();
+            const btn = pendingType === 'Check In' ? document.getElementById('inBtn') : document.getElementById('outBtn');
+            const originalText = btn.innerText;
             btn.disabled = true;
-            btn.innerText = "SENDING...";
+            btn.innerText = "WAIT...";
+
+            // 6. ส่ง Memo เฉพาะตอน Check Out
+            const finalMemo = (pendingType === 'Check Out') ? document.getElementById('memo').value : "-";
 
             const payload = {
                 action: "recordTime",
                 username: user,
                 name: name,
-                type: type,
-                location: document.getElementById('location').value,
-                memo: document.getElementById('memo').value || "-"
+                type: pendingType,
+                location: loc,
+                memo: finalMemo
             };
 
             try {
                 await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
-                alert("บันทึก " + type + " เรียบร้อย");
-                document.getElementById('memo').value = "";
-                loadData();
+                alert("บันทึก " + pendingType + " สำเร็จ");
+                if(pendingType === 'Check Out') document.getElementById('memo').value = "";
+                await loadData();
             } catch(e) {
-                loadData();
-                alert("บันทึกข้อมูลเรียบร้อย");
+                await loadData();
             } finally {
-                btn.disabled = false;
-                btn.innerText = type.toUpperCase();
+                btn.innerText = originalText;
             }
-        }
-
-        function updateHistoryRange(days) {
-            currentRange = days;
-            document.getElementById('btn7').className = days === 7 ? "text-[9px] px-3 py-1 rounded-md font-bold transition-all bg-white shadow-sm text-indigo-600" : "text-[9px] px-3 py-1 rounded-md font-bold transition-all text-slate-400";
-            document.getElementById('btn30').className = days === 30 ? "text-[9px] px-3 py-1 rounded-md font-bold transition-all bg-white shadow-sm text-indigo-600" : "text-[9px] px-3 py-1 rounded-md font-bold transition-all text-slate-400";
-            renderHistoryReport();
         }
 
         async function loadData() {
             try {
                 const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({action: "fetchData"}) });
                 globalData = await res.json();
+                
+                // Hide Loader
+                document.getElementById('loader').style.opacity = '0';
+                setTimeout(() => document.getElementById('loader').style.display = 'none', 500);
+
                 const today = new Date().toLocaleDateString();
+                const myLogsToday = globalData.filter(d => (d.Username === user || d.Name === name) && new Date(d.Timestamp).toLocaleDateString() === today);
 
-                // 1. My Recent Activity (7/12 col)
-                const historyBox = document.getElementById("myHistoryBody");
-                historyBox.innerHTML = "";
-                globalData.filter(d => d.Username === user || d.Name === name).reverse().slice(0, 5).forEach(d => {
-                    const time = new Date(d.Timestamp).toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'});
-                    historyBox.innerHTML += `
-                        <div class="glass-panel p-3 rounded-2xl flex justify-between items-center border border-white text-[11px]">
-                            <div class="flex items-center gap-3">
-                                <span class="${d.Type === 'Check In' ? 'text-emerald-500' : 'text-rose-500'} font-bold">${d.Type}</span>
-                                <span class="text-slate-400">@ ${d.Location}</span>
-                            </div>
-                            <span class="font-bold text-slate-700">${time}</span>
-                        </div>`;
-                });
+                // 3. ป้องกันการกดซ้ำ
+                const hasIn = myLogsToday.some(d => d.Type === "Check In");
+                const hasOut = myLogsToday.some(d => d.Type === "Check Out");
+                
+                document.getElementById('inBtn').disabled = hasIn;
+                document.getElementById('outBtn').disabled = !hasIn || hasOut;
 
-                // 2. Colleague Status (Today)
-                const colleagueBox = document.getElementById("colleagueStatus");
-                colleagueBox.innerHTML = "";
-                const latestMap = new Map();
-                globalData.forEach(d => {
-                    if (new Date(d.Timestamp).toLocaleDateString() === today) {
-                        latestMap.set(d.Name, { type: d.Type, loc: d.Location });
-                    }
-                });
-                latestMap.forEach((val, key) => {
-                    const isOnline = val.type === "Check In";
-                    colleagueBox.innerHTML += `
-                        <div class="flex items-center justify-between p-3 bg-white/50 rounded-2xl border border-slate-50 mb-2">
-                            <div class="flex items-center gap-3">
-                                <div class="w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-emerald-500 animate-pulse' : 'bg-slate-300'}"></div>
-                                <p class="text-[11px] font-semibold text-slate-700">${key}</p>
-                            </div>
-                            <span class="text-[8px] font-bold uppercase ${isOnline ? 'text-emerald-500' : 'text-slate-400'}">${val.type}</span>
-                        </div>`;
-                });
-
-                // 3. Render History Report
-                renderHistoryReport();
+                renderUI();
                 lucide.createIcons();
-            } catch(e) { console.log("Load error"); }
+            } catch(e) { console.log(e); }
         }
 
-        function renderHistoryReport() {
-            const tableBody = document.getElementById("historyTableBody");
-            tableBody.innerHTML = "";
-            
+        function renderUI() {
+            // My Activity
+            const historyBox = document.getElementById("myHistoryBody");
+            historyBox.innerHTML = "";
+            globalData.filter(d => d.Username === user || d.Name === name).reverse().slice(0, 3).forEach(d => {
+                const time = new Date(d.Timestamp).toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'});
+                historyBox.innerHTML += `<div class="glass-panel p-4 rounded-2xl flex justify-between items-center text-[11px]">
+                    <div class="flex items-center gap-3">
+                        <span class="${d.Type === 'Check In' ? 'text-emerald-500' : 'text-rose-500'} font-bold">${d.Type}</span>
+                        <span class="text-slate-400">@ ${d.Location}</span>
+                    </div>
+                    <span class="font-bold text-slate-700">${time} น.</span>
+                </div>`;
+            });
+
+            // Colleague Status
+            const colleagueBox = document.getElementById("colleagueStatus");
+            colleagueBox.innerHTML = "";
+            const today = new Date().toLocaleDateString();
+            const latestMap = new Map();
+            globalData.forEach(d => {
+                if (new Date(d.Timestamp).toLocaleDateString() === today) latestMap.set(d.Name, d);
+            });
+            latestMap.forEach((v, k) => {
+                const isOnline = v.Type === "Check In";
+                colleagueBox.innerHTML += `<div class="flex items-center justify-between p-3 bg-white/50 rounded-2xl border border-slate-50 text-[10px]">
+                    <div class="flex items-center gap-2">
+                        <div class="w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-emerald-500 animate-pulse' : 'bg-slate-300'}"></div>
+                        <p class="font-semibold text-slate-700">${k}</p>
+                    </div>
+                    <span class="${isOnline ? 'text-emerald-500' : 'text-slate-400'} font-bold">${v.Type}</span>
+                </div>`;
+            });
+
+            updateRange(7);
+        }
+
+        function updateRange(days) {
+            const table = document.getElementById("historyTable");
+            table.innerHTML = "";
             const myLogs = globalData.filter(d => d.Username === user || d.Name === name);
             const reportMap = new Map();
-            const cutoffDate = new Date();
-            cutoffDate.setDate(cutoffDate.getDate() - currentRange);
+            const cutoff = new Date();
+            cutoff.setDate(cutoff.getDate() - days);
 
             myLogs.forEach(log => {
                 const logDate = new Date(log.Timestamp);
-                if (logDate >= cutoffDate) {
-                    const dateStr = logDate.toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit' });
-                    const timeStr = logDate.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
-                    
-                    if (!reportMap.has(dateStr)) reportMap.set(dateStr, { in: "-", out: "-" });
-                    const current = reportMap.get(dateStr);
-                    if (log.Type === "Check In") current.in = timeStr;
-                    if (log.Type === "Check Out") current.out = timeStr;
+                if (logDate >= cutoff) {
+                    const dStr = logDate.toLocaleDateString('th-TH', {day:'2-digit', month:'2-digit'});
+                    if (!reportMap.has(dStr)) reportMap.set(dStr, {in:'-', out:'-'});
+                    if (log.Type === "Check In") reportMap.get(dStr).in = logDate.toLocaleTimeString('th-TH', {hour:'2-digit', minute:'2-digit'});
+                    if (log.Type === "Check Out") reportMap.get(dStr).out = logDate.toLocaleTimeString('th-TH', {hour:'2-digit', minute:'2-digit'});
                 }
             });
 
-            // เรียงลำดับวันที่ล่าสุดขึ้นก่อน
-            const sortedDates = Array.from(reportMap.keys()).reverse();
-            sortedDates.forEach(date => {
-                const val = reportMap.get(date);
-                tableBody.innerHTML += `
-                    <tr class="border-b border-slate-50/50">
-                        <td class="py-3 font-medium text-slate-400">${date}</td>
-                        <td class="py-3 text-center font-bold text-emerald-500">${val.in}</td>
-                        <td class="py-3 text-center font-bold text-rose-400">${val.out}</td>
-                    </tr>`;
+            Array.from(reportMap.keys()).reverse().forEach(date => {
+                const v = reportMap.get(date);
+                table.innerHTML += `<div class="flex justify-between items-center p-3 border-b border-slate-50 text-[10px]">
+                    <span class="text-slate-400 font-medium">${date}</span>
+                    <div class="flex gap-4">
+                        <span class="text-emerald-500 font-bold w-8 text-center">${v.in}</span>
+                        <span class="text-rose-400 font-bold w-8 text-center">${v.out}</span>
+                    </div>
+                </div>`;
             });
         }
 
-        window.onload = () => {
-            lucide.createIcons();
-            loadData();
-        };
+        window.onload = () => { lucide.createIcons(); loadData(); };
     </script>
 </body>
 </html>
