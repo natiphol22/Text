@@ -1,248 +1,212 @@
 <!DOCTYPE html>
+
 <html lang="th">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Employee Portal - Time Tracking</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
     <style>
-        :root {
-            --primary: #007bff;
-            --bg: #f8f9fa;
-            --card-bg: #ffffff;
-            --text: #2c3e50;
-        }
-        body { 
-            font-family: 'Segoe UI', Tahoma, sans-serif; 
-            background: var(--bg); 
-            color: var(--text); 
-            margin: 0; 
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .container { width: 100%; max-width: 800px; }
-        
-        /* Header & Clock */
-        .header-card {
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
-        }
-        .timer { font-size: 3rem; font-weight: 700; color: var(--primary); margin: 10px 0; }
-        .date-display { font-size: 1.1rem; color: #6c757d; }
 
-        /* Form Section */
-        .section-card {
-            background: white;
-            padding: 25px;
-            border-radius: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-        }
-        h3 { margin-top: 0; font-weight: 600; display: flex; align-items: center; gap: 10px; }
-        
-        select, textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #eee;
-            border-radius: 12px;
-            margin-bottom: 15px;
-            font-size: 1rem;
-            background: #fdfdfd;
-        }
-        textarea { height: 80px; resize: none; }
+        .section { border: 1px solid #ccc; padding: 15px; margin-bottom: 10px; border-radius: 8px; }
 
-        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        button {
-            padding: 15px;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: 0.3s;
-        }
-        .btn-in { background: #28a745; color: white; }
-        .btn-out { background: #dc3545; color: white; }
-        .btn-memo { background: #6c757d; color: white; grid-column: span 2; }
-        button:hover { opacity: 0.9; transform: translateY(-2px); }
+        .timer { font-size: 24px; font-weight: bold; color: #007bff; }
 
-        /* Colleague Status */
-        .status-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
-        .status-item {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 15px;
-            text-align: center;
-            border-left: 4px solid var(--primary);
-        }
-        .status-name { font-weight: bold; display: block; }
-        .status-loc { font-size: 0.8rem; color: #666; }
-
-        /* Table */
-        .table-wrapper { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th { text-align: left; padding: 12px; border-bottom: 2px solid #eee; color: #666; }
-        td { padding: 12px; border-bottom: 1px solid #f5f5f5; font-size: 0.9rem; }
-
-        .back-btn { background: none; color: #666; border: 1px solid #ddd; width: auto; padding: 8px 20px; margin-bottom: 15px; }
     </style>
+
 </head>
+
 <body>
 
-    <div class="container">
-        <button class="back-btn" onclick="location.href='dashboard.html'"><i class="fa-solid fa-chevron-left"></i> กลับหน้าหลัก</button>
-        
-        <div class="header-card">
-            <div class="date-display" id="todayDate"></div>
-            <div id="clock" class="timer">00:00:00</div>
-            <h2 style="margin:0;">ยินดีต้อนรับ, <span id="displayName">พนักงาน</span></h2>
-        </div>
+    <button onclick="location.href='dashboard.html'">กลับหน้าหลัก</button>
 
-        <div class="section-card">
-            <h3><i class="fa-solid fa-location-dot"></i> ลงเวลาทำงาน</h3>
-            <select id="location">
-                <option value="OFFICE">🏢 OFFICE</option>
-                <option value="WFH">🏠 WFH</option>
-                <option value="ON-SITE">🚗 ON-SITE</option>
-            </select>
-            <textarea id="memo" placeholder="สรุปงานหรือหมายเหตุของคุณที่นี่..."></textarea>
-            <div class="btn-group">
-                <button class="btn-in" onclick="record('Check In')"><i class="fa-solid fa-sign-in"></i> Check In</button>
-                <button class="btn-out" onclick="record('Check Out')"><i class="fa-solid fa-sign-out"></i> Check Out</button>
-                <button class="btn-memo" onclick="record('Memo')"><i class="fa-solid fa-pen"></i> บันทึกเฉพาะ Memo</button>
-            </div>
-        </div>
+    <h2>ระบบลงเวลาพนักงาน</h2>
 
-        <div class="section-card">
-            <h3><i class="fa-solid fa-users"></i> เพื่อนร่วมงานวันนี้</h3>
-            <div id="colleagueStatus" class="status-grid">
-                </div>
-        </div>
+    
 
-        <div class="section-card">
-            <h3><i class="fa-solid fa-clock-rotate-left"></i> ประวัติสัปดาห์นี้</h3>
-            <div class="table-wrapper">
-                <table id="myHistory">
-                    <thead>
-                        <tr>
-                            <th>เวลา</th>
-                            <th>ประเภท</th>
-                            <th>สถานที่</th>
-                            <th>Memo</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </div>
+    <div class="section">
+
+        <div id="clock" class="timer">00:00:00</div>
+
+        <p>วันนี้วันที่: <span id="todayDate"></span></p>
+
     </div>
 
+
+
+    <div class="section">
+
+        <h3>ลงเวลาทำงาน</h3>
+
+        <select id="location">
+
+            <option value="OFFICE">OFFICE</option>
+
+            <option value="WFH">WFH</option>
+
+            <option value="ON-SITE">ON-SITE</option>
+
+        </select>
+
+        <button onclick="record('Check In')">Check In</button>
+
+        <hr>
+
+        <textarea id="memo" placeholder="สรุปงาน / Memo"></textarea><br>
+
+        <button onclick="record('Check Out')">Check Out</button>
+
+        <button onclick="record('Memo')">บันทึก Memo ระหว่างวัน</button>
+
+    </div>
+
+
+
+    <div class="section">
+
+        <h3>สถานะเพื่อนร่วมงานวันนี้</h3>
+
+        <ul id="colleagueStatus"></ul>
+
+    </div>
+
+
+
+    <div class="section">
+
+        <h3>ประวัติของฉัน (สัปดาห์นี้)</h3>
+
+        <table border="1" id="myHistory">
+
+            <thead><tr><th>วันที่</th><th>ประเภท</th><th>สถานที่</th><th>Memo</th></tr></thead>
+
+            <tbody></tbody>
+
+        </table>
+
+    </div>
+
+
+
     <script>
+
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzehwXrrfuioHK68BXQGLpKyBPM5ElXZKgRm0o55yzwXgtx_YGkItjkM090zceA_t7Jcg/exec";
-        const currentUsername = sessionStorage.getItem("username");
-        const currentName = sessionStorage.getItem("userName");
 
-        document.getElementById('displayName').innerText = currentName || "พนักงาน";
+        const username = sessionStorage.getItem("username"); // ดึงจาก session ที่คุณทำไว้
 
-        // Real-time Clock
+        const name = sessionStorage.getItem("userName");
+
+
+
+        // แสดงเวลา Real-time
+
         setInterval(() => {
-            document.getElementById('clock').innerText = new Date().toLocaleTimeString('th-TH');
+
+            document.getElementById('clock').innerText = new Date().toLocaleTimeString();
+
         }, 1000);
-        document.getElementById('todayDate').innerText = new Date().toLocaleDateString('th-TH', { 
-            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
-        });
+
+        document.getElementById('todayDate').innerText = new Date().toLocaleDateString();
+
+
 
         async function record(type) {
-            if(!currentUsername) return alert("เซสชันหมดอายุ กรุณาเข้าสู่ระบบใหม่");
-            
+
             const payload = {
+
                 action: "recordTime",
-                username: currentUsername,
-                name: currentName,
+
+                username: username,
+
+                name: name,
+
                 type: type,
+
                 location: document.getElementById('location').value,
+
                 memo: document.getElementById('memo').value
+
             };
 
-            try {
-                const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
-                const data = await res.json();
-                if(data.status === "success") {
-                    alert("บันทึก " + type + " เรียบร้อยแล้ว");
-                    document.getElementById('memo').value = ""; // ล้างช่อง memo
-                    loadData(); 
-                }
-            } catch(e) {
-                alert("เกิดข้อผิดพลาดในการเชื่อมต่อ");
+            const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
+
+            const data = await res.json();
+
+            if(data.status === "success") { 
+
+                alert("บันทึก " + type + " สำเร็จ"); 
+
+                loadData(); // โหลดข้อมูลใหม่
+
             }
+
         }
 
+
+
         async function loadData() {
-            try {
-                const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({action: "fetchData"}) });
-                const allData = await res.json();
-                
-                const today = new Date().toLocaleDateString();
 
-                // 1. จัดการสถานะเพื่อนร่วมงาน (แสดงสถานะล่าสุดของแต่ละคนในวันนี้)
-                const colleagueStatus = document.getElementById('colleagueStatus');
-                colleagueStatus.innerHTML = "";
-                
-                // ใช้ Map เพื่อเก็บเฉพาะข้อมูลล่าสุดของแต่ละชื่อ
-                const latestStatus = new Map();
-                allData.forEach(d => {
-                    const dDate = new Date(d.Timestamp).toLocaleDateString();
-                    if(dDate === today) {
-                        latestStatus.set(d.Name, { loc: d.Location, type: d.Type });
-                    }
-                });
+            const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({action: "fetchData"}) });
 
-                latestStatus.forEach((val, key) => {
-                    if(val.type !== "Check Out") { // ถ้ายังไม่ออกงาน ให้โชว์สถานะ
-                        colleagueStatus.innerHTML += `
-                            <div class="status-item">
-                                <span class="status-name">${key}</span>
-                                <span class="status-loc">${val.loc}</span>
-                            </div>
-                        `;
-                    }
-                });
+            const allData = await res.json();
 
-                // 2. จัดการประวัติส่วนตัว
-                const historyTable = document.querySelector("#myHistory tbody");
-                historyTable.innerHTML = "";
-                
-                // กรองเฉพาะของตัวเอง และเรียงลำดับใหม่ล่าสุดขึ้นก่อน
-                const myData = allData.filter(d => d.Username === currentUsername).reverse();
-                
-                myData.forEach(d => {
-                    const timeStr = new Date(d.Timestamp).toLocaleString('th-TH', { 
-                        hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short' 
-                    });
-                    
-                    let row = historyTable.insertRow();
-                    row.insertCell(0).innerText = timeStr;
-                    row.insertCell(1).innerHTML = `<span style="color:${d.Type === 'Check In' ? '#28a745' : '#dc3545'}">${d.Type}</span>`;
-                    row.insertCell(2).innerText = d.Location || "-";
-                    row.insertCell(3).innerText = d["WorkSummary/Memo"] || "-";
-                });
+            
 
-            } catch(e) {
-                console.error("Load Error:", e);
-            }
+            // 4. ดูสถานะว่าใครอยู่ที่ไหน
+
+            const statusList = document.getElementById('colleagueStatus');
+
+            statusList.innerHTML = "";
+
+            const todayStr = new Date().toLocaleDateString();
+
+            
+
+            // Filter เฉพาะวันนี้และ Check In ล่าสุดของแต่ละคน
+
+            const todayData = allData.filter(d => d.Date === todayStr);
+
+            todayData.forEach(d => {
+
+                if(d.Type === "Check In") {
+
+                    statusList.innerHTML += `<li>${d.Name}: ${d.Location}</li>`;
+
+                }
+
+            });
+
+
+
+            // 7. ประวัติส่วนตัว
+
+            const historyTable = document.getElementById('myHistory').getElementsByTagName('tbody')[0];
+
+            historyTable.innerHTML = "";
+
+            allData.filter(d => d.Username === username).forEach(d => {
+
+                let row = historyTable.insertRow();
+
+                row.insertCell(0).innerText = d.Date;
+
+                row.insertCell(1).innerText = d.Type;
+
+                row.insertCell(2).innerText = d.Location;
+
+                row.insertCell(3).innerText = d.WorkSummary;
+
+            });
+
         }
 
         loadData();
+
     </script>
+
 </body>
+
 </html>
+
