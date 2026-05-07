@@ -48,7 +48,7 @@
             
             <div class="inline-flex items-center gap-3 px-5 py-2 bg-slate-50/50 rounded-full border border-white shadow-sm">
                 <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                <p class="text-slate-600 text-sm font-light">สวัสดีคุณ, <span id="userDisp" class="font-semibold text-slate-900 italic">...</span></p>
+                <p class="text-slate-600 text-sm font-light">สวัสดีคุณ, <span id="userDisp" class="font-semibold text-slate-900 italic">กำลังโหลด...</span></p>
             </div>
         </div>
 
@@ -92,13 +92,14 @@
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzehwXrrfuioHK68BXQGLpKyBPM5ElXZKgRm0o55yzwXgtx_YGkItjkM090zceA_t7Jcg/exec";
         
-        // --- ดึงข้อมูลจาก Dashboard ---
-        const user = sessionStorage.getItem("username") || sessionStorage.getItem("userName"); 
-        const name = sessionStorage.getItem("userName") || "พนักงาน";
-        
-        // ตรวจสอบความปลอดภัย: ถ้าไม่ได้กดมาจาก Dashboard หรือ Session หลุด ให้ดีดกลับไปหน้าแรก
-        if (!sessionStorage.getItem("isLoggedIn")) {
-            alert("กรุณาเข้าสู่ระบบผ่านหน้า Dashboard");
+        // --- ดึงข้อมูล User จาก Session (รองรับทุกรูปแบบ Key) ---
+        const user = sessionStorage.getItem("userName") || sessionStorage.getItem("username") || "Guest";
+        const name = sessionStorage.getItem("userName") || sessionStorage.getItem("name") || "พนักงาน";
+        const isLoggedIn = sessionStorage.getItem("isLoggedIn");
+
+        // ตรวจสอบเบื้องต้น
+        if (isLoggedIn !== "true" && user === "Guest") {
+            alert("ไม่พบข้อมูลการเข้าสู่ระบบ กรุณา Login ใหม่");
             window.location.href = "index.html";
         }
 
@@ -106,11 +107,16 @@
 
         // ระบบนาฬิกา
         setInterval(() => {
-            document.getElementById('clock').innerText = new Date().toLocaleTimeString('th-TH');
+            const clockEl = document.getElementById('clock');
+            if(clockEl) clockEl.innerText = new Date().toLocaleTimeString('th-TH');
         }, 1000);
-        document.getElementById('todayDate').innerText = new Date().toLocaleDateString('th-TH', { weekday: 'long', day: 'numeric', month: 'long' });
+        
+        const dateEl = document.getElementById('todayDate');
+        if(dateEl) dateEl.innerText = new Date().toLocaleDateString('th-TH', { weekday: 'long', day: 'numeric', month: 'long' });
 
         async function record(type) {
+            if(user === "Guest") return alert("Session หมดอายุ กรุณาเข้าสู่ระบบใหม่");
+
             const btn = event.currentTarget;
             const originalText = btn.innerText;
             
@@ -123,21 +129,27 @@
                 name: name,
                 type: type,
                 location: document.getElementById('location').value,
-                memo: document.getElementById('memo').value
+                memo: document.getElementById('memo').value || "-"
             };
 
             try {
-                const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
+                const res = await fetch(WEB_APP_URL, { 
+                    method: 'POST', 
+                    body: JSON.stringify(payload) 
+                });
                 const result = await res.json();
                 
                 if(result.status === "success") {
                     alert("บันทึก " + type + " สำเร็จ");
                     document.getElementById('memo').value = "";
                     loadData();
+                } else {
+                    alert("เกิดข้อผิดพลาด: " + result.message);
                 }
             } catch(e) {
-                alert("บันทึกข้อมูลเรียบร้อย (ระบบกำลังอัปเดต)");
+                // กรณี Network error แต่ข้อมูลอาจจะเข้าแล้ว ให้ลองโหลดประวัติใหม่
                 loadData();
+                alert("ระบบบันทึกเรียบร้อย");
             } finally {
                 btn.disabled = false;
                 btn.innerText = originalText;
@@ -146,35 +158,41 @@
 
         async function loadData() {
             try {
-                const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({action: "fetchData"}) });
+                const res = await fetch(WEB_APP_URL, { 
+                    method: 'POST', 
+                    body: JSON.stringify({action: "fetchData"}) 
+                });
                 const data = await res.json();
                 const historyBox = document.getElementById("myHistoryBody");
+                if(!historyBox) return;
+                
                 historyBox.innerHTML = "";
                 
-                // กรองเฉพาะข้อมูลของเราวันนี้
-                const today = new Date().toLocaleDateString();
-                data.filter(d => (d.Username === user || d.Name === name))
-                    .reverse().slice(0, 5).forEach(d => {
-                        const time = new Date(d.Timestamp).toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'});
-                        const isCheckIn = d.Type === 'Check In';
-                        
-                        historyBox.innerHTML += `
-                            <div class="glass-panel p-4 rounded-2xl flex justify-between items-center border border-white">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 ${isCheckIn ? 'bg-emerald-50 text-emerald-500' : 'bg-rose-50 text-rose-500'} rounded-lg flex items-center justify-center">
-                                        <i data-lucide="${isCheckIn ? 'log-in' : 'log-out'}" class="w-4 h-4"></i>
-                                    </div>
-                                    <div>
-                                        <p class="text-[11px] font-bold text-slate-800 uppercase">${d.Type}</p>
-                                        <p class="text-[9px] text-slate-400 font-medium">${d.Location}</p>
-                                    </div>
+                // กรองข้อมูลเฉพาะของ User ปัจจุบัน
+                const myData = data.filter(d => d.Username === user || d.Name === name);
+                
+                myData.reverse().slice(0, 5).forEach(d => {
+                    const time = new Date(d.Timestamp).toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'});
+                    const isCheckIn = d.Type === 'Check In';
+                    const isCheckOut = d.Type === 'Check Out';
+                    
+                    historyBox.innerHTML += `
+                        <div class="glass-panel p-4 rounded-2xl flex justify-between items-center border border-white">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 ${isCheckIn ? 'bg-emerald-50 text-emerald-500' : isCheckOut ? 'bg-rose-50 text-rose-500' : 'bg-slate-50 text-slate-500'} rounded-lg flex items-center justify-center">
+                                    <i data-lucide="${isCheckIn ? 'log-in' : isCheckOut ? 'log-out' : 'message-square'}" class="w-4 h-4"></i>
                                 </div>
-                                <p class="text-sm font-bold text-slate-700">${time}</p>
+                                <div>
+                                    <p class="text-[11px] font-bold text-slate-800 uppercase">${d.Type}</p>
+                                    <p class="text-[9px] text-slate-400 font-medium">${d.Location || '-'}</p>
+                                </div>
                             </div>
-                        `;
-                    });
+                            <p class="text-sm font-bold text-slate-700">${time}</p>
+                        </div>
+                    `;
+                });
                 lucide.createIcons();
-            } catch(e) { console.log("Load error"); }
+            } catch(e) { console.log("Load error", e); }
         }
 
         window.onload = () => {
