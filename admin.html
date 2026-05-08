@@ -12,15 +12,9 @@
         .glass-panel { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.7); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.03); }
         .tab-content { display: none; }
         .tab-content.active { display: block; animation: slideUp 0.4s ease-out; }
-        
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .modal { display: none; position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,0.1); backdrop-filter: blur(8px); align-items: center; justify-content: center; padding: 20px; }
         .modal.active { display: flex; }
-
         input, select { transition: all 0.2s ease; }
         input:focus, select:focus { border-color: #6366f1 !important; box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1); outline: none; }
     </style>
@@ -116,21 +110,21 @@
 
         <div id="settingTab" class="tab-content">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                
                 <div class="glass-panel rounded-[3rem] p-10">
                     <div class="flex items-center gap-4 mb-10">
                         <div class="p-3 bg-indigo-50 text-indigo-500 rounded-2xl"><i data-lucide="clock" class="w-6 h-6"></i></div>
-                        <h3 class="text-xl font-bold text-slate-800">Attendance Settings</h3>
+                        <h3 class="text-xl font-bold text-slate-800">Attendance Policy</h3>
                     </div>
                     <div class="space-y-8">
                         <div class="grid grid-cols-2 gap-6">
                             <div class="space-y-2">
-                                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-2">Business Start</label>
-                                <input type="time" id="startTime" value="09:00" class="w-full p-4 bg-slate-50 border border-transparent rounded-2xl">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-2">Check-in Before</label>
+                                <input type="time" id="startTime" class="w-full p-4 bg-slate-50 border border-transparent rounded-2xl">
+                                <p class="text-[9px] text-slate-400 mt-1">* มาหลังเวลานี้ = สาย</p>
                             </div>
                             <div class="space-y-2">
-                                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-2">Business End</label>
-                                <input type="time" id="endTime" value="18:00" class="w-full p-4 bg-slate-50 border border-transparent rounded-2xl">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-2">Standard End</label>
+                                <input type="time" id="endTime" class="w-full p-4 bg-slate-50 border border-transparent rounded-2xl">
                             </div>
                         </div>
                         <button id="saveConfigBtn" onclick="saveSettings()" class="w-full py-5 bg-indigo-600 text-white rounded-[1.8rem] font-bold text-xs uppercase tracking-widest shadow-xl shadow-indigo-100 active:scale-95 transition-all">Save Changes</button>
@@ -155,7 +149,6 @@
                         <button id="addBtn" onclick="handleAddUser()" class="w-full py-5 bg-slate-900 text-white rounded-[1.8rem] font-bold text-xs uppercase tracking-widest shadow-xl active:scale-95 transition-all">Register New Staff</button>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
@@ -164,7 +157,7 @@
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxCxgtJBdY2GXJDY90emZyuw6rLP_00-yUBi7YBdLV3SQ5yn6g_8JaJCWHNUj_N036H/exec";
         let rawData = [];
 
-        // --- UI Pop-up Logic ---
+        // --- UI Logic ---
         function showAlert(title, msg, icon = "info", color = "indigo") {
             const modal = document.getElementById('customAlert');
             document.getElementById('alertTitle').innerText = title;
@@ -178,7 +171,6 @@
 
         function closeAlert() { document.getElementById('customAlert').classList.remove('active'); }
 
-        // --- Tab Navigation ---
         function openTab(evt, tabId) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -187,18 +179,25 @@
             lucide.createIcons();
         }
 
-        // --- Data Fetching & Filtering ---
+        // --- Data Logic ---
+        async function loadCurrentConfig() {
+            try {
+                const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "fetchConfig" }) });
+                const config = await response.json();
+                document.getElementById('startTime').value = config.StartTime || "09:00";
+                document.getElementById('endTime').value = config.EndTime || "18:00";
+            } catch (e) { console.log("Config load failed"); }
+        }
+
         async function loadReportData() {
             const tbody = document.querySelector("#reportTable tbody");
-            tbody.innerHTML = "<tr><td colspan='5' class='p-12 text-center text-slate-400 font-medium italic'>Loading report database...</td></tr>";
+            tbody.innerHTML = "<tr><td colspan='5' class='p-12 text-center text-slate-400 font-medium italic'>Syncing with server...</td></tr>";
             try {
                 const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "fetchData" }) });
                 rawData = await response.json();
                 updateNameDatalist();
                 applyFilters();
-            } catch (error) {
-                showAlert("Error", "ไม่สามารถเชื่อมต่อ Server ได้", "alert-triangle", "red");
-            }
+            } catch (error) { showAlert("Error", "ไม่สามารถเชื่อมต่อฐานข้อมูลได้", "alert-triangle", "red"); }
         }
 
         function updateNameDatalist() {
@@ -212,14 +211,12 @@
             const locF = document.getElementById('filterLoc').value;
             const typeF = document.getElementById('filterType').value;
             const dateRangeF = document.getElementById('filterDateRange').value;
-            
             const now = new Date();
             const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
             const filtered = rawData.filter(d => {
                 const itemDate = new Date(d.Timestamp);
-                let dateMatch = true;
-                if (dateRangeF === "today") dateMatch = itemDate >= startOfToday;
+                let dateMatch = dateRangeF === "today" ? itemDate >= startOfToday : true;
                 const nameMatch = (d.Name || "").toLowerCase().includes(nameF);
                 const locMatch = locF === "" || (d["Location"] || "") === locF;
                 const typeMatch = typeF === "" || (d.Type || "") === typeF;
@@ -230,18 +227,29 @@
 
         function renderTable(data) {
             const tbody = document.querySelector("#reportTable tbody");
-            tbody.innerHTML = "";
-            if (data.length === 0) {
-                tbody.innerHTML = "<tr><td colspan='5' class='p-12 text-center text-slate-400 italic'>No data found.</td></tr>";
-                return;
-            }
+            const policyStart = document.getElementById('startTime').value;
+            tbody.innerHTML = data.length === 0 ? "<tr><td colspan='5' class='p-12 text-center text-slate-400 italic'>No data found.</td></tr>" : "";
+            
             data.forEach(d => {
+                const dateObj = new Date(d.Timestamp);
+                const timeStr = dateObj.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+                
+                let lateTag = '';
+                if (d.Type === 'Check In' && timeStr > policyStart) {
+                    lateTag = `<span class="ml-2 px-2 py-0.5 bg-red-50 text-red-500 text-[9px] font-black rounded-md border border-red-100 italic">LATE</span>`;
+                }
+
                 const typeStyle = d.Type === 'Check In' ? 'text-indigo-500 bg-indigo-50' : 'text-slate-400 bg-slate-50';
-                const row = `
+                tbody.insertAdjacentHTML('beforeend', `
                     <tr class="hover:bg-slate-50/50 transition-colors border-b border-slate-50">
-                        <td class="p-6 text-[11px] font-medium text-slate-500">${new Date(d.Timestamp).toLocaleString('th-TH')}</td>
+                        <td class="p-6 text-[11px] font-medium text-slate-500">${dateObj.toLocaleString('th-TH')}</td>
                         <td class="p-6 text-sm font-bold text-slate-700">${d.Name || "-"}</td>
-                        <td class="p-6"><span class="px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest ${typeStyle}">${d.Type || "-"}</span></td>
+                        <td class="p-6">
+                            <div class="flex items-center">
+                                <span class="px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest ${typeStyle}">${d.Type || "-"}</span>
+                                ${lateTag}
+                            </div>
+                        </td>
                         <td class="p-6 text-xs font-bold text-slate-400 tracking-tighter">${d["Location"] || "-"}</td>
                         <td class="p-6 text-center">
                             <button onclick="showAlert('Activity Details', '${d["WorkSummary/Memo"] || "-"}', 'file-text')" class="p-2 hover:bg-indigo-50 rounded-lg transition-all text-indigo-300 hover:text-indigo-600">
@@ -249,73 +257,52 @@
                             </button>
                         </td>
                     </tr>
-                `;
-                tbody.insertAdjacentHTML('beforeend', row);
+                `);
             });
             lucide.createIcons();
         }
 
-        // --- Admin Actions ---
+        // --- Server Actions ---
         async function handleAddUser() {
-            const u = document.getElementById('newU').value;
-            const p = document.getElementById('newP').value;
-            const n = document.getElementById('newN').value;
-            const r = document.getElementById('newR').value;
-            if (!u || !p || !n) return showAlert("Incomplete", "กรุณากรอกข้อมูลพนักงานให้ครบถ้วน", "alert-circle", "orange");
-            
+            const u = document.getElementById('newU').value, p = document.getElementById('newP').value, n = document.getElementById('newN').value, r = document.getElementById('newR').value;
+            if (!u || !p || !n) return showAlert("Incomplete", "กรุณากรอกข้อมูลพนักงานให้ครบ", "alert-circle", "orange");
             const btn = document.getElementById('addBtn');
             btn.disabled = true; btn.innerText = "REGISTERING...";
-            
             try {
                 const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "addUser", newUsername: u, newPassword: p, newName: n, newRole: r }) });
                 const result = await response.json();
                 if (result.status === "added") {
-                    showAlert("Staff Registered", `เพิ่ม ${n} เข้าสู่ระบบเรียบร้อยแล้ว`, "user-check", "emerald");
+                    showAlert("Success", `เพิ่ม ${n} เรียบร้อย`, "user-check", "emerald");
                     document.getElementById('newU').value = ''; document.getElementById('newP').value = ''; document.getElementById('newN').value = '';
                 }
-            } catch (e) {
-                showAlert("Error", "ล้มเหลวในการส่งข้อมูล", "x-circle", "red");
-            } finally {
-                btn.disabled = false; btn.innerText = "REGISTER NEW STAFF";
-            }
+            } catch (e) { showAlert("Error", "ล้มเหลว", "x-circle", "red"); }
+            finally { btn.disabled = false; btn.innerText = "REGISTER NEW STAFF"; }
         }
 
         async function saveSettings() {
-            const start = document.getElementById('startTime').value;
-            const end = document.getElementById('endTime').value;
+            const start = document.getElementById('startTime').value, end = document.getElementById('endTime').value;
             const btn = document.getElementById('saveConfigBtn');
-
-            if (!start || !end) return showAlert("Incomplete", "กรุณาระบุเวลาให้ครบถ้วน", "alert-circle", "orange");
-
             btn.disabled = true; btn.innerText = "SAVING...";
-
             try {
-                const response = await fetch(WEB_APP_URL, { 
-                    method: 'POST', 
-                    body: JSON.stringify({ action: "saveConfig", startTime: start, endTime: end }) 
-                });
-                const result = await response.json();
-                if (result.status === "success") {
-                    showAlert("System Success", "บันทึกเวลาปฏิบัติงานเรียบร้อยแล้ว", "check-circle", "emerald");
-                }
-            } catch (e) {
-                showAlert("Error", "ไม่สามารถบันทึกได้ในขณะนี้", "x-circle", "red");
-            } finally {
-                btn.disabled = false; btn.innerText = "SAVE CHANGES";
-            }
+                const resp = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "saveConfig", startTime: start, endTime: end }) });
+                const res = await resp.json();
+                if (res.status === "success") showAlert("Updated", "บันทึกเกณฑ์เวลาใหม่แล้ว ระบบจะคำนวณ 'สาย' ตามค่านี้ทันที", "check-circle", "emerald");
+                loadReportData(); // Refresh table with new policy
+            } catch (e) { showAlert("Error", "บันทึกไม่ได้", "x-circle", "red"); }
+            finally { btn.disabled = false; btn.innerText = "SAVE CHANGES"; }
         }
 
         function exportToCSV() {
-            if (rawData.length === 0) return showAlert("Empty", "ไม่มีข้อมูลสำหรับส่งออก", "database");
+            if (rawData.length === 0) return;
             let csv = "data:text/csv;charset=utf-8,\uFEFFวันเวลา,ชื่อ,ประเภท,สถานที่,Memo\n";
             rawData.forEach(d => { csv += `"${d.Timestamp}","${d.Name}","${d.Type}","${d["Location"] || "-"}","${d["WorkSummary/Memo"] || "-"}"\n`; });
             const link = document.createElement("a");
             link.href = encodeURI(csv);
-            link.download = `CubicPlus_Report_${new Date().toLocaleDateString()}.csv`;
+            link.download = `Report_${new Date().toLocaleDateString()}.csv`;
             link.click();
         }
 
-        window.onload = () => { lucide.createIcons(); loadReportData(); };
+        window.onload = () => { lucide.createIcons(); loadReportData(); loadCurrentConfig(); };
     </script>
 </body>
 </html>
