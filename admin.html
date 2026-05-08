@@ -13,10 +13,9 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; animation: fadeIn 0.3s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-        
-        /* สไตล์หน้า Settings แบบใหม่ */
         .settings-nav-btn.active { background: white; color: #6366f1; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1); }
         .config-card { border-left: 4px solid #6366f1; }
+        select { cursor: pointer; }
     </style>
 </head>
 <body class="p-4 md:p-8">
@@ -39,24 +38,38 @@
 
         <div id="reportTab" class="tab-content active">
             <div class="glass-panel rounded-[2.5rem] overflow-hidden">
-                <div class="p-6 border-b border-slate-50 bg-white/50 grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                <div class="p-6 border-b border-slate-50 bg-white/50 grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
                     <div class="space-y-1">
                         <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">ค้นหาชื่อ</label>
-                        <input list="nameOptions" id="filterName" oninput="applyFilters()" class="w-full p-3 bg-slate-50 border-none rounded-xl text-sm focus:ring-2 ring-indigo-100" placeholder="ระบุชื่อพนักงาน...">
+                        <input list="nameOptions" id="filterName" oninput="applyFilters()" class="w-full p-3 bg-slate-50 border-none rounded-xl text-sm focus:ring-2 ring-indigo-100" placeholder="ระบุชื่อ...">
                         <datalist id="nameOptions"></datalist>
                     </div>
                     <div class="space-y-1">
-                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">เลือกช่วงเวลา</label>
-                        <select id="filterDateRange" onchange="applyFilters()" class="w-full p-3 bg-slate-50 border-none rounded-xl text-sm focus:ring-2 ring-indigo-100">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">ช่วงเวลา</label>
+                        <select id="filterDateRange" onchange="applyFilters()" class="w-full p-3 bg-slate-50 border-none rounded-xl text-sm">
                             <option value="all">ทั้งหมด</option>
                             <option value="today">วันนี้</option>
                         </select>
                     </div>
-                    <button onclick="loadReportData()" class="p-3 bg-indigo-50 text-indigo-600 rounded-xl hover:bg-indigo-100 transition-all">
-                        <i data-lucide="refresh-cw" class="w-5 h-5 mx-auto"></i>
-                    </button>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">สถานที่</label>
+                        <select id="filterLoc" onchange="applyFilters()" class="w-full p-3 bg-slate-50 border-none rounded-xl text-sm">
+                            <option value="">ทุกสถานที่</option>
+                            <option value="OFFICE">OFFICE</option>
+                            <option value="WFH">WFH</option>
+                            <option value="ON-SITE">ON-SITE</option>
+                        </select>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">สถานะ</label>
+                        <select id="filterType" onchange="applyFilters()" class="w-full p-3 bg-slate-50 border-none rounded-xl text-sm">
+                            <option value="">ทั้งหมด</option>
+                            <option value="Check In">เข้างาน</option>
+                            <option value="Check Out">ออกงาน</option>
+                        </select>
+                    </div>
                     <button onclick="exportToCSV()" class="p-3 bg-emerald-500 text-white rounded-xl font-bold text-xs uppercase flex items-center justify-center gap-2 shadow-lg shadow-emerald-100">
-                        <i data-lucide="download" class="w-4 h-4"></i> โหลดไฟล์ CSV
+                        <i data-lucide="download" class="w-4 h-4"></i> โหลด CSV
                     </button>
                 </div>
                 <div class="overflow-x-auto">
@@ -91,38 +104,46 @@
                     <div id="timeConfig" class="setting-section block space-y-6">
                         <div class="glass-panel rounded-[2.5rem] p-8 config-card">
                             <h3 class="text-xl font-bold text-slate-800 mb-2">กำหนดเวลาปฏิบัติงาน</h3>
-                            <p class="text-slate-400 text-xs mb-8">ตั้งเกณฑ์เวลาเพื่อตรวจสอบการมาสายของพนักงาน</p>
+                            <p class="text-slate-400 text-xs mb-8">ตั้งเกณฑ์เวลา (ปัจจุบัน: <span id="curStart" class="text-indigo-600 font-black">-</span> - <span id="curEnd" class="text-indigo-600 font-black">-</span>)</p>
                             
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                                 <div class="space-y-3">
-                                    <label class="text-xs font-bold text-slate-500">เวลาเริ่มงาน (ปัจจุบัน: <span id="curStart" class="text-indigo-600 font-black">-</span>)</label>
-                                    <input type="time" id="startTime" class="w-full p-4 bg-slate-100 border-none rounded-2xl text-lg font-bold">
+                                    <label class="text-xs font-bold text-slate-500">เวลาเริ่มงาน (เช็คสาย)</label>
+                                    <div class="flex items-center gap-2">
+                                        <select id="startH" class="flex-1 p-4 bg-slate-100 border-none rounded-2xl text-lg font-bold appearance-none text-center"></select>
+                                        <span class="font-bold">:</span>
+                                        <select id="startM" class="flex-1 p-4 bg-slate-100 border-none rounded-2xl text-lg font-bold appearance-none text-center"></select>
+                                    </div>
                                 </div>
                                 <div class="space-y-3">
-                                    <label class="text-xs font-bold text-slate-500">เวลาเลิกงาน (ปัจจุบัน: <span id="curEnd" class="text-indigo-600 font-black">-</span>)</label>
-                                    <input type="time" id="endTime" class="w-full p-4 bg-slate-100 border-none rounded-2xl text-lg font-bold">
+                                    <label class="text-xs font-bold text-slate-500">เวลาเลิกงานมาตรฐาน</label>
+                                    <div class="flex items-center gap-2">
+                                        <select id="endH" class="flex-1 p-4 bg-slate-100 border-none rounded-2xl text-lg font-bold appearance-none text-center"></select>
+                                        <span class="font-bold">:</span>
+                                        <select id="endM" class="flex-1 p-4 bg-slate-100 border-none rounded-2xl text-lg font-bold appearance-none text-center"></select>
+                                    </div>
                                 </div>
                             </div>
-                            <button id="saveConfigBtn" onclick="saveSettings()" class="w-full py-4 bg-indigo-600 text-white rounded-2xl font-bold text-sm shadow-xl shadow-indigo-100 hover:scale-[1.02] active:scale-95 transition-all">บันทึกเกณฑ์เวลาใหม่</button>
+                            <button id="saveConfigBtn" onclick="saveSettings()" class="w-full py-4 bg-indigo-600 text-white rounded-2xl font-bold text-sm shadow-xl shadow-indigo-100 active:scale-95 transition-all">บันทึกเกณฑ์เวลาใหม่</button>
                         </div>
                     </div>
 
                     <div id="staffConfig" class="setting-section hidden space-y-6">
                         <div class="glass-panel rounded-[2.5rem] p-8">
                             <h3 class="text-xl font-bold text-slate-800 mb-6">ลงทะเบียนพนักงาน</h3>
-                            <div class="space-y-4">
+                            <div class="space-y-4 text-sm">
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <input type="text" id="newN" class="p-4 bg-slate-100 border-none rounded-2xl text-sm" placeholder="ชื่อ-นามสกุล">
-                                    <select id="newR" class="p-4 bg-slate-100 border-none rounded-2xl text-sm">
-                                        <option value="User">User (พนักงานทั่วไป)</option>
-                                        <option value="Admin">Admin (ผู้ดูแลระบบ)</option>
+                                    <input type="text" id="newN" class="p-4 bg-slate-100 border-none rounded-2xl" placeholder="ชื่อ-นามสกุล">
+                                    <select id="newR" class="p-4 bg-slate-100 border-none rounded-2xl">
+                                        <option value="User">User (พนักงาน)</option>
+                                        <option value="Admin">Admin (ผู้ดูแล)</option>
                                     </select>
                                 </div>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <input type="text" id="newU" class="p-4 bg-slate-100 border-none rounded-2xl text-sm" placeholder="Username สำหรับเข้าระบบ">
-                                    <input type="password" id="newP" class="p-4 bg-slate-100 border-none rounded-2xl text-sm" placeholder="Password">
+                                    <input type="text" id="newU" class="p-4 bg-slate-100 border-none rounded-2xl" placeholder="Username">
+                                    <input type="password" id="newP" class="p-4 bg-slate-100 border-none rounded-2xl" placeholder="Password">
                                 </div>
-                                <button id="addBtn" onclick="handleAddUser()" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold text-sm shadow-xl transition-all active:scale-95">เพิ่มพนักงานเข้าสู่ฐานข้อมูล</button>
+                                <button id="addBtn" onclick="handleAddUser()" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold shadow-xl active:scale-95 transition-all">เพิ่มพนักงาน</button>
                             </div>
                         </div>
                     </div>
@@ -135,8 +156,8 @@
         <div class="bg-white w-full max-w-xs rounded-[2rem] p-8 text-center shadow-2xl">
             <div id="alertIcon" class="w-16 h-16 bg-indigo-50 text-indigo-500 rounded-full flex items-center justify-center mx-auto mb-4"></div>
             <h3 id="alertTitle" class="text-lg font-bold text-slate-800 mb-1"></h3>
-            <p id="alertMsg" class="text-slate-500 text-xs mb-6 leading-relaxed"></p>
-            <button onclick="closeAlert()" class="w-full py-3 bg-slate-900 text-white rounded-xl font-bold text-xs uppercase transition-all active:scale-95">ตกลง</button>
+            <p id="alertMsg" class="text-slate-500 text-xs mb-6"></p>
+            <button onclick="closeAlert()" class="w-full py-3 bg-slate-900 text-white rounded-xl font-bold text-xs">ตกลง</button>
         </div>
     </div>
 
@@ -144,7 +165,22 @@
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxCxgtJBdY2GXJDY90emZyuw6rLP_00-yUBi7YBdLV3SQ5yn6g_8JaJCWHNUj_N036H/exec";
         let rawData = [];
 
-        // --- ระบบ Tab หลัก ---
+        // สร้าง Dropdown ชั่วโมง/นาที
+        function initTimeSelectors() {
+            const hSelects = ['startH', 'endH'];
+            const mSelects = ['startM', 'endM'];
+            hSelects.forEach(id => {
+                let options = "";
+                for(let i=0; i<24; i++) options += `<option value="${i.toString().padStart(2,'0')}">${i.toString().padStart(2,'0')}</option>`;
+                document.getElementById(id).innerHTML = options;
+            });
+            mSelects.forEach(id => {
+                let options = "";
+                for(let i=0; i<60; i+=5) options += `<option value="${i.toString().padStart(2,'0')}">${i.toString().padStart(2,'0')}</option>`;
+                document.getElementById(id).innerHTML = options;
+            });
+        }
+
         function openTab(evt, tabId) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -153,7 +189,6 @@
             lucide.createIcons();
         }
 
-        // --- ระบบเมนูย่อยหน้า Settings ---
         function openSettingSection(evt, sectionId) {
             document.querySelectorAll('.setting-section').forEach(s => s.classList.add('hidden'));
             document.querySelectorAll('.settings-nav-btn').forEach(b => b.classList.remove('active'));
@@ -162,7 +197,7 @@
             lucide.createIcons();
         }
 
-        // --- โหลดข้อมูล Config และแสดงผลเวลาที่บันทึกไว้ ---
+        // ดึง Config และแสดงผลเวลาที่บันทึกไว้ทันที
         async function loadCurrentConfig() {
             try {
                 const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "fetchConfig" }) });
@@ -170,25 +205,47 @@
                 const start = config.StartTime || "09:00";
                 const end = config.EndTime || "18:00";
                 
-                // แสดงผลใน Text
                 document.getElementById('curStart').innerText = start;
                 document.getElementById('curEnd').innerText = end;
-                // ใส่ค่าใน Input เผื่อจะแก้ไข
-                document.getElementById('startTime').value = start;
-                document.getElementById('endTime').value = end;
-            } catch (e) { console.log("Config load failed"); }
+
+                // อัปเดตตัวเลือกให้ตรงกับค่าในระบบ
+                const [sh, sm] = start.split(':');
+                const [eh, em] = end.split(':');
+                document.getElementById('startH').value = sh;
+                document.getElementById('startM').value = sm;
+                document.getElementById('endH').value = eh;
+                document.getElementById('endM').value = em;
+            } catch (e) { console.error("Load config failed"); }
         }
 
-        // --- โหลดรายงานการเข้างาน ---
         async function loadReportData() {
             const tbody = document.querySelector("#reportTable tbody");
-            tbody.innerHTML = "<tr><td colspan='5' class='p-12 text-center text-slate-300 italic'>กำลังดึงข้อมูล...</td></tr>";
+            tbody.innerHTML = "<tr><td colspan='5' class='p-12 text-center text-slate-300 italic'>กำลังโหลดข้อมูล...</td></tr>";
             try {
                 const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "fetchData" }) });
                 rawData = await response.json();
                 updateNameDatalist();
                 applyFilters();
-            } catch (error) { showAlert("แจ้งเตือน", "เกิดข้อผิดพลาดในการโหลดข้อมูล", "alert-triangle"); }
+            } catch (error) { showAlert("แจ้งเตือน", "ไม่สามารถเชื่อมต่อฐานข้อมูลได้", "alert-triangle"); }
+        }
+
+        function applyFilters() {
+            const nameF = document.getElementById('filterName').value.toLowerCase();
+            const locF = document.getElementById('filterLoc').value;
+            const typeF = document.getElementById('filterType').value;
+            const dateRangeF = document.getElementById('filterDateRange').value;
+            const now = new Date();
+            const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+            const filtered = rawData.filter(d => {
+                const itemDate = new Date(d.Timestamp);
+                const dateMatch = dateRangeF === "today" ? itemDate >= startOfToday : true;
+                const nameMatch = (d.Name || "").toLowerCase().includes(nameF);
+                const locMatch = !locF || d.Location === locF;
+                const typeMatch = !typeF || d.Type === typeF;
+                return dateMatch && nameMatch && locMatch && typeMatch;
+            });
+            renderTable(filtered);
         }
 
         function renderTable(data) {
@@ -200,22 +257,19 @@
                 const dateObj = new Date(d.Timestamp);
                 const timeStr = dateObj.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
                 let lateTag = (d.Type === 'Check In' && timeStr > policyStart) ? 
-                    `<span class="ml-2 px-2 py-0.5 bg-red-50 text-red-500 text-[9px] font-black rounded-md border border-red-100">สาย</span>` : '';
+                    `<span class="ml-2 px-2 py-0.5 bg-red-50 text-red-500 text-[9px] font-black rounded-md border border-red-100 italic">LATE</span>` : '';
 
-                const typeStyle = d.Type === 'Check In' ? 'text-indigo-600 bg-indigo-50' : 'text-slate-400 bg-slate-50';
                 tbody.insertAdjacentHTML('beforeend', `
-                    <tr class="hover:bg-slate-50/50 transition-colors border-b border-slate-50">
-                        <td class="p-6 font-medium text-slate-500 text-[11px]">${dateObj.toLocaleString('th-TH')}</td>
+                    <tr class="hover:bg-slate-50 transition-colors border-b border-slate-50">
+                        <td class="p-6 text-[11px] text-slate-500">${dateObj.toLocaleString('th-TH')}</td>
                         <td class="p-6 font-bold text-slate-700">${d.Name || "-"}</td>
                         <td class="p-6">
-                            <div class="flex items-center">
-                                <span class="px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest ${typeStyle}">${d.Type || "-"}</span>
-                                ${lateTag}
-                            </div>
+                            <span class="px-3 py-1 rounded-full text-[9px] font-bold uppercase ${d.Type === 'Check In' ? 'text-indigo-600 bg-indigo-50' : 'text-slate-400 bg-slate-50'}">${d.Type || "-"}</span>
+                            ${lateTag}
                         </td>
-                        <td class="p-6 text-xs text-slate-400">${d["Location"] || "-"}</td>
+                        <td class="p-6 text-xs text-slate-400">${d.Location || "-"}</td>
                         <td class="p-6 text-center text-indigo-300">
-                            <button onclick="showAlert('รายละเอียด', '${d["WorkSummary/Memo"] || "-"}', 'file-text')"><i data-lucide="eye" class="w-4 h-4"></i></button>
+                            <button onclick="showAlert('รายละเอียด', '${d["WorkSummary/Memo"] || "-"}', 'file-text')"><i data-lucide="eye" class="w-4 h-4 mx-auto"></i></button>
                         </td>
                     </tr>
                 `);
@@ -223,37 +277,20 @@
             lucide.createIcons();
         }
 
-        // --- บันทึกค่า Config ใหม่ ---
         async function saveSettings() {
-            const start = document.getElementById('startTime').value;
-            const end = document.getElementById('endTime').value;
+            const start = `${document.getElementById('startH').value}:${document.getElementById('startM').value}`;
+            const end = `${document.getElementById('endH').value}:${document.getElementById('endM').value}`;
             const btn = document.getElementById('saveConfigBtn');
             btn.disabled = true; btn.innerText = "กำลังบันทึก...";
             try {
                 const resp = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "saveConfig", startTime: start, endTime: end }) });
                 const res = await resp.json();
                 if (res.status === "success") {
-                    showAlert("สำเร็จ", "บันทึกเวลาเข้า-ออกงานใหม่เรียบร้อยแล้ว", "check-circle", "emerald");
-                    loadCurrentConfig(); // อัปเดตการแสดงผลเวลาในหน้าจอทันที
+                    showAlert("สำเร็จ", "บันทึกเวลาใหม่เรียบร้อยแล้ว", "check-circle");
+                    await loadCurrentConfig(); // โหลดค่าใหม่มาโชว์ทันที
                 }
-            } catch (e) { showAlert("ล้มเหลว", "ไม่สามารถบันทึกข้อมูลได้", "x-circle", "red"); }
+            } catch (e) { showAlert("ล้มเหลว", "ไม่สามารถบันทึกได้", "x-circle"); }
             finally { btn.disabled = false; btn.innerText = "บันทึกเกณฑ์เวลาใหม่"; }
-        }
-
-        // --- (ฟังก์ชันอื่นๆ เหมือนเดิม แต่เปลี่ยนข้อความเป็นภาษาไทย) ---
-        function applyFilters() {
-            const nameF = document.getElementById('filterName').value.toLowerCase();
-            const dateRangeF = document.getElementById('filterDateRange').value;
-            const now = new Date();
-            const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-
-            const filtered = rawData.filter(d => {
-                const itemDate = new Date(d.Timestamp);
-                let dateMatch = dateRangeF === "today" ? itemDate >= startOfToday : true;
-                const nameMatch = (d.Name || "").toLowerCase().includes(nameF);
-                return dateMatch && nameMatch;
-            });
-            renderTable(filtered);
         }
 
         function updateNameDatalist() {
@@ -264,18 +301,18 @@
 
         async function handleAddUser() {
             const u = document.getElementById('newU').value, p = document.getElementById('newP').value, n = document.getElementById('newN').value, r = document.getElementById('newR').value;
-            if (!u || !p || !n) return showAlert("ไม่สมบูรณ์", "กรุณากรอกข้อมูลพนักงานให้ครบ", "alert-circle", "orange");
+            if (!u || !p || !n) return showAlert("ไม่สมบูรณ์", "กรุณากรอกข้อมูลให้ครบ", "alert-circle");
             const btn = document.getElementById('addBtn');
-            btn.disabled = true; btn.innerText = "กำลังดำเนินการ...";
+            btn.disabled = true;
             try {
                 const resp = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "addUser", newUsername: u, newPassword: p, newName: n, newRole: r }) });
                 const res = await resp.json();
                 if (res.status === "added") {
-                    showAlert("สำเร็จ", `เพิ่ม ${n} เข้าสู่ระบบแล้ว`, "user-check", "emerald");
+                    showAlert("สำเร็จ", `เพิ่ม ${n} เรียบร้อย`, "user-check");
                     document.getElementById('newU').value = ''; document.getElementById('newP').value = ''; document.getElementById('newN').value = '';
                 }
-            } catch (e) { showAlert("ผิดพลาด", "ไม่สามารถเพิ่มพนักงานได้", "x-circle", "red"); }
-            finally { btn.disabled = false; btn.innerText = "เพิ่มพนักงานเข้าสู่ฐานข้อมูล"; }
+            } catch (e) { showAlert("ผิดพลาด", "บันทึกไม่ได้", "x-circle"); }
+            finally { btn.disabled = false; }
         }
 
         function showAlert(title, msg, icon = "info") {
@@ -292,17 +329,18 @@
         function exportToCSV() {
             if (rawData.length === 0) return;
             let csv = "data:text/csv;charset=utf-8,\uFEFFวันเวลา,ชื่อ,ประเภท,สถานที่,บันทึก\n";
-            rawData.forEach(d => { csv += `"${d.Timestamp}","${d.Name}","${d.Type}","${d["Location"] || "-"}","${d["WorkSummary/Memo"] || "-"}"\n`; });
+            rawData.forEach(d => { csv += `"${d.Timestamp}","${d.Name}","${d.Type}","${d.Location || "-"}","${d["WorkSummary/Memo"] || "-"}"\n`; });
             const link = document.createElement("a");
             link.href = encodeURI(csv);
             link.download = `Report_Attendance.csv`;
             link.click();
         }
 
-        window.onload = () => { 
+        window.onload = async () => { 
+            initTimeSelectors();
             lucide.createIcons(); 
+            await loadCurrentConfig(); 
             loadReportData(); 
-            loadCurrentConfig(); 
         };
     </script>
 </body>
