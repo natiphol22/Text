@@ -40,6 +40,7 @@
             flex-shrink: 0;
         }
         
+        /* แก้ไข: ใช้ CSS บริหารกรอบแทนการขยับ JS ป้องกันภาพเบี้ยว */
         .field-box {
             display: inline-flex;
             border-bottom: 1.5px dotted #666;
@@ -48,13 +49,15 @@
             white-space: nowrap;
             overflow: visible; 
             padding: 0 4px;
+            box-sizing: border-box;
         }
         .text-value {
             color: #000000 !important; 
             font-weight: 600;
             white-space: nowrap;
-            line-height: 1; 
-            margin-bottom: 2px; 
+            line-height: 1.4; /* ขยายบรรทัดเพื่อคลุมสระบนและวรรณยุกต์ */
+            padding-top: 4px; /* เผื่อที่ว่างด้านบนให้สระไม่โดนตัด */
+            margin-bottom: -2px; /* ดึงข้อความลงมาให้นั่งบนเส้นประพอดี */
             display: inline-block;
         }
 
@@ -119,7 +122,7 @@
                 <svg class="w-7 h-7 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                 เบิกค่าใช้จ่าย
             </h1>
-            <p class="text-xs text-slate-400 mt-1">V.1.7 - Smart JPG Export</p>
+            <p class="text-xs text-slate-400 mt-1">V.1.8 - Final Native Export</p>
         </div>
 
         <div class="p-6 overflow-y-auto flex-1 space-y-8">
@@ -526,7 +529,7 @@
             return BahtText + "บาทถ้วน";
         }
 
-        // --- ระบบ Export PDF & JPG ---
+        // --- ระบบ Export PDF & JPG (ถอนแอนิเมชันออกทั้งหมด) ---
         async function exportDoc(type) {
             const paper = document.getElementById('a4-document');
             const personName = document.getElementById('in-name').value || 'ค่าใช้จ่าย';
@@ -539,7 +542,6 @@
 
             try {
                 if (type === 'pdf') {
-                    // PDF โหลดปกติ
                     btnPdf.disabled = true;
                     btnJpg.disabled = true;
                     txtPdf.innerText = "⏳ กำลังสร้าง PDF...";
@@ -555,24 +557,11 @@
                     await html2pdf().set(opt).from(paper).save();
                     
                 } else if (type === 'jpg') {
-                    // ดันฟอนต์ขึ้นด้วย top แทน transform ป้องกันภาพเบี้ยว/สระหาย
+                    // สร้างภาพแบบไม่ขยับ CSS เพื่อความแม่นยำสูงสุด
                     btnPdf.disabled = true;
                     btnJpg.disabled = true;
                     txtJpg.innerText = "⏳ กำลังสร้าง JPG...";
-
-                    const textValues = document.querySelectorAll('.text-value');
-                    textValues.forEach(el => {
-                        const txt = el.textContent.trim();
-                        // ถ้าเป็นช่องที่ไม่ได้กรอกข้อความ (ว่าง, -, หรือ ....) จะไม่ดันขึ้น
-                        if (txt !== "" && txt !== "-" && !txt.includes("....")) {
-                            el.style.position = 'relative';
-                            el.style.top = '-4px'; 
-                        }
-                    });
                     
-                    // ให้ Browser นิ่งสักแปปก่อนถ่ายรูป
-                    await new Promise(resolve => setTimeout(resolve, 100));
-
                     const canvas = await html2canvas(paper, { 
                         scale: 3, 
                         useCORS: true, 
@@ -585,12 +574,6 @@
                     link.download = fileName + '.jpg';
                     link.href = imgData;
                     link.click();
-
-                    // คืนค่าฟอนต์
-                    textValues.forEach(el => {
-                        el.style.position = '';
-                        el.style.top = '';
-                    });
                 }
             } catch (err) {
                 console.error("Export Error: ", err);
