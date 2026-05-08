@@ -2,192 +2,349 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard | CubicPlus Portal</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ระบบจัดการหลังบ้าน | สวัสดี</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@200;300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Kanit', 'sans-serif'] },
-                    colors: {
-                        primary: { 50: '#eef2ff', 100: '#e0e7ff', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca' }
-                    }
-                }
-            }
-        }
-    </script>
     <style>
-        body { 
-            font-family: 'Kanit', sans-serif; 
-            background-color: #f8fafc;
-            /* Mesh Gradient Background สุดพรีเมียม */
-            background-image: 
-                radial-gradient(at 10% 0%, hsla(228, 100%, 74%, 0.15) 0px, transparent 50%),
-                radial-gradient(at 80% 0%, hsla(189, 100%, 56%, 0.15) 0px, transparent 50%),
-                radial-gradient(at 0% 50%, hsla(355, 100%, 93%, 0.1) 0px, transparent 50%),
-                radial-gradient(at 80% 100%, hsla(240, 100%, 70%, 0.1) 0px, transparent 50%),
-                radial-gradient(at 0% 100%, hsla(22, 100%, 77%, 0.1) 0px, transparent 50%);
-            min-height: 100vh;
-            color: #334155;
-            overflow-x: hidden;
-        }
-
-        .glass-card {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,1);
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .menu-card:hover {
-            transform: translateY(-8px);
-            background: rgba(255, 255, 255, 0.95);
-            box-shadow: 0 30px 60px -15px rgba(99, 102, 241, 0.15);
-            border-color: rgba(99, 102, 241, 0.3);
-        }
-
-        .admin-card {
-            background: linear-gradient(135deg, rgba(255,245,245,0.7) 0%, rgba(255,255,255,0.8) 100%);
-            border: 1px dashed rgba(244,63,94,0.4) !important;
-        }
-
-        .admin-card:hover {
-            border-style: solid !important;
-            border-color: rgba(244,63,94,0.5) !important;
-            box-shadow: 0 30px 60px -15px rgba(244,63,94,0.15);
-        }
-
-        /* Animation ตอนโหลดหน้า */
-        .fade-in-up { opacity: 0; transform: translateY(20px); animation: fadeInUp 0.5s ease-out forwards; }
-        .delay-100 { animation-delay: 0.1s; }
-        .delay-200 { animation-delay: 0.2s; }
-        .delay-300 { animation-delay: 0.3s; }
-        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+        body { font-family: 'Kanit', sans-serif; background: #fcfdfe; color: #334155; min-height: 100vh; }
+        .glass-panel { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.7); box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.05); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* สไตล์การเลือกเวลาแบบ Dropdown */
+        .time-picker-box { background: #f1f5f9; border: 2px solid transparent; transition: all 0.2s ease; text-align: center; border-radius: 1.25rem; overflow: hidden; }
+        .time-picker-box:hover { background: #fff; border-color: #6366f1; transform: translateY(-2px); box-shadow: 0 10px 20px -10px rgba(99, 102, 241, 0.2); }
+        select { -webkit-appearance: none; appearance: none; background: transparent; width: 100%; border: none; padding: 1rem; text-align: center; cursor: pointer; outline: none; font-size: 1.25rem; font-weight: 600; color: #1e293b; }
+        
+        .settings-nav-btn.active { background: white; color: #6366f1; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1); }
     </style>
 </head>
-<body class="p-4 md:p-8 lg:p-12 selection:bg-primary-200 selection:text-primary-900">
+<body class="p-4 md:p-10">
 
-    <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12 fade-in-up">
-        <div class="relative">
-            <h1 class="text-4xl font-bold tracking-tight text-slate-800">Cubic<span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-sky-500">Plus</span> Business</h1>
-            <p class="text-slate-500 font-medium text-sm mt-1">ระบบจัดการหลังบ้านและทรัพยากรองค์กร</p>
+    <div class="max-w-6xl mx-auto mb-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div>
+            <h1 class="text-4xl font-black text-slate-800 tracking-tight">สวัสดี</h1>
+            <p class="text-indigo-500 font-bold text-[10px] uppercase tracking-[0.3em] mt-1">ยินดีต้อนรับสู่ระบบจัดการหลังบ้าน</p>
         </div>
-        
-        <div class="glass-card pl-6 pr-3 py-3 rounded-[2rem] flex items-center gap-5 border border-white">
-            <div class="text-right">
-                <p class="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Logged in as</p>
-                <p id="displayName" class="text-slate-700 font-bold text-sm">กำลังโหลด...</p>
+        <button onclick="location.href='index.html'" class="flex items-center gap-2 px-6 py-3 bg-white border border-slate-100 rounded-2xl text-slate-500 font-bold text-xs uppercase tracking-widest hover:text-indigo-600 shadow-sm transition-all active:scale-95">
+            <i data-lucide="log-out" class="w-4 h-4"></i> ออกจากระบบ
+        </button>
+    </div>
+
+    <div class="max-w-6xl mx-auto">
+        <div class="flex gap-2 p-1.5 bg-slate-200/50 rounded-[2rem] w-fit mb-10">
+            <button id="tabReport" class="tab-btn active px-10 py-3.5 rounded-[1.5rem] text-xs font-bold uppercase tracking-widest transition-all text-slate-400 [&.active]:bg-white [&.active]:text-indigo-600 [&.active]:shadow-md" onclick="openTab(event, 'reportTab'); loadReportData();">รายงานการเช็คอิน</button>
+            <button id="tabSetting" class="tab-btn px-10 py-3.5 rounded-[1.5rem] text-xs font-bold uppercase tracking-widest transition-all text-slate-400 [&.active]:bg-white [&.active]:text-indigo-600 [&.active]:shadow-md" onclick="openTab(event, 'settingTab')">ตั้งค่าระบบ</button>
+        </div>
+
+        <div id="reportTab" class="tab-content active">
+            <div class="glass-panel rounded-[3rem] overflow-hidden">
+                <div class="p-8 border-b border-slate-50 bg-white/50 grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-4 items-end">
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-2">ค้นหาชื่อ</label>
+                        <input list="nameOptions" id="filterName" oninput="applyFilters()" class="w-full p-4 bg-slate-100/50 border-none rounded-2xl text-sm" placeholder="พิมพ์ชื่อ...">
+                        <datalist id="nameOptions"></datalist>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-2">ช่วงเวลา</label>
+                        <select id="filterDateRange" onchange="applyFilters()" class="w-full p-4 bg-slate-100/50 border-none rounded-2xl text-sm">
+                            <option value="all">ทั้งหมด</option>
+                            <option value="today">วันนี้</option>
+                        </select>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-2">สถานที่</label>
+                        <select id="filterLoc" onchange="applyFilters()" class="w-full p-4 bg-slate-100/50 border-none rounded-2xl text-sm">
+                            <option value="">ทุกสถานที่</option>
+                            <option value="OFFICE">OFFICE</option>
+                            <option value="WFH">WFH</option>
+                        </select>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-2">ประเภท</label>
+                        <select id="filterType" onchange="applyFilters()" class="w-full p-4 bg-slate-100/50 border-none rounded-2xl text-sm">
+                            <option value="">ทั้งหมด</option>
+                            <option value="Check In">เข้างาน</option>
+                            <option value="Check Out">ออกงาน</option>
+                        </select>
+                    </div>
+                    <button onclick="exportToCSV()" class="p-4 bg-emerald-500 text-white rounded-2xl font-bold text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg shadow-emerald-100 hover:scale-[1.02] active:scale-95 transition-all">
+                        <i data-lucide="download" class="w-4 h-4"></i> Export CSV
+                    </button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table id="reportTable" class="w-full text-left">
+                        <thead>
+                            <tr class="bg-slate-50/30 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                                <th class="p-8">วันเวลา</th>
+                                <th class="p-8">ชื่อพนักงาน</th>
+                                <th class="p-8">ประเภท</th>
+                                <th class="p-8">สถานที่</th>
+                                <th class="p-8 text-center">บันทึก</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-50"></tbody>
+                    </table>
+                </div>
             </div>
-            <button onclick="logout()" class="w-12 h-12 bg-white border border-slate-100 text-rose-500 rounded-full flex items-center justify-center hover:bg-rose-50 hover:border-rose-200 hover:scale-105 transition-all shadow-sm group">
-                <i data-lucide="power" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
-            </button>
+        </div>
+
+        <div id="settingTab" class="tab-content">
+            <div class="flex flex-col md:flex-row gap-8">
+                <div class="w-full md:w-64 space-y-2">
+                    <button onclick="openSettingSection(event, 'timeConfig')" class="settings-nav-btn active w-full flex items-center gap-4 px-8 py-5 rounded-3xl text-sm font-bold text-slate-500 transition-all">
+                        <i data-lucide="clock" class="w-5 h-5"></i> ตั้งค่าเวลาเข้างาน
+                    </button>
+                    <button onclick="openSettingSection(event, 'staffConfig')" class="settings-nav-btn w-full flex items-center gap-4 px-8 py-5 rounded-3xl text-sm font-bold text-slate-500 transition-all">
+                        <i data-lucide="user-plus" class="w-5 h-5"></i> ลงทะเบียนพนักงาน
+                    </button>
+                </div>
+
+                <div class="flex-1">
+                    <div id="timeConfig" class="setting-section block">
+                        <div class="glass-panel rounded-[3rem] p-10 border-l-[6px] border-indigo-500">
+                            <h3 class="text-2xl font-bold text-slate-800 mb-1">กำหนดเกณฑ์เวลา</h3>
+                            <p class="text-slate-400 text-sm mb-10 italic">บันทึกปัจจุบัน: <span id="curStart" class="text-indigo-600 font-bold">-</span> ถึง <span id="curEnd" class="text-indigo-600 font-bold">-</span></p>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 mb-10">
+                                <div class="space-y-4">
+                                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] ml-2">เวลาเริ่มงาน (เช็คสาย)</label>
+                                    <div class="flex items-center gap-3">
+                                        <div class="time-picker-box flex-1"><select id="startH"></select></div>
+                                        <span class="font-bold text-slate-300">:</span>
+                                        <div class="time-picker-box flex-1"><select id="startM"></select></div>
+                                    </div>
+                                </div>
+                                <div class="space-y-4">
+                                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] ml-2">เวลาเลิกงาน</label>
+                                    <div class="flex items-center gap-3">
+                                        <div class="time-picker-box flex-1"><select id="endH"></select></div>
+                                        <span class="font-bold text-slate-300">:</span>
+                                        <div class="time-picker-box flex-1"><select id="endM"></select></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button id="saveConfigBtn" onclick="saveSettings()" class="w-full py-5 bg-indigo-600 text-white rounded-[1.8rem] font-bold text-xs uppercase tracking-widest shadow-xl shadow-indigo-100 hover:bg-indigo-700 active:scale-95 transition-all">บันทึกเกณฑ์เวลา</button>
+                        </div>
+                    </div>
+
+                    <div id="staffConfig" class="setting-section hidden">
+                        <div class="glass-panel rounded-[3rem] p-10">
+                            <h3 class="text-2xl font-bold text-slate-800 mb-8">ข้อมูลพนักงาน</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 text-sm">
+                                <input type="text" id="newN" class="p-5 bg-slate-100/50 border-none rounded-2xl" placeholder="ชื่อ-นามสกุล">
+                                <select id="newR" class="p-5 bg-slate-100/50 border-none rounded-2xl appearance-none">
+                                    <option value="User">ทั่วไป (User)</option>
+                                    <option value="Admin">ผู้ดูแล (Admin)</option>
+                                </select>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 text-sm">
+                                <input type="text" id="newU" class="p-5 bg-slate-100/50 border-none rounded-2xl" placeholder="Username">
+                                <input type="password" id="newP" class="p-5 bg-slate-100/50 border-none rounded-2xl" placeholder="Password">
+                            </div>
+                            <button id="addBtn" onclick="handleAddUser()" class="w-full py-5 bg-slate-900 text-white rounded-[1.8rem] font-bold text-xs uppercase tracking-widest shadow-xl active:scale-95 transition-all">เพิ่มพนักงาน</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="max-w-6xl mx-auto space-y-8">
-        
-        <div class="mb-10 fade-in-up delay-100">
-            <h2 class="text-2xl md:text-3xl font-bold text-slate-800 tracking-tight">สวัสดีคุณ <span id="welcomeName" class="text-primary-600">...</span> 👋</h2>
-            <p class="text-slate-500 mt-1">ยินดีต้อนรับสู่ระบบ เลือกเมนูที่คุณต้องการใช้งานด้านล่างได้เลย</p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            
-            <a href="checkin.html" class="glass-card menu-card p-8 md:p-10 rounded-[2.5rem] group fade-in-up delay-100 relative overflow-hidden">
-                <div class="absolute -top-10 -right-10 w-32 h-32 bg-emerald-100 rounded-full blur-3xl opacity-50 group-hover:opacity-80 transition-opacity"></div>
-                <div class="w-16 h-16 bg-emerald-50 text-emerald-500 rounded-[1.5rem] flex items-center justify-center mb-8 group-hover:scale-110 transition-transform shadow-sm border border-emerald-100">
-                    <i data-lucide="map-pin" class="w-7 h-7"></i>
-                </div>
-                <h3 class="text-xl font-bold text-slate-800 mb-2 tracking-tight">Check-in</h3>
-                <p class="text-slate-500 text-sm leading-relaxed">ลงเวลาเข้า-ออกงาน และบันทึกสถานที่ทำงานรายวันอย่างแม่นยำ</p>
-                <div class="mt-8 flex items-center text-emerald-600 font-semibold text-sm opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all">
-                    เข้าใช้งานระบบ <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
-                </div>
-            </a>
-
-            <a href="#" class="glass-card menu-card p-8 md:p-10 rounded-[2.5rem] group fade-in-up delay-200 relative overflow-hidden">
-                <div class="absolute -top-10 -right-10 w-32 h-32 bg-indigo-100 rounded-full blur-3xl opacity-50 group-hover:opacity-80 transition-opacity"></div>
-                <div class="w-16 h-16 bg-indigo-50 text-indigo-500 rounded-[1.5rem] flex items-center justify-center mb-8 group-hover:scale-110 transition-transform shadow-sm border border-indigo-100">
-                    <i data-lucide="wallet" class="w-7 h-7"></i>
-                </div>
-                <h3 class="text-xl font-bold text-slate-800 mb-2 tracking-tight">แจ้งเบิกค่าใช้จ่าย</h3>
-                <p class="text-slate-500 text-sm leading-relaxed">ส่งคำขอเบิกค่าเดินทาง ค่าใช้จ่ายบริษัท และติดตามสถานะการอนุมัติ</p>
-                <div class="mt-8 flex items-center text-indigo-600 font-semibold text-sm opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all">
-                    เข้าใช้งานระบบ <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
-                </div>
-            </a>
-
-            <a href="#" class="glass-card menu-card p-8 md:p-10 rounded-[2.5rem] group fade-in-up delay-200 relative overflow-hidden">
-                <div class="absolute -top-10 -right-10 w-32 h-32 bg-amber-100 rounded-full blur-3xl opacity-50 group-hover:opacity-80 transition-opacity"></div>
-                <div class="w-16 h-16 bg-amber-50 text-amber-500 rounded-[1.5rem] flex items-center justify-center mb-8 group-hover:scale-110 transition-transform shadow-sm border border-amber-100">
-                    <i data-lucide="file-type-2" class="w-7 h-7"></i>
-                </div>
-                <h3 class="text-xl font-bold text-slate-800 mb-2 tracking-tight">PDF to JPG</h3>
-                <p class="text-slate-500 text-sm leading-relaxed">เครื่องมือจัดการเอกสาร แปลงไฟล์ออนไลน์ได้ทันที รวดเร็วและปลอดภัย</p>
-                <div class="mt-8 flex items-center text-amber-600 font-semibold text-sm opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all">
-                    เข้าใช้งานเครื่องมือ <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
-                </div>
-            </a>
-
-            <a href="admin.html" id="adminMenu" class="glass-card menu-card admin-card p-8 md:p-10 rounded-[2.5rem] group hidden fade-in-up delay-300 relative overflow-hidden">
-                <div class="absolute -top-10 -right-10 w-32 h-32 bg-rose-100 rounded-full blur-3xl opacity-50 group-hover:opacity-80 transition-opacity"></div>
-                <div class="absolute top-6 right-6">
-                    <span class="px-3 py-1 bg-rose-100 text-rose-600 text-[10px] font-bold uppercase tracking-widest rounded-full">Admin Only</span>
-                </div>
-                <div class="w-16 h-16 bg-rose-50 text-rose-500 rounded-[1.5rem] flex items-center justify-center mb-8 group-hover:scale-110 transition-transform shadow-sm border border-rose-100">
-                    <i data-lucide="settings-2" class="w-7 h-7"></i>
-                </div>
-                <h3 class="text-xl font-bold text-slate-800 mb-2 tracking-tight">Admin Panel</h3>
-                <p class="text-slate-500 text-sm leading-relaxed">ระบบจัดการข้อมูลสมาชิก ตั้งค่าเกณฑ์เวลา และดาวน์โหลดรายงานภาพรวม</p>
-                <div class="mt-8 flex items-center text-rose-600 font-semibold text-sm opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all">
-                    เข้าสู่หลังบ้าน <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
-                </div>
-            </a>
+    <div id="customAlert" class="fixed inset-0 z-[100] hidden bg-slate-900/10 backdrop-blur-md items-center justify-center p-4">
+        <div class="bg-white w-full max-w-sm rounded-[2.5rem] p-10 text-center shadow-2xl">
+            <div id="alertIcon" class="w-16 h-16 bg-indigo-50 text-indigo-500 rounded-full flex items-center justify-center mx-auto mb-6"></div>
+            <h3 id="alertTitle" class="text-xl font-bold text-slate-800 mb-2"></h3>
+            <p id="alertMsg" class="text-slate-500 text-sm mb-8"></p>
+            <button onclick="closeAlert()" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold text-xs tracking-widest transition-all active:scale-95">ตกลง</button>
         </div>
     </div>
 
     <script>
-        window.onload = function() {
-            lucide.createIcons();
-            
-            const isLoggedIn = sessionStorage.getItem("isLoggedIn");
-            const role = sessionStorage.getItem("userRole") || sessionStorage.getItem("role");
-            const name = sessionStorage.getItem("userName");
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxCxgtJBdY2GXJDY90emZyuw6rLP_00-yUBi7YBdLV3SQ5yn6g_8JaJCWHNUj_N036H/exec";
+        let rawData = [];
 
-            // ตรวจสอบความปลอดภัย ถ้าไม่ได้ล็อกอินให้เด้งกลับหน้า index
-            if (isLoggedIn !== "true") {
-                window.location.href = "index.html"; 
-                return;
-            }
-
-            // แสดงชื่อผู้ใช้ใน Header และข้อความต้อนรับ
-            const displayUser = name ? name : "User Account";
-            document.getElementById("displayName").innerText = displayUser;
-            document.getElementById("welcomeName").innerText = displayUser;
-
-            // ตรวจสอบสิทธิ์ Admin เพื่อเปิดปุ่มจัดการระบบ
-            if (role && role.toLowerCase().trim() === "admin") {
-                const adminBtn = document.getElementById("adminMenu");
-                adminBtn.classList.remove("hidden");
-                adminBtn.classList.add("block");
-            }
-        };
-
-        function logout() {
-            if (confirm("ต้องการออกจากระบบใช่หรือไม่?")) {
-                sessionStorage.clear();
-                window.location.href = "index.html";
-            }
+        function populateTimeDropdowns() {
+            const hSelects = ['startH', 'endH'], mSelects = ['startM', 'endM'];
+            hSelects.forEach(id => {
+                let html = "";
+                for(let i=0; i<24; i++) {
+                    const val = i.toString().padStart(2, '0');
+                    html += `<option value="${val}">${val}</option>`;
+                }
+                document.getElementById(id).innerHTML = html;
+            });
+            mSelects.forEach(id => {
+                let html = "";
+                for(let i=0; i<60; i+=5) {
+                    const val = i.toString().padStart(2, '0');
+                    html += `<option value="${val}">${val}</option>`;
+                }
+                document.getElementById(id).innerHTML = html;
+            });
         }
-    </script>
 
+        async function loadCurrentConfig() {
+            try {
+                const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "fetchConfig" }) });
+                const config = await response.json();
+                const start = config.StartTime || "09:00";
+                const end = config.EndTime || "18:00";
+                
+                document.getElementById('curStart').innerText = start;
+                document.getElementById('curEnd').innerText = end;
+
+                const [sh, sm] = start.split(':');
+                const [eh, em] = end.split(':');
+                document.getElementById('startH').value = sh;
+                document.getElementById('startM').value = sm;
+                document.getElementById('endH').value = eh;
+                document.getElementById('endM').value = em;
+            } catch (e) { console.error("Config Load Error"); }
+        }
+
+        async function loadReportData() {
+            const tbody = document.querySelector("#reportTable tbody");
+            tbody.innerHTML = "<tr><td colspan='5' class='p-12 text-center text-slate-300 italic'>กำลังโหลดข้อมูล...</td></tr>";
+            try {
+                const resp = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "fetchData" }) });
+                rawData = await resp.json();
+                updateNameDatalist();
+                applyFilters();
+            } catch (e) { showAlert("แจ้งเตือน", "ไม่สามารถเชื่อมต่อข้อมูลได้", "alert-triangle"); }
+        }
+
+        function renderTable(data) {
+            const tbody = document.querySelector("#reportTable tbody");
+            const policyStart = document.getElementById('curStart').innerText;
+            tbody.innerHTML = data.length === 0 ? "<tr><td colspan='5' class='p-12 text-center text-slate-400 italic'>ไม่พบข้อมูล</td></tr>" : "";
+            
+            data.forEach(d => {
+                const dateObj = new Date(d.Timestamp);
+                const timeStr = dateObj.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+                const isLate = (d.Type === 'Check In' && timeStr > policyStart);
+                const lateBadge = isLate ? `<span class="ml-2 px-2 py-0.5 bg-red-50 text-red-500 text-[9px] font-black rounded-md border border-red-100 italic">สาย</span>` : '';
+
+                tbody.insertAdjacentHTML('beforeend', `
+                    <tr class="hover:bg-slate-50 transition-colors border-b border-slate-50">
+                        <td class="p-8 text-[11px] font-medium text-slate-500">${dateObj.toLocaleString('th-TH')}</td>
+                        <td class="p-8 font-bold text-slate-700">${d.Name || "-"}</td>
+                        <td class="p-8 text-[10px] font-bold">
+                            <span class="px-3 py-1 rounded-full uppercase ${d.Type === 'Check In' ? 'text-indigo-600 bg-indigo-50' : 'text-slate-400 bg-slate-50'}">${d.Type === 'Check In' ? 'เข้างาน' : 'ออกงาน'}</span>
+                            ${lateBadge}
+                        </td>
+                        <td class="p-8 text-xs font-bold text-slate-400">${d.Location || "-"}</td>
+                        <td class="p-8 text-center text-indigo-300">
+                            <button onclick="showAlert('รายละเอียด', '${d["WorkSummary/Memo"] || "-"}', 'file-text')"><i data-lucide="eye" class="w-5 h-5 mx-auto"></i></button>
+                        </td>
+                    </tr>
+                `);
+            });
+            lucide.createIcons();
+        }
+
+        async function saveSettings() {
+            const start = `${document.getElementById('startH').value}:${document.getElementById('startM').value}`;
+            const end = `${document.getElementById('endH').value}:${document.getElementById('endM').value}`;
+            const btn = document.getElementById('saveConfigBtn');
+            btn.disabled = true; btn.innerText = "กำลังบันทึก...";
+            try {
+                const resp = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "saveConfig", startTime: start, endTime: end }) });
+                const res = await resp.json();
+                if (res.status === "success") {
+                    showAlert("สำเร็จ", "บันทึกเวลาใหม่เรียบร้อยแล้ว", "check-circle");
+                    await loadCurrentConfig(); 
+                }
+            } catch (e) { showAlert("ล้มเหลว", "เกิดข้อผิดพลาด", "x-circle"); }
+            finally { btn.disabled = false; btn.innerText = "บันทึกเกณฑ์เวลา"; }
+        }
+
+        function openTab(evt, tabId) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            evt.currentTarget.classList.add('active');
+            lucide.createIcons();
+        }
+
+        function openSettingSection(evt, sectionId) {
+            document.querySelectorAll('.setting-section').forEach(s => s.classList.add('hidden'));
+            document.querySelectorAll('.settings-nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(sectionId).classList.remove('hidden');
+            evt.currentTarget.classList.add('active');
+            lucide.createIcons();
+        }
+
+        function applyFilters() {
+            const nameF = document.getElementById('filterName').value.toLowerCase();
+            const locF = document.getElementById('filterLoc').value;
+            const typeF = document.getElementById('filterType').value;
+            const dateRangeF = document.getElementById('filterDateRange').value;
+            const now = new Date();
+            const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+            const filtered = rawData.filter(d => {
+                const itemDate = new Date(d.Timestamp);
+                const dateMatch = dateRangeF === "today" ? itemDate >= startOfToday : true;
+                const nameMatch = (d.Name || "").toLowerCase().includes(nameF);
+                const locMatch = !locF || d.Location === locF;
+                const typeMatch = !typeF || d.Type === typeF;
+                return dateMatch && nameMatch && locMatch && typeMatch;
+            });
+            renderTable(filtered);
+        }
+
+        function updateNameDatalist() {
+            const list = document.getElementById('nameOptions');
+            const uniqueNames = [...new Set(rawData.map(d => d.Name))];
+            list.innerHTML = uniqueNames.map(name => `<option value="${name}">`).join('');
+        }
+
+        async function handleAddUser() {
+            const u = document.getElementById('newU').value, p = document.getElementById('newP').value, n = document.getElementById('newN').value, r = document.getElementById('newR').value;
+            if (!u || !p || !n) return showAlert("ข้อมูลไม่ครบ", "กรุณาระบุข้อมูลพนักงาน", "alert-circle");
+            const btn = document.getElementById('addBtn');
+            btn.disabled = true;
+            try {
+                const resp = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "addUser", newUsername: u, newPassword: p, newName: n, newRole: r }) });
+                const res = await resp.json();
+                if (res.status === "added") {
+                    showAlert("สำเร็จ", `เพิ่มพนักงาน ${n} เรียบร้อย`, "user-check");
+                    document.getElementById('newU').value = ''; document.getElementById('newP').value = ''; document.getElementById('newN').value = '';
+                }
+            } catch (e) { showAlert("ผิดพลาด", "บันทึกไม่ได้", "x-circle"); }
+            finally { btn.disabled = false; }
+        }
+
+        function showAlert(title, msg, icon = "info") {
+            const modal = document.getElementById('customAlert');
+            document.getElementById('alertTitle').innerText = title;
+            document.getElementById('alertMsg').innerText = msg;
+            document.getElementById('alertIcon').innerHTML = `<i data-lucide="${icon}" class="w-8 h-8"></i>`;
+            modal.style.display = 'flex';
+            lucide.createIcons();
+        }
+
+        function closeAlert() { document.getElementById('customAlert').style.display = 'none'; }
+
+        function exportToCSV() {
+            if (rawData.length === 0) return;
+            let csv = "data:text/csv;charset=utf-8,\uFEFFวันเวลา,ชื่อ,ประเภท,สถานที่,บันทึก\n";
+            rawData.forEach(d => { csv += `"${d.Timestamp}","${d.Name}","${d.Type === 'Check In' ? 'เข้างาน' : 'ออกงาน'}","${d.Location || "-"}","${d["WorkSummary/Memo"] || "-"}"\n`; });
+            const link = document.createElement("a");
+            link.href = encodeURI(csv);
+            link.download = `Attendance_Report.csv`;
+            link.click();
+        }
+
+        window.onload = async () => { 
+            populateTimeDropdowns();
+            lucide.createIcons(); 
+            await loadCurrentConfig(); 
+            loadReportData(); 
+        };
+    </script>
 </body>
 </html>
