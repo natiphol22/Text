@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Synology Support - AI Smart Search</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -67,6 +68,52 @@
             box-shadow: 0 0 30px rgba(0,0,0,0.1);
         }
         
+        /* --- Floating Back Button --- */
+        .btn-floating-back {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text);
+            background: var(--panel-glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            padding: 10px 16px;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        .btn-floating-back:hover {
+            color: white;
+            background: var(--ai-glow);
+            border-color: var(--ai-glow);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(14, 165, 233, 0.3);
+        }
+        .btn-floating-back:active {
+            transform: scale(0.95);
+        }
+        /* Mobile adjustment to avoid overlapping with header icons */
+        @media (max-width: 1000px) {
+            .btn-floating-back {
+                top: auto;
+                bottom: 80px;
+                right: 16px;
+                padding: 12px;
+                border-radius: 50%;
+            }
+            .btn-floating-back span {
+                display: none;
+            }
+        }
+
         /* --- Header --- */
         .header { 
             padding: 12px 16px; 
@@ -288,6 +335,11 @@
     </style>
 </head>
 <body>
+
+<button onclick="location.href='dashboard.html'" class="btn-floating-back" title="กลับหน้าหลัก">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg> 
+    <span>กลับหน้าหลัก</span>
+</button>
 
 <div class="app">
     <div class="header">
