@@ -74,11 +74,10 @@
 
     <div class="w-full md:w-[380px] h-screen flex flex-col border-r border-white/5 bg-onyx no-print">
         
-        <div class="p-6 border-b border-white/5 flex items-center justify-between">
-            <h1 class="text-white font-bold text-lg tracking-tight">คำนวณค่าเดินทาง</h1>
-            <button onclick="location.href='dashboard.html'" class="flex items-center gap-2 text-[11px] font-bold text-slate-400 hover:text-gold transition-colors px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/5 active:scale-95">
-                <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> กลับหน้าหลัก
-            </button>
+        <div class="p-6 border-b border-white/5">
+            <h1 class="text-white font-bold text-lg tracking-tight flex items-center gap-2">
+                <i data-lucide="calculator" class="w-5 h-5 text-gold"></i> คำนวณค่าเดินทาง
+            </h1>
         </div>
 
         <div class="p-6 space-y-6 flex-grow overflow-y-auto custom-scroll">
@@ -138,19 +137,27 @@
                     <input type="number" id="rate" value="3.66" step="0.01" oninput="updateUI()" class="luxury-input !text-gold font-bold">
                 </div>
                 <div class="flex items-end">
-                    <button onclick="openMaps()" class="w-full h-[40px] border border-gold/30 rounded-lg text-[10px] font-bold text-gold hover:bg-gold hover:text-black transition-all">แผนที่</button>
+                    <button onclick="openMaps()" class="w-full h-[40px] border border-gold/30 rounded-lg text-[10px] font-bold text-gold hover:bg-gold hover:text-black transition-all flex items-center justify-center gap-1.5">
+                        <i data-lucide="map" class="w-3.5 h-3.5"></i> แผนที่
+                    </button>
                 </div>
             </div>
         </div>
 
         <div class="p-6 border-t border-white/5">
-            <button onclick="window.print()" class="w-full py-4 bg-gradient-to-r from-gold to-darkGold text-black rounded-xl font-bold text-sm shadow-xl hover:brightness-110 transition-all">
+            <button onclick="window.print()" class="w-full py-4 bg-gradient-to-r from-gold to-darkGold text-black rounded-xl font-bold text-sm shadow-[0_0_20px_rgba(197,160,89,0.2)] hover:shadow-[0_0_30px_rgba(197,160,89,0.4)] hover:-translate-y-0.5 transition-all">
                 พิมพ์รายงาน (PDF)
             </button>
         </div>
     </div>
 
-    <div id="preview-pane" class="flex-1 bg-black p-8 md:p-12 overflow-y-auto flex justify-center items-start">
+    <div id="preview-pane" class="flex-1 bg-black p-8 md:p-12 overflow-y-auto flex justify-center items-start relative">
+        
+        <button onclick="location.href='dashboard.html'" class="no-print absolute top-6 right-6 z-50 flex items-center gap-2 text-xs font-bold text-slate-300 hover:text-gold transition-all px-4 py-2.5 rounded-xl bg-onyx/60 hover:bg-onyx backdrop-blur-md border border-white/10 hover:border-gold/30 active:scale-95 shadow-xl">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i> 
+            กลับหน้าหลัก
+        </button>
+
         <div class="paper w-full max-w-[580px] rounded-[2.5rem] p-10 relative">
             
             <div class="flex justify-between items-start mb-6 border-b border-gold/20 pb-6">
