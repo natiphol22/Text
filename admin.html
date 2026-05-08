@@ -369,23 +369,45 @@
             applyFilters();
         }
 
+        // --- ระบบดึงข้อมูลเวลาแบบทนทาน (Robust Fetch) ---
         async function loadCurrentConfig() {
+            let start = "09:00"; 
+            let end = "18:00";
+            
+            // แสดงสถานะกำลังโหลด
+            document.getElementById('curStart').innerHTML = `<i data-lucide="loader-2" class="w-3 h-3 animate-spin inline"></i>`;
+            document.getElementById('curEnd').innerHTML = `<i data-lucide="loader-2" class="w-3 h-3 animate-spin inline"></i>`;
+            lucide.createIcons();
+
             try {
-                const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "fetchConfig" }) });
-                const config = await response.json();
-                const start = config.StartTime || "09:00";
-                const end = config.EndTime || "18:00";
+                const response = await fetch(WEB_APP_URL, { 
+                    method: 'POST', 
+                    body: JSON.stringify({ action: "fetchConfig" }) 
+                });
                 
+                // อ่านข้อมูลเป็น Text เพื่อความชัวร์ ป้องกันปัญหา Parse JSON จากฝั่ง Google Script
+                const textResult = await response.text(); 
+                
+                if(textResult) {
+                    const config = JSON.parse(textResult);
+                    if (config.StartTime) start = config.StartTime;
+                    if (config.EndTime) end = config.EndTime;
+                }
+            } catch (e) { 
+                console.warn("ไม่สามารถดึงข้อมูล Config ได้ ระบบจะใช้ค่าเริ่มต้นแทน:", e);
+            } finally {
+                // อัปเดตข้อมูลบนหน้าจอ
                 document.getElementById('curStart').innerText = start;
                 document.getElementById('curEnd').innerText = end;
 
+                // หั่นเวลาใส่ใน Input
                 const [sh, sm] = start.split(':');
                 const [eh, em] = end.split(':');
                 document.getElementById('startH').value = sh;
                 document.getElementById('startM').value = sm;
                 document.getElementById('endH').value = eh;
                 document.getElementById('endM').value = em;
-            } catch (e) { console.error("Config Load Error"); }
+            }
         }
 
         async function loadReportData() {
