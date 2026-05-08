@@ -1,107 +1,153 @@
 <!DOCTYPE html>
-
 <html lang="th">
-
 <head>
-
     <meta charset="UTF-8">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Business Portal</title>
-
-    <style>
-
-        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f5f5f5; }
-
-        .login-box { border: 1px solid #ddd; padding: 30px; border-radius: 12px; width: 320px; background: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-
-        input { width: 100%; margin-bottom: 15px; padding: 12px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px; }
-
-        button { width: 100%; padding: 12px; background-color: #007bff; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
-
-        button:hover { background-color: #0056b3; }
-
-    </style>
-
-</head>
-
-<body>
-
-
-
-<div class="login-box">
-
-    <h2 style="text-align: center;">Login</h2>
-
-    <input type="text" id="user" placeholder="Username">
-
-    <input type="password" id="pass" placeholder="Password">
-
-    <button onclick="handleLogin()">เข้าสู่ระบบ</button>
-
-</div>
-
-
-
-<script>
-
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzehwXrrfuioHK68BXQGLpKyBPM5ElXZKgRm0o55yzwXgtx_YGkItjkM090zceA_t7Jcg/exec"; // วาง URL จาก Google Apps Script
-
-
-
-    async function handleLogin() {
-
-        const payload = {
-
-            action: "login",
-
-            username: document.getElementById('user').value,
-
-            password: document.getElementById('pass').value
-
-        };
-
-
-
-        try {
-
-            const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
-
-            const result = await response.json();
-
-
-
-            if (result.status === "success") {
-
-                // เก็บข้อมูลชั่วคราวไว้ใน Browser
-
-                sessionStorage.setItem("isLoggedIn", "true");
-
-                sessionStorage.setItem("userName", result.name);
-
-                sessionStorage.setItem("userRole", result.role);
-
-                
-
-                // ย้ายไปหน้า Dashboard
-
-                window.location.href = "dashboard.html";
-
-            } else {
-
-                alert("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง");
-
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Kanit', 'sans-serif'] },
+                    colors: {
+                        primary: { 50: '#eef2ff', 100: '#e0e7ff', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca' }
+                    }
+                }
             }
-
-        } catch (err) {
-
-            alert("เชื่อมต่อไม่สำเร็จ");
-
+        }
+    </script>
+    
+    <style>
+        body { 
+            font-family: 'Kanit', sans-serif; 
+            background-color: #f8fafc;
+            /* พื้นหลังไล่สีแบบพรีเมียม */
+            background-image: 
+                radial-gradient(at 10% 0%, hsla(228, 100%, 74%, 0.15) 0px, transparent 50%),
+                radial-gradient(at 80% 0%, hsla(189, 100%, 56%, 0.15) 0px, transparent 50%),
+                radial-gradient(at 0% 50%, hsla(355, 100%, 93%, 0.1) 0px, transparent 50%),
+                radial-gradient(at 80% 100%, hsla(240, 100%, 70%, 0.1) 0px, transparent 50%),
+                radial-gradient(at 0% 100%, hsla(22, 100%, 77%, 0.1) 0px, transparent 50%);
+            min-height: 100vh;
+            color: #334155;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
         }
 
-    }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,1);
+        }
 
-</script>
+        .input-glass {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.02);
+            transition: all 0.3s ease;
+        }
+        .input-glass:focus-within {
+            background: #fff;
+            border-color: #818cf8;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+        
+        .fade-in-up { opacity: 0; transform: translateY(20px); animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="selection:bg-primary-200 selection:text-primary-900">
 
+    <div class="glass-card w-full max-w-[420px] rounded-[2.5rem] p-8 md:p-10 relative overflow-hidden fade-in-up">
+        <div class="absolute -top-20 -right-20 w-48 h-48 bg-primary-200 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
+        <div class="absolute -bottom-20 -left-20 w-48 h-48 bg-cyan-200 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
+        
+        <div class="relative z-10">
+            <div class="text-center mb-8">
+                <img src="LOGO.png" alt="CubicPlus Logo" class="h-20 mx-auto drop-shadow-md mb-4 object-contain">
+                <h2 class="text-2xl font-bold text-slate-800 tracking-tight">เข้าสู่ระบบ</h2>
+                <p class="text-slate-500 text-sm mt-1">Cubic<span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-sky-500 font-semibold">Plus</span> Business Portal</p>
+            </div>
+
+            <div class="space-y-5">
+                <div class="space-y-1.5">
+                    <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">ชื่อผู้ใช้งาน</label>
+                    <div class="input-glass flex items-center px-4 py-3.5 rounded-2xl relative group">
+                        <i data-lucide="user" class="w-5 h-5 text-slate-400 group-focus-within:text-primary-500 transition-colors"></i>
+                        <input type="text" id="user" placeholder="Username" class="w-full bg-transparent border-none outline-none ml-3 text-sm font-medium text-slate-700 placeholder:text-slate-400 placeholder:font-normal">
+                    </div>
+                </div>
+
+                <div class="space-y-1.5">
+                    <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">รหัสผ่าน</label>
+                    <div class="input-glass flex items-center px-4 py-3.5 rounded-2xl relative group">
+                        <i data-lucide="lock" class="w-5 h-5 text-slate-400 group-focus-within:text-primary-500 transition-colors"></i>
+                        <input type="password" id="pass" placeholder="••••••••" class="w-full bg-transparent border-none outline-none ml-3 text-sm font-medium text-slate-700 placeholder:text-slate-400 placeholder:font-normal">
+                    </div>
+                </div>
+
+                <button onclick="handleLogin()" class="w-full mt-2 py-4 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 text-white rounded-2xl font-bold text-sm shadow-[0_10px_20px_rgba(99,102,241,0.25)] hover:shadow-[0_15px_30px_rgba(99,102,241,0.35)] hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all flex items-center justify-center gap-2">
+                    เข้าสู่ระบบ <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </button>
+            </div>
+            
+            <div class="mt-8 text-center border-t border-slate-200/60 pt-6">
+                <p class="text-xs text-slate-400">พบปัญหาการใช้งาน? <a href="#" class="text-primary-500 font-semibold hover:underline">ติดต่อผู้ดูแลระบบ</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // สร้างไอคอนของ Lucide
+        lucide.createIcons();
+
+        // UX: เพิ่มการกด Enter เพื่อล็อคอิน
+        document.addEventListener("keydown", function(event) {
+            if (event.key === "Enter") {
+                handleLogin();
+            }
+        });
+
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzehwXrrfuioHK68BXQGLpKyBPM5ElXZKgRm0o55yzwXgtx_YGkItjkM090zceA_t7Jcg/exec"; // วาง URL จาก Google Apps Script
+
+        async function handleLogin() {
+            const payload = {
+                action: "login",
+                username: document.getElementById('user').value,
+                password: document.getElementById('pass').value
+            };
+
+            try {
+                const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
+                const result = await response.json();
+
+                if (result.status === "success") {
+                    // เก็บข้อมูลชั่วคราวไว้ใน Browser
+                    sessionStorage.setItem("isLoggedIn", "true");
+                    sessionStorage.setItem("userName", result.name);
+                    sessionStorage.setItem("userRole", result.role);
+                    
+                    // ย้ายไปหน้า Dashboard
+                    window.location.href = "dashboard.html";
+                } else {
+                    alert("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง");
+                }
+            } catch (err) {
+                alert("เชื่อมต่อไม่สำเร็จ");
+            }
+        }
+    </script>
 </body>
-
 </html>
