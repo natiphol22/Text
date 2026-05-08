@@ -98,6 +98,7 @@
             @page { size: A4; margin: 0; }
             body { background: white; margin: 0; padding: 0; overflow: visible; }
             .glass-panel { display: none !important; }
+            .no-print { display: none !important; }
             .preview-container { 
                 background: none; padding: 0; margin: 0; width: 100%; display: block; 
             }
@@ -261,8 +262,13 @@
         </div>
     </div>
 
+    <div class="flex-1 preview-container relative" id="print-area">
+        
+        <button onclick="location.href='dashboard.html'" class="no-print absolute top-6 right-6 z-50 flex items-center gap-2 text-xs font-bold text-slate-300 hover:text-cyan-400 transition-all px-4 py-2.5 rounded-xl bg-slate-900/40 hover:bg-slate-800/80 backdrop-blur-md border border-white/10 hover:border-cyan-500/30 active:scale-95 shadow-xl">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg> 
+            กลับหน้าหลัก
+        </button>
 
-    <div class="flex-1 preview-container" id="print-area">
         <div class="a4-paper" id="a4-document">
             
             <div style="display: flex; align-items: center; justify-content: flex-start; margin-left: 5%; margin-bottom: 25px;">
