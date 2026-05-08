@@ -56,7 +56,7 @@
 <body class="bg-black text-slate-200 h-screen overflow-hidden flex">
 
     <div class="w-[450px] h-full flex flex-col glass-panel z-10 shadow-2xl relative">
-        <div class="p-6 border-b border-white/10 relative overflow-hidden flex-shrink-0 flex justify-between items-start">
+        <div class="p-6 border-b border-white/10 relative overflow-hidden flex-shrink-0">
             <div class="absolute top-0 right-0 w-32 h-32 bg-cyan-500/20 rounded-full blur-3xl"></div>
             <div class="relative z-10">
                 <h1 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-emerald-400 flex items-center gap-2">
@@ -65,11 +65,6 @@
                 </h1>
                 <p class="text-xs text-slate-400 mt-1">Batch Conversion System (Max 5 Files)</p>
             </div>
-            
-            <button onclick="location.href='dashboard.html'" class="relative z-10 flex items-center gap-1.5 text-[11px] font-bold text-slate-400 hover:text-cyan-400 transition-colors px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/5 active:scale-95 shrink-0 mt-1">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg> 
-                กลับหน้าหลัก
-            </button>
         </div>
 
         <div class="p-6 overflow-y-auto flex-1 space-y-6">
@@ -111,16 +106,22 @@
     </div>
 
     <div class="flex-1 preview-container flex items-center justify-center relative">
+        
+        <button onclick="location.href='dashboard.html'" class="absolute top-6 right-6 z-50 flex items-center gap-2 text-xs font-bold text-slate-300 hover:text-cyan-400 transition-all px-4 py-2.5 rounded-xl bg-slate-900/40 hover:bg-slate-800/80 backdrop-blur-md border border-white/10 hover:border-cyan-500/30 active:scale-95 shadow-xl">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg> 
+            กลับหน้าหลัก
+        </button>
+
         <div class="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none">
             <svg class="w-96 h-96" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
         </div>
         
         <div class="text-center z-10 space-y-4 max-w-md" id="status-panel">
-            <div class="w-20 h-20 bg-cyan-500/10 rounded-full flex items-center justify-center mx-auto border border-cyan-500/30">
+            <div class="w-20 h-20 bg-cyan-500/10 rounded-full flex items-center justify-center mx-auto border border-cyan-500/30 shadow-[0_0_30px_rgba(6,182,212,0.15)]">
                 <svg class="w-10 h-10 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
             </div>
-            <h2 class="text-2xl font-bold text-white">ระบบพร้อมใช้งาน</h2>
-            <p class="text-slate-400 text-sm leading-relaxed">
+            <h2 class="text-2xl font-bold text-white tracking-tight">ระบบพร้อมใช้งาน</h2>
+            <p class="text-slate-400 text-sm leading-relaxed bg-black/20 p-4 rounded-2xl border border-white/5">
                 1. ทยอยอัปโหลดไฟล์เพิ่มได้เรื่อยๆ สูงสุด 5 ไฟล์<br>
                 2. เปลี่ยนชื่อไฟล์ตามต้องการในแถบด้านซ้าย<br>
                 3. กดดาวน์โหลด ระบบจะรวมทุกไฟล์เป็น .zip ให้อัตโนมัติ
@@ -131,23 +132,18 @@
     <script>
         let selectedFiles = [];
 
-        // 1. จัดการเมื่อผู้ใช้อัปโหลดไฟล์ (แก้ไขให้สะสมไฟล์ได้)
+        // 1. จัดการเมื่อผู้ใช้อัปโหลดไฟล์
         document.getElementById('pdf-upload').addEventListener('change', function(e) {
-            // ดึงไฟล์ที่พึ่งอัปโหลดเข้ามาใหม่
             let newFiles = Array.from(e.target.files).filter(f => f.type === 'application/pdf');
 
-            // นำไฟล์ใหม่ไปต่อท้ายไฟล์เดิมที่มีอยู่
             selectedFiles = [...selectedFiles, ...newFiles];
 
-            // เช็คว่าเกิน 5 ไฟล์หรือไม่ ถ้าเกินให้ตัดทิ้ง
             if (selectedFiles.length > 5) {
                 alert('สะสมได้สูงสุด 5 ไฟล์ครับ ระบบจะตัดไฟล์ที่เกินออกให้โดยอัตโนมัติ');
                 selectedFiles = selectedFiles.slice(0, 5);
             }
 
-            // ล้างค่า input เพื่อให้สามารถกดเลือกไฟล์เดิมซ้ำได้ในกรณีที่ลบออกแล้วเพิ่มใหม่
             e.target.value = '';
-
             updateUI();
         });
 
