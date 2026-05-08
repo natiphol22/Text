@@ -4,126 +4,240 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Check-in | CubicPlus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@200;300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Kanit', 'sans-serif'] },
+                    colors: {
+                        primary: { 50: '#eef2ff', 100: '#e0e7ff', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca' }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        body { font-family: 'Kanit', sans-serif; background: #fcfdfe; min-height: 100vh; overflow-x: hidden; }
-        .glass-panel { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.7); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.03); }
-        .loader-overlay { position: fixed; inset: 0; background: #fff; z-index: 999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s ease; }
-        .spinner { width: 45px; height: 45px; border: 4px solid #f3f3f3; border-top: 4px solid #6366f1; border-radius: 50%; animation: spin 1s linear infinite; }
+        body { 
+            font-family: 'Kanit', sans-serif; 
+            background-color: #f8fafc;
+            background-image: 
+                radial-gradient(at 10% 0%, hsla(228, 100%, 74%, 0.15) 0px, transparent 50%),
+                radial-gradient(at 80% 0%, hsla(189, 100%, 56%, 0.15) 0px, transparent 50%),
+                radial-gradient(at 0% 50%, hsla(355, 100%, 93%, 0.1) 0px, transparent 50%),
+                radial-gradient(at 80% 100%, hsla(240, 100%, 70%, 0.1) 0px, transparent 50%),
+                radial-gradient(at 0% 100%, hsla(22, 100%, 77%, 0.1) 0px, transparent 50%);
+            min-height: 100vh; 
+            overflow-x: hidden; 
+            color: #334155;
+        }
+
+        .glass-card { 
+            background: rgba(255, 255, 255, 0.7); 
+            backdrop-filter: blur(24px); 
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.8); 
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,1); 
+        }
+
+        .input-glass {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.02);
+            transition: all 0.3s ease;
+        }
+        .input-glass:focus {
+            background: #fff;
+            border-color: #818cf8;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+        /* Loader */
+        .loader-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); z-index: 999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s ease; }
+        .spinner { width: 50px; height: 50px; border: 4px solid #e0e7ff; border-top: 4px solid #4f46e5; border-radius: 50%; animation: spin 1s cubic-bezier(0.55, 0.15, 0.45, 0.85) infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .modal { display: none; position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,0.1); backdrop-filter: blur(8px); align-items: center; justify-content: center; padding: 20px; }
-        .modal.active { display: flex; }
-        button:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); }
+
+        /* Modals */
+        .modal { display: none; position: fixed; inset: 0; z-index: 100; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(8px); align-items: center; justify-content: center; padding: 20px; transition: opacity 0.3s ease; }
+        .modal.active { display: flex; animation: fadeIn 0.3s ease-out forwards; }
+        .modal-content { transform: scale(0.95) translateY(10px); opacity: 0; }
+        .modal.active .modal-content { animation: popUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes popUp { to { transform: scale(1) translateY(0); opacity: 1; } }
+
+        button:disabled { opacity: 0.6; cursor: not-allowed; transform: scale(1) !important; box-shadow: none !important; }
+        
+        /* Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
 </head>
-<body class="p-4 md:p-10">
+<body class="p-4 md:p-6 lg:p-10 selection:bg-primary-200 selection:text-primary-900">
 
     <div id="loader" class="loader-overlay">
-        <div class="spinner mb-4"></div>
-        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em]">CubicPlus System</p>
+        <div class="spinner mb-6 shadow-lg shadow-primary-500/20"></div>
+        <div class="flex items-center gap-2">
+            <h1 class="text-xl font-bold tracking-tight text-slate-800">Cubic<span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-sky-500">Plus</span></h1>
+        </div>
+        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em] mt-2 animate-pulse">Initializing System...</p>
     </div>
 
-    <div class="max-w-6xl mx-auto mb-8 flex justify-between items-center px-4">
-        <div class="text-left">
-            <p id="userDisp" class="text-slate-900 font-bold italic text-xl leading-none">...</p>
-            <p class="text-[10px] uppercase font-bold text-indigo-400 tracking-[0.2em] mt-2">Staff Presence</p>
+    <div class="max-w-6xl mx-auto mb-8 flex justify-between items-center px-2 md:px-4">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-primary-100 to-white flex items-center justify-center border-2 border-white shadow-sm text-primary-600 font-bold text-xl" id="userInitial">U</div>
+            <div class="text-left">
+                <p id="userDisp" class="text-slate-800 font-bold text-xl md:text-2xl leading-none tracking-tight">...</p>
+                <div class="flex items-center gap-2 mt-1.5">
+                    <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span></span>
+                    <p class="text-[10px] uppercase font-bold text-slate-500 tracking-[0.2em]">Staff Presence</p>
+                </div>
+            </div>
         </div>
-        <button onclick="location.href='dashboard.html'" class="p-3 bg-white rounded-2xl shadow-sm border border-slate-100 text-slate-400 hover:text-indigo-600 transition-all">
-            <i data-lucide="x" class="w-6 h-6"></i>
+        <button onclick="location.href='dashboard.html'" class="group p-3 bg-white/80 rounded-2xl shadow-sm border border-slate-200/60 text-slate-500 hover:text-rose-500 hover:border-rose-200 hover:bg-rose-50 transition-all active:scale-95">
+            <i data-lucide="power" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
         </button>
     </div>
 
     <div id="customAlert" class="modal">
-        <div class="glass-panel w-full max-w-sm rounded-[2.5rem] p-10 text-center shadow-2xl">
-            <div id="alertIcon" class="w-20 h-20 bg-indigo-50 text-indigo-500 rounded-full flex items-center justify-center mx-auto mb-6"></div>
-            <h3 id="alertTitle" class="text-xl font-bold text-slate-800 mb-2">Notice</h3>
+        <div class="glass-card modal-content w-full max-w-sm rounded-[2.5rem] p-10 text-center shadow-2xl relative overflow-hidden">
+            <div class="absolute -top-10 -right-10 w-32 h-32 bg-primary-100 rounded-full blur-2xl opacity-60"></div>
+            <div id="alertIcon" class="w-20 h-20 bg-primary-50 text-primary-500 rounded-[1.5rem] flex items-center justify-center mx-auto mb-6 rotate-3 border border-white shadow-sm"></div>
+            <h3 id="alertTitle" class="text-xl font-bold text-slate-800 mb-2 tracking-tight">Notice</h3>
             <p id="alertMsg" class="text-slate-500 text-sm mb-8 leading-relaxed"></p>
-            <button onclick="closeAlert()" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold text-xs uppercase tracking-widest active:scale-95 transition-all">OK</button>
+            <button onclick="closeAlert()" class="w-full py-4 bg-slate-800 hover:bg-slate-900 text-white rounded-2xl font-bold text-sm uppercase tracking-widest active:scale-95 transition-all shadow-lg shadow-slate-800/20">ตกลง</button>
         </div>
     </div>
 
     <div id="locationModal" class="modal">
-        <div class="glass-panel w-full max-w-sm rounded-[2.5rem] p-10 space-y-6 shadow-2xl">
-            <h3 class="text-center font-bold text-slate-800 tracking-tight text-lg">Check In Location</h3>
-            <div class="grid grid-cols-1 gap-3">
-                <button onclick="confirmRecord('OFFICE')" class="p-4 bg-slate-50 hover:bg-white border border-transparent hover:border-indigo-100 rounded-2xl flex items-center gap-4 transition-all">
-                    <span class="text-xl">🏢</span> <span class="font-bold text-slate-700">OFFICE</span>
+        <div class="glass-card modal-content w-full max-w-[28rem] rounded-[2.5rem] p-8 md:p-10 shadow-2xl relative overflow-hidden">
+            <div class="absolute -top-20 -left-20 w-48 h-48 bg-emerald-100 rounded-full blur-3xl opacity-50"></div>
+            
+            <div class="text-center mb-8 relative z-10">
+                <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm border border-slate-100 text-primary-500">
+                    <i data-lucide="map-pin" class="w-6 h-6"></i>
+                </div>
+                <h3 class="font-bold text-slate-800 tracking-tight text-2xl">สถานที่ปฏิบัติงาน</h3>
+                <p class="text-slate-500 text-xs mt-1">กรุณาเลือกสถานที่ที่คุณทำงานในวันนี้</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 relative z-10">
+                <button onclick="confirmRecord('OFFICE')" class="group flex flex-col items-center justify-center p-6 bg-white/60 hover:bg-white border border-white hover:border-indigo-200 rounded-[1.5rem] transition-all hover:shadow-xl hover:shadow-indigo-500/10 hover:-translate-y-1">
+                    <div class="w-14 h-14 rounded-full bg-indigo-50 text-indigo-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><i data-lucide="building-2" class="w-7 h-7"></i></div>
+                    <span class="font-bold text-slate-700 text-sm">OFFICE</span>
                 </button>
-                <button onclick="confirmRecord('WFH')" class="p-4 bg-slate-50 hover:bg-white border border-transparent hover:border-indigo-100 rounded-2xl flex items-center gap-4 transition-all">
-                    <span class="text-xl">🏠</span> <span class="font-bold text-slate-700">WFH</span>
+                <button onclick="confirmRecord('WFH')" class="group flex flex-col items-center justify-center p-6 bg-white/60 hover:bg-white border border-white hover:border-emerald-200 rounded-[1.5rem] transition-all hover:shadow-xl hover:shadow-emerald-500/10 hover:-translate-y-1">
+                    <div class="w-14 h-14 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><i data-lucide="home" class="w-7 h-7"></i></div>
+                    <span class="font-bold text-slate-700 text-sm">WFH</span>
                 </button>
-                <button onclick="confirmRecord('ON-SITE')" class="p-4 bg-slate-50 hover:bg-white border border-transparent hover:border-indigo-100 rounded-2xl flex items-center gap-4 transition-all">
-                    <span class="text-xl">🚗</span> <span class="font-bold text-slate-700">ON-SITE</span>
+                <button onclick="confirmRecord('ON-SITE')" class="group flex flex-col items-center justify-center p-6 bg-white/60 hover:bg-white border border-white hover:border-amber-200 rounded-[1.5rem] transition-all hover:shadow-xl hover:shadow-amber-500/10 hover:-translate-y-1">
+                    <div class="w-14 h-14 rounded-full bg-amber-50 text-amber-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><i data-lucide="car" class="w-7 h-7"></i></div>
+                    <span class="font-bold text-slate-700 text-sm">ON-SITE</span>
                 </button>
             </div>
-            <button onclick="closeLocation()" class="w-full text-center text-[10px] text-slate-400 font-bold uppercase py-2">CANCEL</button>
+            
+            <button onclick="closeLocation()" class="w-full mt-8 py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-2xl font-bold text-xs uppercase tracking-widest transition-all active:scale-95 relative z-10">ยกเลิก</button>
         </div>
     </div>
 
     <div class="max-w-6xl mx-auto">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            <div class="lg:col-span-7 space-y-8">
-                <div class="glass-panel rounded-[3.5rem] p-10 md:p-14 text-center border-b-[10px] border-indigo-500/10">
-                    <div id="todayDate" class="text-[10px] uppercase tracking-[0.5em] text-indigo-400 font-bold mb-4"></div>
-                    <div id="clock" class="text-6xl md:text-7xl font-extralight text-slate-800 tracking-tighter mb-10 leading-none">00:00:00</div>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
+            
+            <div class="lg:col-span-7 flex flex-col gap-8">
+                <div class="glass-card rounded-[3rem] p-10 md:p-14 text-center relative overflow-hidden flex-1 flex flex-col justify-center">
+                    <div class="absolute top-0 right-0 w-full h-2 bg-gradient-to-r from-primary-400 via-sky-400 to-emerald-400"></div>
                     
-                    <div class="space-y-6">
-                        <div class="grid grid-cols-2 gap-4">
-                            <button id="inBtn" onclick="openLocationModal('Check In')" class="py-6 bg-slate-900 text-white rounded-[1.8rem] font-bold text-xs uppercase tracking-widest shadow-2xl active:scale-95 transition-all">Check In</button>
-                            <button id="outBtn" onclick="confirmRecord('-')" class="py-6 bg-white text-slate-900 border border-slate-200 rounded-[1.8rem] font-bold text-xs uppercase tracking-widest active:scale-95 transition-all">Check Out</button>
+                    <div id="todayDate" class="text-[11px] uppercase tracking-[0.4em] text-primary-500 font-bold mb-4"></div>
+                    <div id="clock" class="text-7xl md:text-[5.5rem] font-light text-transparent bg-clip-text bg-gradient-to-br from-slate-800 to-slate-500 tracking-tighter mb-10 leading-none pb-2">00:00:00</div>
+                    
+                    <div class="w-full max-w-md mx-auto space-y-6">
+                        <div class="grid grid-cols-2 gap-4 md:gap-6">
+                            <button id="inBtn" onclick="openLocationModal('Check In')" class="py-5 md:py-6 bg-gradient-to-br from-primary-600 to-primary-500 text-white rounded-[1.8rem] font-bold text-sm uppercase tracking-widest shadow-[0_10px_20px_rgba(99,102,241,0.3)] hover:shadow-[0_15px_30px_rgba(99,102,241,0.4)] hover:-translate-y-1 active:translate-y-0 active:scale-95 transition-all flex flex-col items-center justify-center gap-2">
+                                <i data-lucide="log-in" class="w-5 h-5 opacity-80"></i>
+                                Check In
+                            </button>
+                            <button id="outBtn" onclick="confirmRecord('-')" class="py-5 md:py-6 bg-white/80 text-slate-700 border border-slate-200 rounded-[1.8rem] font-bold text-sm uppercase tracking-widest shadow-sm hover:shadow-md hover:border-slate-300 hover:bg-white hover:-translate-y-1 active:translate-y-0 active:scale-95 transition-all flex flex-col items-center justify-center gap-2">
+                                <i data-lucide="log-out" class="w-5 h-5 opacity-60"></i>
+                                Check Out
+                            </button>
                         </div>
-                        <div class="text-left bg-white/60 p-6 rounded-[2rem] border border-white">
-                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-2 block mb-3 tracking-widest">Daily Summary</label>
-                            <textarea id="memo" rows="3" class="w-full bg-transparent border-none text-base font-normal focus:ring-0 placeholder:text-slate-200 p-2" placeholder="วันนี้คุณทำอะไรสำเร็จบ้าง..."></textarea>
+                        <div class="text-left bg-white/50 p-6 rounded-[2rem] border border-white shadow-sm">
+                            <label class="text-[11px] font-bold text-slate-500 uppercase ml-1 block mb-3 tracking-widest flex items-center gap-2">
+                                <i data-lucide="edit-3" class="w-3.5 h-3.5 text-primary-400"></i> Daily Summary
+                            </label>
+                            <textarea id="memo" rows="2" class="w-full input-glass rounded-xl text-sm font-medium text-slate-700 placeholder:text-slate-400 placeholder:font-normal p-4 resize-none custom-scrollbar" placeholder="วันนี้คุณทำงานอะไรเสร็จบ้าง? (บันทึกตอนเลิกงาน)"></textarea>
                         </div>
                     </div>
                 </div>
 
                 <div class="px-2">
-                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-[0.3em] mb-6 flex items-center gap-3 px-2">
-                        <i data-lucide="history" class="w-4 h-4 text-indigo-400"></i> My Today Activity
+                    <h4 class="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                        <i data-lucide="activity" class="w-4 h-4 text-primary-400"></i> My Today Activity
                     </h4>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="glass-panel p-6 rounded-[2rem] border-l-4 border-indigo-400">
-                            <div class="flex justify-between items-start mb-4">
-                                <div class="p-2 bg-indigo-50 text-indigo-500 rounded-xl"><i data-lucide="clock" class="w-4 h-4"></i></div>
-                                <span class="text-[9px] font-bold text-indigo-300 uppercase tracking-widest">In</span>
+                    <div class="grid grid-cols-2 gap-4 md:gap-6">
+                        <div class="glass-card p-6 rounded-[2rem] relative overflow-hidden group">
+                            <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-emerald-400"></div>
+                            <div class="flex justify-between items-start mb-4 pl-2">
+                                <div class="p-2.5 bg-emerald-50 text-emerald-500 rounded-[14px]"><i data-lucide="log-in" class="w-4 h-4"></i></div>
+                                <span class="text-[10px] font-bold text-emerald-500 bg-emerald-50 px-2 py-1 rounded-md uppercase tracking-wider">In</span>
                             </div>
-                            <p id="inTimeText" class="text-2xl font-bold text-slate-700 tracking-tighter">--:--</p>
-                            <p id="inLocText" class="text-[10px] text-slate-400 font-medium mt-1 uppercase">Ready</p>
+                            <div class="pl-2">
+                                <p id="inTimeText" class="text-3xl font-bold text-slate-700 tracking-tighter">--:--</p>
+                                <p id="inLocText" class="text-[11px] text-slate-500 font-medium mt-1 uppercase truncate flex items-center gap-1.5"><i data-lucide="map-pin" class="w-3 h-3"></i> Ready</p>
+                            </div>
                         </div>
-                        <div class="glass-panel p-6 rounded-[2rem] border-l-4 border-slate-400">
-                            <div class="flex justify-between items-start mb-4">
-                                <div class="p-2 bg-slate-50 text-slate-400 rounded-xl"><i data-lucide="log-out" class="w-4 h-4"></i></div>
-                                <span class="text-[9px] font-bold text-slate-300 uppercase tracking-widest">Out</span>
+                        <div class="glass-card p-6 rounded-[2rem] relative overflow-hidden group">
+                            <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-rose-400"></div>
+                            <div class="flex justify-between items-start mb-4 pl-2">
+                                <div class="p-2.5 bg-rose-50 text-rose-500 rounded-[14px]"><i data-lucide="log-out" class="w-4 h-4"></i></div>
+                                <span class="text-[10px] font-bold text-rose-500 bg-rose-50 px-2 py-1 rounded-md uppercase tracking-wider">Out</span>
                             </div>
-                            <p id="outTimeText" class="text-2xl font-bold text-slate-700 tracking-tighter">--:--</p>
-                            <p id="outLocText" class="text-[10px] text-slate-400 font-medium mt-1 uppercase">Done</p>
+                            <div class="pl-2">
+                                <p id="outTimeText" class="text-3xl font-bold text-slate-700 tracking-tighter">--:--</p>
+                                <p id="outLocText" class="text-[11px] text-slate-500 font-medium mt-1 uppercase truncate flex items-center gap-1.5"><i data-lucide="check-circle-2" class="w-3 h-3"></i> Done</p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="lg:col-span-5 space-y-8">
-                <div class="glass-panel rounded-[3rem] p-10">
-                    <div class="flex justify-between items-center mb-8 px-2">
-                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Team Status</h4>
-                        <span id="activeCount" class="text-[10px] font-bold text-indigo-500 bg-indigo-50 px-3 py-1 rounded-full uppercase">0 Online</span>
+            <div class="lg:col-span-5 flex flex-col gap-8">
+                <div class="glass-card rounded-[2.5rem] p-8">
+                    <div class="flex justify-between items-center mb-6">
+                        <h4 class="text-sm font-bold text-slate-800 tracking-tight flex items-center gap-2">
+                            <i data-lucide="users" class="w-4 h-4 text-primary-500"></i> Team Status
+                        </h4>
+                        <span id="activeCount" class="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-3 py-1 rounded-full uppercase flex items-center gap-1.5 shadow-sm">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> 0 Online
+                        </span>
                     </div>
-                    <div id="colleagueStatus" class="space-y-3 max-h-[300px] overflow-y-auto pr-2"></div>
+                    <div id="colleagueStatus" class="space-y-3 max-h-[250px] overflow-y-auto pr-2 custom-scrollbar"></div>
                 </div>
 
-                <div class="glass-panel rounded-[3rem] p-10">
-                    <div class="flex justify-between items-center mb-8 px-2">
-                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Reports</h4>
-                        <div class="flex bg-slate-100 p-1 rounded-xl scale-90">
-                            <button onclick="updateRange(7)" id="btn7" class="px-4 py-1.5 rounded-lg font-bold text-xs transition-all bg-white shadow-sm text-indigo-600">7D</button>
-                            <button onclick="updateRange(30)" id="btn30" class="px-4 py-1.5 rounded-lg font-bold text-xs transition-all text-slate-400">30D</button>
+                <div class="glass-card rounded-[2.5rem] p-8 flex-1 flex flex-col">
+                    <div class="flex justify-between items-center mb-6">
+                        <h4 class="text-sm font-bold text-slate-800 tracking-tight flex items-center gap-2">
+                            <i data-lucide="bar-chart-2" class="w-4 h-4 text-primary-500"></i> My Reports
+                        </h4>
+                        <div class="flex bg-slate-100 p-1 rounded-xl">
+                            <button onclick="updateRange(7)" id="btn7" class="px-4 py-1.5 rounded-lg font-bold text-xs transition-all bg-white shadow-sm text-primary-600">7 Days</button>
+                            <button onclick="updateRange(30)" id="btn30" class="px-4 py-1.5 rounded-lg font-bold text-xs transition-all text-slate-400 hover:text-slate-600">30 Days</button>
                         </div>
                     </div>
-                    <div id="historyTable" class="space-y-1"></div>
+                    
+                    <div class="flex justify-between items-center px-4 py-2 mb-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-200/50">
+                        <span class="w-16">Date</span>
+                        <div class="flex gap-8"><span class="w-10 text-center">In</span><span class="w-10 text-center">Out</span></div>
+                    </div>
+                    
+                    <div id="historyTable" class="space-y-1.5 overflow-y-auto custom-scrollbar flex-1 max-h-[250px] pr-1"></div>
                 </div>
             </div>
         </div>
@@ -136,10 +250,11 @@
         let globalData = [];
         let pendingType = '';
 
+        // Initial setup
         document.getElementById('userDisp').innerText = name;
+        document.getElementById('userInitial').innerText = name.charAt(0).toUpperCase();
 
         // 🟢 Balanced Dynamic Logic: 
-        // ก่อนเที่ยง -> ช้า 1 นาที | หลังเที่ยง -> เร็ว 1 นาที
         function updateClock() {
             const now = new Date();
             const hours = now.getHours();
@@ -149,16 +264,18 @@
                 now.setMinutes(now.getMinutes() + 1);
             }
             document.getElementById('clock').innerText = now.toLocaleTimeString('th-TH');
-            document.getElementById('todayDate').innerText = now.toLocaleDateString('th-TH', { weekday: 'long', day: 'numeric', month: 'long' });
+            document.getElementById('todayDate').innerText = now.toLocaleDateString('th-TH', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
         }
         setInterval(updateClock, 1000);
+        updateClock();
 
-        function showCustomAlert(title, msg, icon = "check-circle", color = "indigo") {
+        function showCustomAlert(title, msg, icon = "check-circle", color = "primary") {
             const modal = document.getElementById('customAlert');
             document.getElementById('alertTitle').innerText = title;
             document.getElementById('alertMsg').innerText = msg;
             const iconBox = document.getElementById('alertIcon');
-            iconBox.className = `w-20 h-20 bg-${color}-50 text-${color}-500 rounded-full flex items-center justify-center mx-auto mb-6`;
+            
+            iconBox.className = `w-20 h-20 bg-${color}-50 text-${color}-500 rounded-[1.5rem] flex items-center justify-center mx-auto mb-6 rotate-3 border border-white shadow-sm`;
             iconBox.innerHTML = `<i data-lucide="${icon}" class="w-10 h-10"></i>`;
             lucide.createIcons();
             modal.classList.add('active');
@@ -172,93 +289,165 @@
             closeLocation();
             const typeToSend = (loc === '-') ? 'Check Out' : 'Check In';
             const btn = typeToSend === 'Check In' ? document.getElementById('inBtn') : document.getElementById('outBtn');
+            const originalHTML = btn.innerHTML;
+            
             btn.disabled = true;
-            btn.innerText = "WAIT...";
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Processing...`;
+            lucide.createIcons();
+
             const payload = { action: "recordTime", username: user, name: name, type: typeToSend, location: loc === '-' ? "" : loc, memo: (typeToSend === 'Check Out') ? document.getElementById('memo').value : "-" };
+            
             try {
                 await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
-                showCustomAlert("Success", `บันทึก ${typeToSend} สำเร็จ`, "check-circle", "emerald");
+                showCustomAlert("บันทึกสำเร็จ", `ระบบได้บันทึกเวลา ${typeToSend} ของคุณเรียบร้อยแล้ว`, "check-circle-2", "emerald");
                 if(typeToSend === 'Check Out') document.getElementById('memo').value = "";
                 await loadData();
-            } catch(e) { await loadData(); } finally { btn.disabled = false; btn.innerText = typeToSend.toUpperCase(); }
+            } catch(e) { 
+                showCustomAlert("เกิดข้อผิดพลาด", "ไม่สามารถบันทึกข้อมูลได้ กรุณาลองใหม่อีกครั้ง", "x-octagon", "rose");
+                await loadData(); 
+            } finally { 
+                btn.disabled = false; 
+                btn.innerHTML = originalHTML; 
+                lucide.createIcons();
+            }
         }
 
         async function loadData() {
             try {
                 const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({action: "fetchData"}) });
                 globalData = await res.json();
+                
+                // Hide loader smoothly
                 document.getElementById('loader').style.opacity = '0';
                 setTimeout(() => document.getElementById('loader').style.display = 'none', 500);
-                const today = new Date().toLocaleDateString();
-                const myToday = globalData.filter(d => (d.Username === user || d.Name === name) && new Date(d.Timestamp).toLocaleDateString() === today);
+                
+                const today = new Date().toLocaleDateString('th-TH');
+                const myToday = globalData.filter(d => (d.Username === user || d.Name === name) && new Date(d.Timestamp).toLocaleDateString('th-TH') === today);
+                
                 const hasIn = myToday.some(d => d.Type === "Check In");
                 const hasOut = myToday.some(d => d.Type === "Check Out");
+                
                 document.getElementById('inBtn').disabled = hasIn;
                 document.getElementById('outBtn').disabled = !hasIn || hasOut;
+                
                 const inLog = myToday.find(d => d.Type === "Check In");
                 const outLog = myToday.find(d => d.Type === "Check Out");
+                
                 if(inLog) {
                     document.getElementById('inTimeText').innerText = new Date(inLog.Timestamp).toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'});
-                    document.getElementById('inLocText').innerText = "AT: " + inLog.Location;
+                    document.getElementById('inLocText').innerHTML = `<i data-lucide="map-pin" class="w-3 h-3"></i> ${inLog.Location}`;
                 }
                 if(outLog) {
                     document.getElementById('outTimeText').innerText = new Date(outLog.Timestamp).toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'});
-                    document.getElementById('outLocText').innerText = "DONE";
+                    document.getElementById('outLocText').innerHTML = `<i data-lucide="check-circle-2" class="w-3 h-3 text-emerald-500"></i> COMPLETED`;
                 }
+                
                 renderUI();
                 lucide.createIcons();
-            } catch(e) { console.log(e); }
+            } catch(e) { 
+                console.log(e); 
+                document.getElementById('loader').innerHTML = `<div class="p-4 bg-rose-50 text-rose-500 rounded-2xl"><i data-lucide="wifi-off" class="w-8 h-8 mx-auto mb-2"></i><p class="font-bold">Connection Error</p></div>`;
+                lucide.createIcons();
+            }
         }
 
         function renderUI() {
             const colleagueBox = document.getElementById("colleagueStatus");
             colleagueBox.innerHTML = "";
-            const today = new Date().toLocaleDateString();
+            const today = new Date().toLocaleDateString('th-TH');
             const latestMap = new Map();
-            globalData.forEach(d => { if (new Date(d.Timestamp).toLocaleDateString() === today) latestMap.set(d.Name, d); });
+            
+            globalData.forEach(d => { 
+                if (new Date(d.Timestamp).toLocaleDateString('th-TH') === today) latestMap.set(d.Name, d); 
+            });
+            
             let activeCount = 0;
+            let htmlContent = "";
+            
             latestMap.forEach((v, k) => {
                 const isOnline = v.Type === "Check In";
                 if(isOnline) activeCount++;
-                const locIcon = v.Location === 'OFFICE' ? '🏢' : v.Location === 'WFH' ? '🏠' : v.Location === 'ON-SITE' ? '🚗' : '🕒';
-                colleagueBox.innerHTML += `<div class="flex items-center justify-between p-4 bg-white/40 rounded-2xl border border-white">
+                
+                // Set icons based on location
+                let locIconHTML = `<i data-lucide="clock" class="w-3 h-3"></i>`;
+                if(v.Location === 'OFFICE') locIconHTML = `<i data-lucide="building-2" class="w-3 h-3 text-indigo-400"></i>`;
+                else if(v.Location === 'WFH') locIconHTML = `<i data-lucide="home" class="w-3 h-3 text-emerald-400"></i>`;
+                else if(v.Location === 'ON-SITE') locIconHTML = `<i data-lucide="car" class="w-3 h-3 text-amber-400"></i>`;
+                
+                htmlContent += `
+                <div class="flex items-center justify-between p-3.5 bg-white/50 hover:bg-white rounded-2xl border border-white shadow-sm transition-colors">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-indigo-50 text-indigo-400 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white shadow-sm">${k.charAt(0)}</div>
-                        <div><p class="font-bold text-slate-700 text-[11px]">${k}</p><p class="text-[9px] text-slate-400 flex items-center gap-1 uppercase tracking-tighter">${locIcon} ${v.Location || '-'}</p></div>
+                        <div class="w-10 h-10 bg-gradient-to-br from-slate-100 to-slate-50 text-slate-500 rounded-full flex items-center justify-center text-xs font-bold border border-slate-200 shadow-sm">${k.charAt(0)}</div>
+                        <div>
+                            <p class="font-bold text-slate-700 text-xs">${k}</p>
+                            <p class="text-[10px] text-slate-400 font-medium flex items-center gap-1.5 uppercase tracking-wide mt-0.5">${locIconHTML} ${v.Location || 'Finished'}</p>
+                        </div>
                     </div>
-                    <div class="w-2 h-2 rounded-full ${isOnline ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-slate-200'}"></div>
+                    <div class="w-2.5 h-2.5 rounded-full ${isOnline ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-slate-300'}"></div>
                 </div>`;
             });
-            document.getElementById('activeCount').innerText = `${activeCount} ONLINE`;
+            
+            if(htmlContent === "") {
+                htmlContent = `<div class="text-center p-6 text-slate-400 text-sm italic">ยังไม่มีเพื่อนร่วมงานเช็คอินวันนี้</div>`;
+            }
+            
+            colleagueBox.innerHTML = htmlContent;
+            document.getElementById('activeCount').innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> ${activeCount} Online`;
+            
+            // Set default range to 7 days on load
             updateRange(7);
         }
 
         function updateRange(days) {
+            // UI Toggle
+            document.getElementById('btn7').className = days === 7 ? "px-4 py-1.5 rounded-lg font-bold text-xs transition-all bg-white shadow-sm text-primary-600" : "px-4 py-1.5 rounded-lg font-bold text-xs transition-all text-slate-400 hover:text-slate-600";
+            document.getElementById('btn30').className = days === 30 ? "px-4 py-1.5 rounded-lg font-bold text-xs transition-all bg-white shadow-sm text-primary-600" : "px-4 py-1.5 rounded-lg font-bold text-xs transition-all text-slate-400 hover:text-slate-600";
+
             const table = document.getElementById("historyTable");
             table.innerHTML = "";
+            
             const myLogs = globalData.filter(d => d.Username === user || d.Name === name);
             const reportMap = new Map();
             const cutoff = new Date();
-            cutoff.setDate(cutoff.getDate() - days);
+            cutoff.setHours(0,0,0,0);
+            cutoff.setDate(cutoff.getDate() - days + 1); // +1 to include today
+            
             myLogs.forEach(log => {
                 const logDate = new Date(log.Timestamp);
                 if (logDate >= cutoff) {
-                    const dStr = logDate.toLocaleDateString('th-TH', {day:'2-digit', month:'2-digit'});
+                    const dStr = logDate.toLocaleDateString('th-TH', {day:'2-digit', month:'short'});
                     if (!reportMap.has(dStr)) reportMap.set(dStr, {in:'-', out:'-'});
                     if (log.Type === "Check In") reportMap.get(dStr).in = logDate.toLocaleTimeString('th-TH', {hour:'2-digit', minute:'2-digit'});
                     if (log.Type === "Check Out") reportMap.get(dStr).out = logDate.toLocaleTimeString('th-TH', {hour:'2-digit', minute:'2-digit'});
                 }
             });
-            Array.from(reportMap.keys()).reverse().forEach(date => {
-                const v = reportMap.get(date);
-                table.innerHTML += `<div class="flex justify-between items-center p-4 bg-white/30 rounded-2xl mb-1 text-[11px] font-bold border border-slate-50 transition-all hover:bg-white/60">
-                    <span class="text-slate-400 w-12 tracking-tight">${date}</span>
-                    <div class="flex gap-6 text-slate-700"><span class="w-8 text-center">${v.in}</span><span class="w-8 text-center">${v.out}</span></div>
-                </div>`;
-            });
+            
+            let htmlRows = "";
+            const sortedDates = Array.from(reportMap.keys()).reverse();
+            
+            if(sortedDates.length === 0) {
+                htmlRows = `<div class="text-center p-6 text-slate-400 text-sm italic">ไม่พบประวัติใน ${days} วันที่ผ่านมา</div>`;
+            } else {
+                sortedDates.forEach(date => {
+                    const v = reportMap.get(date);
+                    htmlRows += `
+                    <div class="flex justify-between items-center p-4 bg-white/40 hover:bg-white rounded-2xl text-xs font-bold border border-white shadow-sm transition-all group">
+                        <span class="text-slate-500 tracking-wide">${date}</span>
+                        <div class="flex gap-8 text-slate-700">
+                            <span class="w-10 text-center ${v.in !== '-' ? 'text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md' : 'text-slate-300'}">${v.in}</span>
+                            <span class="w-10 text-center ${v.out !== '-' ? 'text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md' : 'text-slate-300'}">${v.out}</span>
+                        </div>
+                    </div>`;
+                });
+            }
+            
+            table.innerHTML = htmlRows;
         }
 
-        window.onload = () => { lucide.createIcons(); loadData(); };
+        window.onload = () => { 
+            lucide.createIcons(); 
+            loadData(); 
+        };
     </script>
 </body>
 </html>
