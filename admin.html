@@ -3,87 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ระบบจัดการหลังบ้าน | CubicPlus</title>
+    <title>Admin Panel | CubicPlus</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@200;300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        body { font-family: 'Kanit', sans-serif; background: #f8fafc; color: #334155; min-height: 100vh; }
+        body { font-family: 'Kanit', sans-serif; background: #fcfdfe; color: #334155; min-height: 100vh; }
         .glass-panel { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.7); box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.05); }
         .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.3s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .tab-content.active { display: block; animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* สไตล์หน้าเลือกเวลาใหม่ */
+        .time-picker-box { background: #f8fafc; border: 2px solid transparent; transition: all 0.2s ease; text-align: center; font-size: 1.25rem; font-weight: 600; cursor: pointer; border-radius: 1.25rem; }
+        .time-picker-box:hover { background: #fff; border-color: #6366f1; transform: translateY(-2px); box-shadow: 0 10px 20px -10px rgba(99, 102, 241, 0.2); }
+        select { -webkit-appearance: none; -moz-appearance: none; appearance: none; background: transparent; width: 100%; border: none; padding: 1rem; text-align: center; cursor: pointer; outline: none; }
+        
         .settings-nav-btn.active { background: white; color: #6366f1; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1); }
-        .config-card { border-left: 4px solid #6366f1; }
-        select { cursor: pointer; }
     </style>
 </head>
-<body class="p-4 md:p-8">
+<body class="p-4 md:p-10">
 
-    <div class="max-w-6xl mx-auto mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div class="max-w-6xl mx-auto mb-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
             <h1 class="text-3xl font-bold text-slate-800 tracking-tight">ระบบจัดการหลังบ้าน</h1>
-            <p class="text-indigo-500 font-bold text-[10px] uppercase tracking-[0.2em] mt-1">CubicPlus Advanced Admin</p>
+            <p class="text-indigo-500 font-bold text-[10px] uppercase tracking-[0.3em] mt-1">CubicPlus Advanced Admin</p>
         </div>
-        <button onclick="location.href='index.html'" class="flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-100 rounded-2xl text-slate-500 font-bold text-xs hover:text-indigo-600 transition-all active:scale-95 shadow-sm">
-            <i data-lucide="log-out" class="w-4 h-4"></i> ออกจากระบบ
+        <button onclick="location.href='index.html'" class="flex items-center gap-2 px-6 py-3 bg-white border border-slate-100 rounded-2xl text-slate-500 font-bold text-xs uppercase tracking-widest hover:text-indigo-600 shadow-sm transition-all active:scale-95">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i> กลับหน้าหลัก
         </button>
     </div>
 
     <div class="max-w-6xl mx-auto">
-        <div class="flex gap-2 p-1.5 bg-slate-200/50 rounded-2xl w-fit mb-8">
-            <button class="tab-btn active px-8 py-3 rounded-xl text-xs font-bold transition-all text-slate-500 [&.active]:bg-white [&.active]:text-indigo-600 [&.active]:shadow-sm" onclick="openTab(event, 'reportTab'); loadReportData();">รายงานการเข้างาน</button>
-            <button class="tab-btn px-8 py-3 rounded-xl text-xs font-bold transition-all text-slate-500 [&.active]:bg-white [&.active]:text-indigo-600 [&.active]:shadow-sm" onclick="openTab(event, 'settingTab')">ตั้งค่าระบบ</button>
+        <div class="flex gap-2 p-1.5 bg-slate-200/50 rounded-[2rem] w-fit mb-10">
+            <button id="tabReport" class="tab-btn active px-10 py-3.5 rounded-[1.5rem] text-xs font-bold uppercase tracking-widest transition-all text-slate-400 [&.active]:bg-white [&.active]:text-indigo-600 [&.active]:shadow-md" onclick="openTab(event, 'reportTab'); loadReportData();">รายงานการเช็คอิน</button>
+            <button id="tabSetting" class="tab-btn px-10 py-3.5 rounded-[1.5rem] text-xs font-bold uppercase tracking-widest transition-all text-slate-400 [&.active]:bg-white [&.active]:text-indigo-600 [&.active]:shadow-md" onclick="openTab(event, 'settingTab')">ตั้งค่าระบบ</button>
         </div>
 
         <div id="reportTab" class="tab-content active">
-            <div class="glass-panel rounded-[2.5rem] overflow-hidden">
-                <div class="p-6 border-b border-slate-50 bg-white/50 grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
-                    <div class="space-y-1">
-                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">ค้นหาชื่อ</label>
-                        <input list="nameOptions" id="filterName" oninput="applyFilters()" class="w-full p-3 bg-slate-50 border-none rounded-xl text-sm focus:ring-2 ring-indigo-100" placeholder="ระบุชื่อ...">
+            <div class="glass-panel rounded-[3rem] overflow-hidden">
+                <div class="p-8 border-b border-slate-50 bg-white/50 grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-4 items-end">
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-2">ค้นหาชื่อ</label>
+                        <input list="nameOptions" id="filterName" oninput="applyFilters()" class="w-full p-4 bg-slate-100/50 border-none rounded-2xl text-sm" placeholder="พิมพ์ชื่อพนักงาน...">
                         <datalist id="nameOptions"></datalist>
                     </div>
-                    <div class="space-y-1">
-                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">ช่วงเวลา</label>
-                        <select id="filterDateRange" onchange="applyFilters()" class="w-full p-3 bg-slate-50 border-none rounded-xl text-sm">
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-2">ช่วงเวลา</label>
+                        <select id="filterDateRange" onchange="applyFilters()" class="w-full p-4 bg-slate-100/50 border-none rounded-2xl text-sm">
                             <option value="all">ทั้งหมด</option>
-                            <option value="today">วันนี้</option>
+                            <option value="today">เฉพาะวันนี้</option>
                         </select>
                     </div>
-                    <div class="space-y-1">
-                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">สถานที่</label>
-                        <select id="filterLoc" onchange="applyFilters()" class="w-full p-3 bg-slate-50 border-none rounded-xl text-sm">
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-2">สถานที่</label>
+                        <select id="filterLoc" onchange="applyFilters()" class="w-full p-4 bg-slate-100/50 border-none rounded-2xl text-sm">
                             <option value="">ทุกสถานที่</option>
                             <option value="OFFICE">OFFICE</option>
                             <option value="WFH">WFH</option>
-                            <option value="ON-SITE">ON-SITE</option>
                         </select>
                     </div>
-                    <div class="space-y-1">
-                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">สถานะ</label>
-                        <select id="filterType" onchange="applyFilters()" class="w-full p-3 bg-slate-50 border-none rounded-xl text-sm">
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-2">ประเภท</label>
+                        <select id="filterType" onchange="applyFilters()" class="w-full p-4 bg-slate-100/50 border-none rounded-2xl text-sm">
                             <option value="">ทั้งหมด</option>
                             <option value="Check In">เข้างาน</option>
                             <option value="Check Out">ออกงาน</option>
                         </select>
                     </div>
-                    <button onclick="exportToCSV()" class="p-3 bg-emerald-500 text-white rounded-xl font-bold text-xs uppercase flex items-center justify-center gap-2 shadow-lg shadow-emerald-100">
-                        <i data-lucide="download" class="w-4 h-4"></i> โหลด CSV
+                    <button onclick="exportToCSV()" class="p-4 bg-emerald-500 text-white rounded-2xl font-bold text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg shadow-emerald-100 hover:scale-[1.02] active:scale-95 transition-all">
+                        <i data-lucide="download" class="w-4 h-4"></i> Export CSV
                     </button>
                 </div>
                 <div class="overflow-x-auto">
                     <table id="reportTable" class="w-full text-left">
                         <thead>
-                            <tr class="bg-slate-50/50 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                                <th class="p-6">วัน/เวลา</th>
-                                <th class="p-6">ชื่อพนักงาน</th>
-                                <th class="p-6">สถานะ</th>
-                                <th class="p-6">สถานที่</th>
-                                <th class="p-6 text-center">บันทึก</th>
+                            <tr class="bg-slate-50/30 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                                <th class="p-8">วันเวลา</th>
+                                <th class="p-8">ชื่อ-นามสกุล</th>
+                                <th class="p-8">ประเภท</th>
+                                <th class="p-8">สถานที่</th>
+                                <th class="p-8 text-center">รายละเอียด</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-50 text-sm"></tbody>
+                        <tbody class="divide-y divide-slate-50"></tbody>
                     </table>
                 </div>
             </div>
@@ -92,59 +95,57 @@
         <div id="settingTab" class="tab-content">
             <div class="flex flex-col md:flex-row gap-8">
                 <div class="w-full md:w-64 space-y-2">
-                    <button onclick="openSettingSection(event, 'timeConfig')" class="settings-nav-btn active w-full flex items-center gap-3 px-6 py-4 rounded-2xl text-sm font-bold text-slate-500 transition-all">
+                    <button onclick="openSettingSection(event, 'timeConfig')" class="settings-nav-btn active w-full flex items-center gap-4 px-8 py-5 rounded-3xl text-sm font-bold text-slate-500 transition-all">
                         <i data-lucide="clock" class="w-5 h-5"></i> ตั้งค่าเวลาเข้างาน
                     </button>
-                    <button onclick="openSettingSection(event, 'staffConfig')" class="settings-nav-btn w-full flex items-center gap-3 px-6 py-4 rounded-2xl text-sm font-bold text-slate-500 transition-all">
-                        <i data-lucide="user-plus" class="w-5 h-5"></i> เพิ่มพนักงานใหม่
+                    <button onclick="openSettingSection(event, 'staffConfig')" class="settings-nav-btn w-full flex items-center gap-4 px-8 py-5 rounded-3xl text-sm font-bold text-slate-500 transition-all">
+                        <i data-lucide="user-plus" class="w-5 h-5"></i> ลงทะเบียนพนักงาน
                     </button>
                 </div>
 
                 <div class="flex-1">
-                    <div id="timeConfig" class="setting-section block space-y-6">
-                        <div class="glass-panel rounded-[2.5rem] p-8 config-card">
-                            <h3 class="text-xl font-bold text-slate-800 mb-2">กำหนดเวลาปฏิบัติงาน</h3>
-                            <p class="text-slate-400 text-xs mb-8">ตั้งเกณฑ์เวลา (ปัจจุบัน: <span id="curStart" class="text-indigo-600 font-black">-</span> - <span id="curEnd" class="text-indigo-600 font-black">-</span>)</p>
+                    <div id="timeConfig" class="setting-section block">
+                        <div class="glass-panel rounded-[3rem] p-10 border-l-[6px] border-indigo-500">
+                            <h3 class="text-2xl font-bold text-slate-800 mb-1">กำหนดเกณฑ์เวลา</h3>
+                            <p class="text-slate-400 text-sm mb-10 italic">ขณะนี้ตั้งไว้ที่: <span id="curStart" class="text-indigo-600 font-bold">-</span> ถึง <span id="curEnd" class="text-indigo-600 font-bold">-</span></p>
                             
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                                <div class="space-y-3">
-                                    <label class="text-xs font-bold text-slate-500">เวลาเริ่มงาน (เช็คสาย)</label>
-                                    <div class="flex items-center gap-2">
-                                        <select id="startH" class="flex-1 p-4 bg-slate-100 border-none rounded-2xl text-lg font-bold appearance-none text-center"></select>
-                                        <span class="font-bold">:</span>
-                                        <select id="startM" class="flex-1 p-4 bg-slate-100 border-none rounded-2xl text-lg font-bold appearance-none text-center"></select>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 mb-10">
+                                <div class="space-y-4">
+                                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] ml-2">เวลาเริ่มงาน (เช็คสาย)</label>
+                                    <div class="flex items-center gap-3">
+                                        <div class="time-picker-box flex-1"><select id="startH"></select></div>
+                                        <span class="font-bold text-slate-300">:</span>
+                                        <div class="time-picker-box flex-1"><select id="startM"></select></div>
                                     </div>
                                 </div>
-                                <div class="space-y-3">
-                                    <label class="text-xs font-bold text-slate-500">เวลาเลิกงานมาตรฐาน</label>
-                                    <div class="flex items-center gap-2">
-                                        <select id="endH" class="flex-1 p-4 bg-slate-100 border-none rounded-2xl text-lg font-bold appearance-none text-center"></select>
-                                        <span class="font-bold">:</span>
-                                        <select id="endM" class="flex-1 p-4 bg-slate-100 border-none rounded-2xl text-lg font-bold appearance-none text-center"></select>
+                                <div class="space-y-4">
+                                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] ml-2">เวลาเลิกงาน</label>
+                                    <div class="flex items-center gap-3">
+                                        <div class="time-picker-box flex-1"><select id="endH"></select></div>
+                                        <span class="font-bold text-slate-300">:</span>
+                                        <div class="time-picker-box flex-1"><select id="endM"></select></div>
                                     </div>
                                 </div>
                             </div>
-                            <button id="saveConfigBtn" onclick="saveSettings()" class="w-full py-4 bg-indigo-600 text-white rounded-2xl font-bold text-sm shadow-xl shadow-indigo-100 active:scale-95 transition-all">บันทึกเกณฑ์เวลาใหม่</button>
+                            <button id="saveConfigBtn" onclick="saveSettings()" class="w-full py-5 bg-indigo-600 text-white rounded-[1.8rem] font-bold text-xs uppercase tracking-widest shadow-xl shadow-indigo-100 hover:bg-indigo-700 active:scale-95 transition-all">บันทึกค่าเวลาใหม่</button>
                         </div>
                     </div>
 
-                    <div id="staffConfig" class="setting-section hidden space-y-6">
-                        <div class="glass-panel rounded-[2.5rem] p-8">
-                            <h3 class="text-xl font-bold text-slate-800 mb-6">ลงทะเบียนพนักงาน</h3>
-                            <div class="space-y-4 text-sm">
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <input type="text" id="newN" class="p-4 bg-slate-100 border-none rounded-2xl" placeholder="ชื่อ-นามสกุล">
-                                    <select id="newR" class="p-4 bg-slate-100 border-none rounded-2xl">
-                                        <option value="User">User (พนักงาน)</option>
-                                        <option value="Admin">Admin (ผู้ดูแล)</option>
-                                    </select>
-                                </div>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <input type="text" id="newU" class="p-4 bg-slate-100 border-none rounded-2xl" placeholder="Username">
-                                    <input type="password" id="newP" class="p-4 bg-slate-100 border-none rounded-2xl" placeholder="Password">
-                                </div>
-                                <button id="addBtn" onclick="handleAddUser()" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold shadow-xl active:scale-95 transition-all">เพิ่มพนักงาน</button>
+                    <div id="staffConfig" class="setting-section hidden">
+                        <div class="glass-panel rounded-[3rem] p-10">
+                            <h3 class="text-2xl font-bold text-slate-800 mb-8">ข้อมูลพนักงานใหม่</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                <input type="text" id="newN" class="p-5 bg-slate-100/50 border-none rounded-2xl text-sm" placeholder="ชื่อ-นามสกุล">
+                                <select id="newR" class="p-5 bg-slate-100/50 border-none rounded-2xl text-sm appearance-none">
+                                    <option value="User">ทั่วไป (User)</option>
+                                    <option value="Admin">ผู้ดูแล (Admin)</option>
+                                </select>
                             </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                                <input type="text" id="newU" class="p-5 bg-slate-100/50 border-none rounded-2xl text-sm" placeholder="Username">
+                                <input type="password" id="newP" class="p-5 bg-slate-100/50 border-none rounded-2xl text-sm" placeholder="Password">
+                            </div>
+                            <button id="addBtn" onclick="handleAddUser()" class="w-full py-5 bg-slate-900 text-white rounded-[1.8rem] font-bold text-xs uppercase tracking-widest shadow-xl active:scale-95 transition-all">เพิ่มพนักงานเข้าสู่ระบบ</button>
                         </div>
                     </div>
                 </div>
@@ -152,12 +153,12 @@
         </div>
     </div>
 
-    <div id="customAlert" class="fixed inset-0 z-[100] hidden bg-slate-900/20 backdrop-blur-md items-center justify-center p-4">
-        <div class="bg-white w-full max-w-xs rounded-[2rem] p-8 text-center shadow-2xl">
-            <div id="alertIcon" class="w-16 h-16 bg-indigo-50 text-indigo-500 rounded-full flex items-center justify-center mx-auto mb-4"></div>
-            <h3 id="alertTitle" class="text-lg font-bold text-slate-800 mb-1"></h3>
-            <p id="alertMsg" class="text-slate-500 text-xs mb-6"></p>
-            <button onclick="closeAlert()" class="w-full py-3 bg-slate-900 text-white rounded-xl font-bold text-xs">ตกลง</button>
+    <div id="customAlert" class="fixed inset-0 z-[100] hidden bg-slate-900/10 backdrop-blur-md items-center justify-center p-4">
+        <div class="bg-white w-full max-w-sm rounded-[2.5rem] p-10 text-center shadow-2xl">
+            <div id="alertIcon" class="w-16 h-16 bg-indigo-50 text-indigo-500 rounded-full flex items-center justify-center mx-auto mb-6"></div>
+            <h3 id="alertTitle" class="text-xl font-bold text-slate-800 mb-2"></h3>
+            <p id="alertMsg" class="text-slate-500 text-sm mb-8 leading-relaxed"></p>
+            <button onclick="closeAlert()" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold text-xs uppercase tracking-widest transition-all active:scale-95">ปิดหน้าต่าง</button>
         </div>
     </div>
 
@@ -165,22 +166,105 @@
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxCxgtJBdY2GXJDY90emZyuw6rLP_00-yUBi7YBdLV3SQ5yn6g_8JaJCWHNUj_N036H/exec";
         let rawData = [];
 
-        // สร้าง Dropdown ชั่วโมง/นาที
-        function initTimeSelectors() {
-            const hSelects = ['startH', 'endH'];
-            const mSelects = ['startM', 'endM'];
+        // ฟังก์ชันสร้างตัวเลือกเวลาให้ดูดี
+        function populateTimeDropdowns() {
+            const hSelects = ['startH', 'endH'], mSelects = ['startM', 'endM'];
             hSelects.forEach(id => {
-                let options = "";
-                for(let i=0; i<24; i++) options += `<option value="${i.toString().padStart(2,'0')}">${i.toString().padStart(2,'0')}</option>`;
-                document.getElementById(id).innerHTML = options;
+                let html = "";
+                for(let i=0; i<24; i++) {
+                    const val = i.toString().padStart(2, '0');
+                    html += `<option value="${val}">${val}</option>`;
+                }
+                document.getElementById(id).innerHTML = html;
             });
             mSelects.forEach(id => {
-                let options = "";
-                for(let i=0; i<60; i+=5) options += `<option value="${i.toString().padStart(2,'0')}">${i.toString().padStart(2,'0')}</option>`;
-                document.getElementById(id).innerHTML = options;
+                let html = "";
+                for(let i=0; i<60; i+=5) {
+                    const val = i.toString().padStart(2, '0');
+                    html += `<option value="${val}">${val}</option>`;
+                }
+                document.getElementById(id).innerHTML = html;
             });
         }
 
+        // ดึงข้อมูลการตั้งค่าและแสดงผลทันที
+        async function loadCurrentConfig() {
+            try {
+                const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "fetchConfig" }) });
+                const config = await response.json();
+                const start = config.StartTime || "09:00";
+                const end = config.EndTime || "18:00";
+                
+                document.getElementById('curStart').innerText = start;
+                document.getElementById('curEnd').innerText = end;
+
+                // เซ็ตค่าใน Dropdown
+                const [sh, sm] = start.split(':');
+                const [eh, em] = end.split(':');
+                document.getElementById('startH').value = sh;
+                document.getElementById('startM').value = sm;
+                document.getElementById('endH').value = eh;
+                document.getElementById('endM').value = em;
+            } catch (e) { console.error("Config Load Error"); }
+        }
+
+        async function loadReportData() {
+            const tbody = document.querySelector("#reportTable tbody");
+            tbody.innerHTML = "<tr><td colspan='5' class='p-12 text-center text-slate-300 italic'>กำลังโหลดข้อมูล...</td></tr>";
+            try {
+                const resp = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "fetchData" }) });
+                rawData = await resp.json();
+                updateNameDatalist();
+                applyFilters();
+            } catch (e) { showAlert("แจ้งเตือน", "ไม่สามารถดึงข้อมูลได้", "alert-triangle"); }
+        }
+
+        function renderTable(data) {
+            const tbody = document.querySelector("#reportTable tbody");
+            const policyStart = document.getElementById('curStart').innerText;
+            tbody.innerHTML = data.length === 0 ? "<tr><td colspan='5' class='p-12 text-center text-slate-400 italic'>ไม่พบข้อมูล</td></tr>" : "";
+            
+            data.forEach(d => {
+                const dateObj = new Date(d.Timestamp);
+                const timeStr = dateObj.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+                const isLate = (d.Type === 'Check In' && timeStr > policyStart);
+                const lateBadge = isLate ? `<span class="ml-2 px-2 py-0.5 bg-red-50 text-red-500 text-[9px] font-black rounded-md border border-red-100 italic">สาย</span>` : '';
+
+                tbody.insertAdjacentHTML('beforeend', `
+                    <tr class="hover:bg-slate-50 transition-colors border-b border-slate-50">
+                        <td class="p-8 text-[11px] font-medium text-slate-500">${dateObj.toLocaleString('th-TH')}</td>
+                        <td class="p-8 font-bold text-slate-700">${d.Name || "-"}</td>
+                        <td class="p-8">
+                            <span class="px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest ${d.Type === 'Check In' ? 'text-indigo-600 bg-indigo-50' : 'text-slate-400 bg-slate-50'}">${d.Type === 'Check In' ? 'เข้างาน' : 'ออกงาน'}</span>
+                            ${lateBadge}
+                        </td>
+                        <td class="p-8 text-xs font-bold text-slate-400">${d.Location || "-"}</td>
+                        <td class="p-8 text-center text-indigo-300">
+                            <button onclick="showAlert('รายละเอียดบันทึก', '${d["WorkSummary/Memo"] || "-"}', 'file-text')" class="hover:text-indigo-600 transition-all"><i data-lucide="eye" class="w-5 h-5 mx-auto"></i></button>
+                        </td>
+                    </tr>
+                `);
+            });
+            lucide.createIcons();
+        }
+
+        async function saveSettings() {
+            const start = `${document.getElementById('startH').value}:${document.getElementById('startM').value}`;
+            const end = `${document.getElementById('endH').value}:${document.getElementById('endM').value}`;
+            const btn = document.getElementById('saveConfigBtn');
+            btn.disabled = true; btn.innerText = "กำลังบันทึก...";
+            try {
+                const resp = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "saveConfig", startTime: start, endTime: end }) });
+                const res = await resp.json();
+                if (res.status === "success") {
+                    showAlert("สำเร็จ", "บันทึกเกณฑ์เวลาใหม่แล้ว ระบบจะเริ่มคำนวณการ 'สาย' ทันที", "check-circle");
+                    await loadCurrentConfig(); 
+                }
+            } catch (e) { showAlert("ล้มเหลว", "ไม่สามารถบันทึกได้", "x-circle"); }
+            finally { btn.disabled = false; btn.innerText = "บันทึกค่าเวลาใหม่"; }
+        }
+
+        // --- ระบบสลับหน้า ---
         function openTab(evt, tabId) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -195,38 +279,6 @@
             document.getElementById(sectionId).classList.remove('hidden');
             evt.currentTarget.classList.add('active');
             lucide.createIcons();
-        }
-
-        // ดึง Config และแสดงผลเวลาที่บันทึกไว้ทันที
-        async function loadCurrentConfig() {
-            try {
-                const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "fetchConfig" }) });
-                const config = await response.json();
-                const start = config.StartTime || "09:00";
-                const end = config.EndTime || "18:00";
-                
-                document.getElementById('curStart').innerText = start;
-                document.getElementById('curEnd').innerText = end;
-
-                // อัปเดตตัวเลือกให้ตรงกับค่าในระบบ
-                const [sh, sm] = start.split(':');
-                const [eh, em] = end.split(':');
-                document.getElementById('startH').value = sh;
-                document.getElementById('startM').value = sm;
-                document.getElementById('endH').value = eh;
-                document.getElementById('endM').value = em;
-            } catch (e) { console.error("Load config failed"); }
-        }
-
-        async function loadReportData() {
-            const tbody = document.querySelector("#reportTable tbody");
-            tbody.innerHTML = "<tr><td colspan='5' class='p-12 text-center text-slate-300 italic'>กำลังโหลดข้อมูล...</td></tr>";
-            try {
-                const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "fetchData" }) });
-                rawData = await response.json();
-                updateNameDatalist();
-                applyFilters();
-            } catch (error) { showAlert("แจ้งเตือน", "ไม่สามารถเชื่อมต่อฐานข้อมูลได้", "alert-triangle"); }
         }
 
         function applyFilters() {
@@ -248,51 +300,6 @@
             renderTable(filtered);
         }
 
-        function renderTable(data) {
-            const tbody = document.querySelector("#reportTable tbody");
-            const policyStart = document.getElementById('curStart').innerText;
-            tbody.innerHTML = data.length === 0 ? "<tr><td colspan='5' class='p-12 text-center text-slate-400 italic'>ไม่พบข้อมูล</td></tr>" : "";
-            
-            data.forEach(d => {
-                const dateObj = new Date(d.Timestamp);
-                const timeStr = dateObj.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-                let lateTag = (d.Type === 'Check In' && timeStr > policyStart) ? 
-                    `<span class="ml-2 px-2 py-0.5 bg-red-50 text-red-500 text-[9px] font-black rounded-md border border-red-100 italic">LATE</span>` : '';
-
-                tbody.insertAdjacentHTML('beforeend', `
-                    <tr class="hover:bg-slate-50 transition-colors border-b border-slate-50">
-                        <td class="p-6 text-[11px] text-slate-500">${dateObj.toLocaleString('th-TH')}</td>
-                        <td class="p-6 font-bold text-slate-700">${d.Name || "-"}</td>
-                        <td class="p-6">
-                            <span class="px-3 py-1 rounded-full text-[9px] font-bold uppercase ${d.Type === 'Check In' ? 'text-indigo-600 bg-indigo-50' : 'text-slate-400 bg-slate-50'}">${d.Type || "-"}</span>
-                            ${lateTag}
-                        </td>
-                        <td class="p-6 text-xs text-slate-400">${d.Location || "-"}</td>
-                        <td class="p-6 text-center text-indigo-300">
-                            <button onclick="showAlert('รายละเอียด', '${d["WorkSummary/Memo"] || "-"}', 'file-text')"><i data-lucide="eye" class="w-4 h-4 mx-auto"></i></button>
-                        </td>
-                    </tr>
-                `);
-            });
-            lucide.createIcons();
-        }
-
-        async function saveSettings() {
-            const start = `${document.getElementById('startH').value}:${document.getElementById('startM').value}`;
-            const end = `${document.getElementById('endH').value}:${document.getElementById('endM').value}`;
-            const btn = document.getElementById('saveConfigBtn');
-            btn.disabled = true; btn.innerText = "กำลังบันทึก...";
-            try {
-                const resp = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "saveConfig", startTime: start, endTime: end }) });
-                const res = await resp.json();
-                if (res.status === "success") {
-                    showAlert("สำเร็จ", "บันทึกเวลาใหม่เรียบร้อยแล้ว", "check-circle");
-                    await loadCurrentConfig(); // โหลดค่าใหม่มาโชว์ทันที
-                }
-            } catch (e) { showAlert("ล้มเหลว", "ไม่สามารถบันทึกได้", "x-circle"); }
-            finally { btn.disabled = false; btn.innerText = "บันทึกเกณฑ์เวลาใหม่"; }
-        }
-
         function updateNameDatalist() {
             const list = document.getElementById('nameOptions');
             const uniqueNames = [...new Set(rawData.map(d => d.Name))];
@@ -301,17 +308,17 @@
 
         async function handleAddUser() {
             const u = document.getElementById('newU').value, p = document.getElementById('newP').value, n = document.getElementById('newN').value, r = document.getElementById('newR').value;
-            if (!u || !p || !n) return showAlert("ไม่สมบูรณ์", "กรุณากรอกข้อมูลให้ครบ", "alert-circle");
+            if (!u || !p || !n) return showAlert("ข้อมูลไม่ครบ", "กรุณาระบุข้อมูลพนักงานให้ครบทุกช่อง", "alert-circle");
             const btn = document.getElementById('addBtn');
             btn.disabled = true;
             try {
                 const resp = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "addUser", newUsername: u, newPassword: p, newName: n, newRole: r }) });
                 const res = await resp.json();
                 if (res.status === "added") {
-                    showAlert("สำเร็จ", `เพิ่ม ${n} เรียบร้อย`, "user-check");
+                    showAlert("ลงทะเบียนแล้ว", `เพิ่มพนักงาน ${n} เรียบร้อย`, "user-check");
                     document.getElementById('newU').value = ''; document.getElementById('newP').value = ''; document.getElementById('newN').value = '';
                 }
-            } catch (e) { showAlert("ผิดพลาด", "บันทึกไม่ได้", "x-circle"); }
+            } catch (e) { showAlert("ผิดพลาด", "ไม่สามารถส่งข้อมูลได้", "x-circle"); }
             finally { btn.disabled = false; }
         }
 
@@ -329,7 +336,7 @@
         function exportToCSV() {
             if (rawData.length === 0) return;
             let csv = "data:text/csv;charset=utf-8,\uFEFFวันเวลา,ชื่อ,ประเภท,สถานที่,บันทึก\n";
-            rawData.forEach(d => { csv += `"${d.Timestamp}","${d.Name}","${d.Type}","${d.Location || "-"}","${d["WorkSummary/Memo"] || "-"}"\n`; });
+            rawData.forEach(d => { csv += `"${d.Timestamp}","${d.Name}","${d.Type === 'Check In' ? 'เข้างาน' : 'ออกงาน'}","${d.Location || "-"}","${d["WorkSummary/Memo"] || "-"}"\n`; });
             const link = document.createElement("a");
             link.href = encodeURI(csv);
             link.download = `Report_Attendance.csv`;
@@ -337,7 +344,7 @@
         }
 
         window.onload = async () => { 
-            initTimeSelectors();
+            populateTimeDropdowns();
             lucide.createIcons(); 
             await loadCurrentConfig(); 
             loadReportData(); 
