@@ -56,7 +56,6 @@
             line-height: 1; 
             margin-bottom: 2px; 
             display: inline-block;
-            /* ลบ transition ออก เพื่อไม่ให้ html2canvas ถ่ายภาพตอนฟอนต์กำลังขยับ (แก้ภาพเบี้ยว) */
         }
 
         .doc-row { margin-bottom: 8px; display: flex; align-items: flex-end; flex-wrap: wrap; }
@@ -120,7 +119,7 @@
                 <svg class="w-7 h-7 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                 เบิกค่าใช้จ่าย
             </h1>
-            <p class="text-xs text-slate-400 mt-1">V.1.6 - Perfect JPG & PDF Export</p>
+            <p class="text-xs text-slate-400 mt-1">V.1.7 - Smart JPG Export</p>
         </div>
 
         <div class="p-6 overflow-y-auto flex-1 space-y-8">
@@ -563,8 +562,12 @@
 
                     const textValues = document.querySelectorAll('.text-value');
                     textValues.forEach(el => {
-                        el.style.position = 'relative';
-                        el.style.top = '-4px'; 
+                        const txt = el.textContent.trim();
+                        // ถ้าเป็นช่องที่ไม่ได้กรอกข้อความ (ว่าง, -, หรือ ....) จะไม่ดันขึ้น
+                        if (txt !== "" && txt !== "-" && !txt.includes("....")) {
+                            el.style.position = 'relative';
+                            el.style.top = '-4px'; 
+                        }
                     });
                     
                     // ให้ Browser นิ่งสักแปปก่อนถ่ายรูป
