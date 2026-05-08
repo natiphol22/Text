@@ -56,18 +56,24 @@
 <body class="bg-black text-slate-200 h-screen overflow-hidden flex">
 
     <div class="w-[450px] h-full flex flex-col glass-panel z-10 shadow-2xl relative">
-        <div class="p-6 border-b border-white/10 relative overflow-hidden flex-shrink-0">
+        <div class="p-6 border-b border-white/10 relative overflow-hidden flex-shrink-0 flex justify-between items-start">
             <div class="absolute top-0 right-0 w-32 h-32 bg-cyan-500/20 rounded-full blur-3xl"></div>
-            <h1 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-emerald-400 flex items-center gap-2">
-                <svg class="w-7 h-7 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                PDF to JPG Pro
-            </h1>
-            <p class="text-xs text-slate-400 mt-1">Batch Conversion System (Max 5 Files)</p>
+            <div class="relative z-10">
+                <h1 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-emerald-400 flex items-center gap-2">
+                    <svg class="w-7 h-7 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                    PDF to JPG Pro
+                </h1>
+                <p class="text-xs text-slate-400 mt-1">Batch Conversion System (Max 5 Files)</p>
+            </div>
+            
+            <button onclick="location.href='dashboard.html'" class="relative z-10 flex items-center gap-1.5 text-[11px] font-bold text-slate-400 hover:text-cyan-400 transition-colors px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/5 active:scale-95 shrink-0 mt-1">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg> 
+                กลับหน้าหลัก
+            </button>
         </div>
 
         <div class="p-6 overflow-y-auto flex-1 space-y-6">
             
-            <!-- Step 1: Upload -->
             <div class="bg-white/5 p-4 rounded-xl border border-white/5 hover:border-cyan-500/30 transition-all">
                 <h2 class="text-sm font-bold text-cyan-400 tracking-wider mb-4">01. อัปโหลดไฟล์ PDF</h2>
                 <div class="relative w-full h-24 rounded-lg border-2 border-dashed border-slate-600 hover:border-cyan-400 transition-colors flex items-center justify-center bg-black/20 cursor-pointer overflow-hidden group">
@@ -83,7 +89,6 @@
                 </div>
             </div>
 
-            <!-- Step 2: Naming -->
             <div class="bg-white/5 p-4 rounded-xl border border-white/5 hover:border-emerald-500/30 transition-all">
                 <h2 class="text-sm font-bold text-emerald-400 tracking-wider mb-4">02. ตั้งชื่อไฟล์ใหม่ (Output Name)</h2>
                 <div id="file-list-container" class="space-y-3">
@@ -93,7 +98,6 @@
             
         </div>
 
-        <!-- Step 3: Action -->
         <div class="p-5 border-t border-white/10 bg-black/40 backdrop-blur-md">
             <button id="btn-convert" onclick="processFiles()" disabled class="w-full group relative py-3 px-4 rounded-xl font-medium text-white overflow-hidden transition-all bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed [&:not(:disabled)]:shadow-[0_0_20px_rgba(6,182,212,0.3)] [&:not(:disabled)]:hover:shadow-[0_0_30px_rgba(6,182,212,0.5)]">
                 <div class="absolute inset-0 bg-gradient-to-r from-cyan-500 to-blue-500 group-hover:scale-105 transition-transform duration-300 hidden group-enabled:block"></div>
@@ -106,7 +110,6 @@
         </div>
     </div>
 
-    <!-- Right Panel: Preview/Instructions -->
     <div class="flex-1 preview-container flex items-center justify-center relative">
         <div class="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none">
             <svg class="w-96 h-96" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
