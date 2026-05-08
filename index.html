@@ -68,10 +68,49 @@
         .fade-in-up { opacity: 0; transform: translateY(20px); animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
 
-        /* ปรับแต่ง SweetAlert2 ให้เข้ากับฟอนต์เว็บ */
+        /* ปรับแต่ง SweetAlert2 ให้มินิมอลและเข้ากับ Glassmorphism */
         .swal2-popup {
             font-family: 'Kanit', sans-serif !important;
             border-radius: 1.5rem !important;
+            width: 22rem !important;
+            padding: 1.25rem !important;
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(16px) !important;
+            -webkit-backdrop-filter: blur(16px) !important;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15) !important;
+        }
+
+        .swal2-title {
+            font-size: 1.15rem !important;
+            color: #1e293b !important;
+            padding-top: 0 !important;
+        }
+
+        .swal2-html-container {
+            font-size: 0.85rem !important;
+            color: #64748b !important;
+            margin-top: 0.5rem !important;
+        }
+
+        .swal2-confirm {
+            border-radius: 0.75rem !important;
+            font-size: 0.85rem !important;
+            padding: 0.5rem 1.5rem !important;
+            font-weight: 500 !important;
+            box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.2) !important;
+        }
+
+        .swal2-icon {
+            transform: scale(0.7) !important;
+            margin: 1rem auto 0.5rem auto !important;
+        }
+
+        /* ---------------------------------------------------
+           แก้บัคตาซ้อน: ซ่อนไอคอนดวงตา default ของเบราว์เซอร์ Edge/IE 
+           --------------------------------------------------- */
+        input[type="password"]::-ms-reveal,
+        input[type="password"]::-ms-clear {
+            display: none;
         }
     </style>
 </head>
@@ -146,7 +185,8 @@
             }
         });
 
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzehwXrrfuioHK68BXQGLpKyBPM5ElXZKgRm0o55yzwXgtx_YGkItjkM090zceA_t7Jcg/exec"; // ส่วนนี้ไม่แตะต้องครับ
+        // ส่วนเชื่อมต่อ Google Apps Script ที่ระบบเดิมของคุณมีอยู่แล้ว
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzehwXrrfuioHK68BXQGLpKyBPM5ElXZKgRm0o55yzwXgtx_YGkItjkM090zceA_t7Jcg/exec"; 
 
         async function handleLogin() {
             const userInp = document.getElementById('user').value.trim();
@@ -193,17 +233,19 @@
                         title: 'ยินดีต้อนรับ!',
                         text: 'เข้าสู่ระบบสำเร็จ กำลังพาท่านไป...',
                         timer: 1500,
-                        showConfirmButton: false
+                        showConfirmButton: false,
+                        backdrop: `rgba(0,0,0,0.4)`
                     }).then(() => {
                         window.location.href = "dashboard.html";
                     });
                 } else {
-                    // แจ้งเตือนเมื่อรหัสผิด (แทนที่ alert เดิม)
+                    // แจ้งเตือนเมื่อรหัสผิด
                     Swal.fire({
                         icon: 'error',
                         title: 'เข้าสู่ระบบไม่สำเร็จ',
                         text: 'ชื่อผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง',
-                        confirmButtonColor: '#6366f1'
+                        confirmButtonColor: '#6366f1',
+                        backdrop: `rgba(0,0,0,0.4)`
                     });
                 }
             } catch (err) {
@@ -211,7 +253,8 @@
                     icon: 'error',
                     title: 'เกิดข้อผิดพลาด',
                     text: 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ในขณะนี้',
-                    confirmButtonColor: '#6366f1'
+                    confirmButtonColor: '#6366f1',
+                    backdrop: `rgba(0,0,0,0.4)`
                 });
             } finally {
                 // คืนค่าสถานะปุ่มกลับมาเหมือนเดิม
