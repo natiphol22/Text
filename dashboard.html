@@ -10,6 +10,7 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -73,6 +74,39 @@
         .delay-400 { animation-delay: 0.4s; }
         .delay-500 { animation-delay: 0.5s; }
         @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+
+        /* ปรับแต่ง SweetAlert2 ให้มินิมอลและเข้ากับ Glassmorphism */
+        .swal2-popup {
+            font-family: 'Kanit', sans-serif !important;
+            border-radius: 1.5rem !important;
+            width: 24rem !important;
+            padding: 1.25rem !important;
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(16px) !important;
+            -webkit-backdrop-filter: blur(16px) !important;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15) !important;
+        }
+        .swal2-title {
+            font-size: 1.25rem !important;
+            color: #1e293b !important;
+            padding-top: 0 !important;
+        }
+        .swal2-html-container {
+            font-size: 0.9rem !important;
+            color: #64748b !important;
+            margin-top: 0.5rem !important;
+        }
+        .swal2-actions { margin-top: 1.5rem !important; }
+        .swal2-confirm, .swal2-cancel {
+            border-radius: 0.75rem !important;
+            font-size: 0.9rem !important;
+            padding: 0.5rem 1.5rem !important;
+            font-weight: 500 !important;
+        }
+        .swal2-icon {
+            transform: scale(0.8) !important;
+            margin: 1rem auto 0.5rem auto !important;
+        }
     </style>
 </head>
 <body class="p-4 md:p-8 lg:p-12 selection:bg-primary-200 selection:text-primary-900">
@@ -96,7 +130,7 @@
 
     <div class="max-w-6xl mx-auto space-y-8">
         
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
             
             <a href="checkin.html" class="glass-card menu-card p-8 md:p-10 rounded-[2.5rem] group fade-in-up delay-100 relative overflow-hidden">
                 <div class="absolute -top-10 -right-10 w-32 h-32 bg-emerald-100 rounded-full blur-3xl opacity-50 group-hover:opacity-80 transition-opacity"></div>
@@ -110,13 +144,49 @@
                 </div>
             </a>
 
+             <a href="Ai.html" class="glass-card menu-card p-8 md:p-10 rounded-[2.5rem] group fade-in-up delay-500 relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 w-32 h-32 bg-fuchsia-100 rounded-full blur-3xl opacity-50 group-hover:opacity-80 transition-opacity"></div>
+                <div class="w-16 h-16 bg-fuchsia-50 text-fuchsia-500 rounded-[1.5rem] flex items-center justify-center mb-8 group-hover:scale-110 transition-transform shadow-sm border border-fuchsia-100">
+                    <i data-lucide="sparkles" class="w-7 h-7"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-800 mb-2 tracking-tight">AI Smart Assistant</h3>
+                <p class="text-slate-500 text-sm leading-relaxed">ผู้ช่วย AI อัจฉริยะ ค้นหาข้อมูล ตอบคำถาม และช่วยซัพพอร์ตการทำงาน</p>
+                <div class="mt-8 flex items-center text-fuchsia-600 font-semibold text-sm opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all">
+                    เปิดใช้งาน AI <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                </div>
+            </a>
+
+              <a href="leave.html" class="glass-card menu-card p-8 md:p-10 rounded-[2.5rem] group fade-in-up delay-[600ms] relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 w-32 h-32 bg-teal-100 rounded-full blur-3xl opacity-50 group-hover:opacity-80 transition-opacity"></div>
+                <div class="w-16 h-16 bg-teal-50 text-teal-500 rounded-[1.5rem] flex items-center justify-center mb-8 group-hover:scale-110 transition-transform shadow-sm border border-teal-100">
+                    <i data-lucide="calendar-clock" class="w-7 h-7"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-800 mb-2 tracking-tight">ระบบลางาน</h3>
+                <p class="text-slate-500 text-sm leading-relaxed">ยื่นคำร้องลากิจ ลาป่วย ลาพักร้อน พร้อมติดตามสถานะการอนุมัติ</p>
+                <div class="mt-8 flex items-center text-teal-600 font-semibold text-sm opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all">
+                    เข้าสู่ระบบลางาน <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                </div>
+            </a>
+
+            <a href="calendar.html" class="glass-card menu-card p-8 md:p-10 rounded-[2.5rem] group fade-in-up delay-[700ms] relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 w-32 h-32 bg-blue-100 rounded-full blur-3xl opacity-50 group-hover:opacity-80 transition-opacity"></div>
+                <div class="w-16 h-16 bg-blue-50 text-blue-500 rounded-[1.5rem] flex items-center justify-center mb-8 group-hover:scale-110 transition-transform shadow-sm border border-blue-100">
+                    <i data-lucide="calendar-days" class="w-7 h-7"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-800 mb-2 tracking-tight">ปฏิทินวันหยุด</h3>
+                <p class="text-slate-500 text-sm leading-relaxed">เช็ควันหยุดประจำปีของบริษัท และวางแผนวันหยุดพักผ่อนของคุณ</p>
+                <div class="mt-8 flex items-center text-blue-600 font-semibold text-sm opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all">
+                    ดูปฏิทิน <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                </div>
+            </a>
+
             <a href="Form.html" class="glass-card menu-card p-8 md:p-10 rounded-[2.5rem] group fade-in-up delay-200 relative overflow-hidden">
                 <div class="absolute -top-10 -right-10 w-32 h-32 bg-indigo-100 rounded-full blur-3xl opacity-50 group-hover:opacity-80 transition-opacity"></div>
                 <div class="w-16 h-16 bg-indigo-50 text-indigo-500 rounded-[1.5rem] flex items-center justify-center mb-8 group-hover:scale-110 transition-transform shadow-sm border border-indigo-100">
                     <i data-lucide="wallet" class="w-7 h-7"></i>
                 </div>
-                <h3 class="text-xl font-bold text-slate-800 mb-2 tracking-tight">แจ้งเบิกค่าใช้จ่าย</h3>
-                <p class="text-slate-500 text-sm leading-relaxed">กรอกฟอร์มคำขอเบิกค่าเดินทาง ค่าใช้จ่ายบริษัท และติดตามสถานะ</p>
+                <h3 class="text-xl font-bold text-slate-800 mb-2 tracking-tight">แบบฟอร์มเบิกเบี้ยเลี้ยง</h3>
+                <p class="text-slate-500 text-sm leading-relaxed">กรอกฟอร์มเบิกเบี้ยเลี้ยง</p>
                 <div class="mt-8 flex items-center text-indigo-600 font-semibold text-sm opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all">
                     เข้าสู่ฟอร์มเบิกจ่าย <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
                 </div>
@@ -146,19 +216,8 @@
                 </div>
             </a>
 
-            <a href="Ai.html" class="glass-card menu-card p-8 md:p-10 rounded-[2.5rem] group fade-in-up delay-500 relative overflow-hidden">
-                <div class="absolute -top-10 -right-10 w-32 h-32 bg-fuchsia-100 rounded-full blur-3xl opacity-50 group-hover:opacity-80 transition-opacity"></div>
-                <div class="w-16 h-16 bg-fuchsia-50 text-fuchsia-500 rounded-[1.5rem] flex items-center justify-center mb-8 group-hover:scale-110 transition-transform shadow-sm border border-fuchsia-100">
-                    <i data-lucide="sparkles" class="w-7 h-7"></i>
-                </div>
-                <h3 class="text-xl font-bold text-slate-800 mb-2 tracking-tight">AI Smart Assistant</h3>
-                <p class="text-slate-500 text-sm leading-relaxed">ผู้ช่วย AI อัจฉริยะ ค้นหาข้อมูล ตอบคำถาม และช่วยซัพพอร์ตการทำงาน</p>
-                <div class="mt-8 flex items-center text-fuchsia-600 font-semibold text-sm opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all">
-                    เปิดใช้งาน AI <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
-                </div>
-            </a>
 
-            <a href="admin.html" id="adminMenu" class="glass-card menu-card admin-card p-8 md:p-10 rounded-[2.5rem] group hidden fade-in-up delay-[600ms] relative overflow-hidden">
+            <a href="admin.html" id="adminMenu" class="glass-card menu-card admin-card p-8 md:p-10 rounded-[2.5rem] group hidden fade-in-up delay-[800ms] relative overflow-hidden">
                 <div class="absolute -top-10 -right-10 w-32 h-32 bg-rose-100 rounded-full blur-3xl opacity-50 group-hover:opacity-80 transition-opacity"></div>
                 <div class="absolute top-6 right-6">
                     <span class="px-3 py-1 bg-rose-100 text-rose-600 text-[10px] font-bold uppercase tracking-widest rounded-full">Admin Only</span>
@@ -202,11 +261,25 @@
             }
         };
 
+        // เปลี่ยนฟังก์ชัน Log out มาใช้ SweetAlert2 แทน confirm เดิม
         function logout() {
-            if (confirm("ต้องการออกจากระบบใช่หรือไม่?")) {
-                sessionStorage.clear();
-                window.location.href = "index.html";
-            }
+            Swal.fire({
+                title: 'ออกจากระบบ?',
+                text: "คุณต้องการออกจากระบบ CubicPlus ใช่หรือไม่",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#f43f5e', // สีแดง (rose-500)
+                cancelButtonColor: '#94a3b8',  // สีเทา (slate-400)
+                confirmButtonText: 'ออกจากระบบ',
+                cancelButtonText: 'ยกเลิก',
+                backdrop: `rgba(0,0,0,0.4)`,
+                reverseButtons: true // สลับตำแหน่งปุ่มให้ดูสมูทกับ UX
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    sessionStorage.clear();
+                    window.location.href = "index.html";
+                }
+            });
         }
     </script>
 
