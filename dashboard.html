@@ -4,108 +4,157 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard | CubicPlus Portal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@200;300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Kanit', 'sans-serif'] },
+                    colors: {
+                        primary: { 50: '#eef2ff', 100: '#e0e7ff', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca' }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
         body { 
             font-family: 'Kanit', sans-serif; 
-            background: #f8fafc;
-            background-image: radial-gradient(circle at top right, #eff6ff, transparent),
-                              radial-gradient(circle at bottom left, #f5f3ff, transparent);
+            background-color: #f8fafc;
+            /* Mesh Gradient Background สุดพรีเมียม */
+            background-image: 
+                radial-gradient(at 10% 0%, hsla(228, 100%, 74%, 0.15) 0px, transparent 50%),
+                radial-gradient(at 80% 0%, hsla(189, 100%, 56%, 0.15) 0px, transparent 50%),
+                radial-gradient(at 0% 50%, hsla(355, 100%, 93%, 0.1) 0px, transparent 50%),
+                radial-gradient(at 80% 100%, hsla(240, 100%, 70%, 0.1) 0px, transparent 50%),
+                radial-gradient(at 0% 100%, hsla(22, 100%, 77%, 0.1) 0px, transparent 50%);
             min-height: 100vh;
+            color: #334155;
+            overflow-x: hidden;
         }
+
         .glass-card {
             background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.03);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,1);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
+
         .menu-card:hover {
             transform: translateY(-8px);
-            background: #ffffff;
-            box-shadow: 0 30px 60px -12px rgba(99, 102, 241, 0.1);
-            border-color: #6366f1;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 30px 60px -15px rgba(99, 102, 241, 0.15);
+            border-color: rgba(99, 102, 241, 0.3);
         }
+
         .admin-card {
-            background: linear-gradient(135deg, #fff5f5 0%, #ffffff 100%);
-            border: 1px dashed #feb2b2 !important;
+            background: linear-gradient(135deg, rgba(255,245,245,0.7) 0%, rgba(255,255,255,0.8) 100%);
+            border: 1px dashed rgba(244,63,94,0.4) !important;
         }
+
         .admin-card:hover {
             border-style: solid !important;
-            border-color: #f56565 !important;
+            border-color: rgba(244,63,94,0.5) !important;
+            box-shadow: 0 30px 60px -15px rgba(244,63,94,0.15);
         }
+
+        /* Animation ตอนโหลดหน้า */
+        .fade-in-up { opacity: 0; transform: translateY(20px); animation: fadeInUp 0.5s ease-out forwards; }
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body class="p-6 md:p-12">
+<body class="p-4 md:p-8 lg:p-12 selection:bg-primary-200 selection:text-primary-900">
 
-    <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
-        <div>
-            <h1 class="text-4xl font-semibold text-slate-800 tracking-tight">CubicPlus <span class="font-light text-indigo-500">Business</span></h1>
-            <p class="text-slate-400 font-light mt-1">ระบบจัดการหลังบ้านและทรัพยากรองค์กร</p>
+    <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12 fade-in-up">
+        <div class="relative">
+            <h1 class="text-4xl font-bold tracking-tight text-slate-800">Cubic<span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-sky-500">Plus</span> Business</h1>
+            <p class="text-slate-500 font-medium text-sm mt-1">ระบบจัดการหลังบ้านและทรัพยากรองค์กร</p>
         </div>
-        <div class="glass-card px-6 py-4 rounded-[2rem] flex items-center gap-4 border border-white">
+        
+        <div class="glass-card pl-6 pr-3 py-3 rounded-[2rem] flex items-center gap-5 border border-white">
             <div class="text-right">
                 <p class="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Logged in as</p>
-                <p id="displayName" class="text-slate-700 font-semibold italic">กำลังโหลด...</p>
+                <p id="displayName" class="text-slate-700 font-bold text-sm">กำลังโหลด...</p>
             </div>
-            <button onclick="logout()" class="w-10 h-10 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center hover:bg-rose-500 hover:text-white transition-all shadow-sm">
-                <i data-lucide="log-out" class="w-4 h-4"></i>
+            <button onclick="logout()" class="w-12 h-12 bg-white border border-slate-100 text-rose-500 rounded-full flex items-center justify-center hover:bg-rose-50 hover:border-rose-200 hover:scale-105 transition-all shadow-sm group">
+                <i data-lucide="power" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
             </button>
         </div>
     </div>
 
     <div class="max-w-6xl mx-auto space-y-8">
-        <div id="statusSummary" class="glass-card p-6 rounded-[2rem] flex items-center gap-4 border-l-4 border-l-indigo-500">
-            <div class="w-10 h-10 bg-indigo-50 text-indigo-500 rounded-2xl flex items-center justify-center animate-pulse">
-                <i data-lucide="radio" class="w-5 h-5"></i>
-            </div>
-            <div class="text-sm">
-                <span class="text-slate-400">สถานะทีมวันนี้:</span>
-                <span id="statusText" class="text-slate-600 font-medium ml-1 italic text-xs">กำลังเชื่อมต่อข้อมูลล่าสุด...</span>
-            </div>
+        
+        <div class="mb-10 fade-in-up delay-100">
+            <h2 class="text-2xl md:text-3xl font-bold text-slate-800 tracking-tight">สวัสดีคุณ <span id="welcomeName" class="text-primary-600">...</span> 👋</h2>
+            <p class="text-slate-500 mt-1">ยินดีต้อนรับสู่ระบบ เลือกเมนูที่คุณต้องการใช้งานด้านล่างได้เลย</p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <a href="checkin.html" class="glass-card menu-card p-10 rounded-[3rem] group">
-                <div class="w-14 h-14 bg-emerald-50 text-emerald-500 rounded-[1.5rem] flex items-center justify-center mb-6 group-hover:bg-emerald-500 group-hover:text-white transition-all">
-                    <i data-lucide="map-pin" class="w-6 h-6"></i>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            
+            <a href="checkin.html" class="glass-card menu-card p-8 md:p-10 rounded-[2.5rem] group fade-in-up delay-100 relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 w-32 h-32 bg-emerald-100 rounded-full blur-3xl opacity-50 group-hover:opacity-80 transition-opacity"></div>
+                <div class="w-16 h-16 bg-emerald-50 text-emerald-500 rounded-[1.5rem] flex items-center justify-center mb-8 group-hover:scale-110 transition-transform shadow-sm border border-emerald-100">
+                    <i data-lucide="map-pin" class="w-7 h-7"></i>
                 </div>
-                <h3 class="text-xl font-semibold text-slate-800 mb-2">Check-in</h3>
-                <p class="text-slate-400 text-sm font-light">ลงเวลาเข้า-ออกงาน และบันทึกสถานที่ทำงานรายวัน</p>
+                <h3 class="text-xl font-bold text-slate-800 mb-2 tracking-tight">Check-in</h3>
+                <p class="text-slate-500 text-sm leading-relaxed">ลงเวลาเข้า-ออกงาน และบันทึกสถานที่ทำงานรายวันอย่างแม่นยำ</p>
+                <div class="mt-8 flex items-center text-emerald-600 font-semibold text-sm opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all">
+                    เข้าใช้งานระบบ <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                </div>
             </a>
 
-            <a href="#" class="glass-card menu-card p-10 rounded-[3rem] group">
-                <div class="w-14 h-14 bg-indigo-50 text-indigo-500 rounded-[1.5rem] flex items-center justify-center mb-6 group-hover:bg-indigo-500 group-hover:text-white transition-all">
-                    <i data-lucide="wallet" class="w-6 h-6"></i>
+            <a href="#" class="glass-card menu-card p-8 md:p-10 rounded-[2.5rem] group fade-in-up delay-200 relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 w-32 h-32 bg-indigo-100 rounded-full blur-3xl opacity-50 group-hover:opacity-80 transition-opacity"></div>
+                <div class="w-16 h-16 bg-indigo-50 text-indigo-500 rounded-[1.5rem] flex items-center justify-center mb-8 group-hover:scale-110 transition-transform shadow-sm border border-indigo-100">
+                    <i data-lucide="wallet" class="w-7 h-7"></i>
                 </div>
-                <h3 class="text-xl font-semibold text-slate-800 mb-2">แจ้งเบิกค่าใช้จ่าย</h3>
-                <p class="text-slate-400 text-sm font-light">ส่งคำขอเบิกค่าใช้จ่ายบริษัท และติดตามสถานะการอนุมัติ</p>
+                <h3 class="text-xl font-bold text-slate-800 mb-2 tracking-tight">แจ้งเบิกค่าใช้จ่าย</h3>
+                <p class="text-slate-500 text-sm leading-relaxed">ส่งคำขอเบิกค่าเดินทาง ค่าใช้จ่ายบริษัท และติดตามสถานะการอนุมัติ</p>
+                <div class="mt-8 flex items-center text-indigo-600 font-semibold text-sm opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all">
+                    เข้าใช้งานระบบ <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                </div>
             </a>
 
-            <a href="#" class="glass-card menu-card p-10 rounded-[3rem] group">
-                <div class="w-14 h-14 bg-amber-50 text-amber-500 rounded-[1.5rem] flex items-center justify-center mb-6 group-hover:bg-amber-500 group-hover:text-white transition-all">
-                    <i data-lucide="file-type-2" class="w-6 h-6"></i>
+            <a href="#" class="glass-card menu-card p-8 md:p-10 rounded-[2.5rem] group fade-in-up delay-200 relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 w-32 h-32 bg-amber-100 rounded-full blur-3xl opacity-50 group-hover:opacity-80 transition-opacity"></div>
+                <div class="w-16 h-16 bg-amber-50 text-amber-500 rounded-[1.5rem] flex items-center justify-center mb-8 group-hover:scale-110 transition-transform shadow-sm border border-amber-100">
+                    <i data-lucide="file-type-2" class="w-7 h-7"></i>
                 </div>
-                <h3 class="text-xl font-semibold text-slate-800 mb-2">PDF to JPG</h3>
-                <p class="text-slate-400 text-sm font-light">เครื่องมือจัดการเอกสาร แปลงไฟล์ออนไลน์ได้ทันที</p>
+                <h3 class="text-xl font-bold text-slate-800 mb-2 tracking-tight">PDF to JPG</h3>
+                <p class="text-slate-500 text-sm leading-relaxed">เครื่องมือจัดการเอกสาร แปลงไฟล์ออนไลน์ได้ทันที รวดเร็วและปลอดภัย</p>
+                <div class="mt-8 flex items-center text-amber-600 font-semibold text-sm opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all">
+                    เข้าใช้งานเครื่องมือ <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                </div>
             </a>
 
-            <a href="admin.html" id="adminMenu" class="glass-card menu-card admin-card p-10 rounded-[3rem] group hidden">
-                <div class="w-14 h-14 bg-rose-50 text-rose-500 rounded-[1.5rem] flex items-center justify-center mb-6 group-hover:bg-rose-500 group-hover:text-white transition-all">
-                    <i data-lucide="settings-2" class="w-6 h-6"></i>
+            <a href="admin.html" id="adminMenu" class="glass-card menu-card admin-card p-8 md:p-10 rounded-[2.5rem] group hidden fade-in-up delay-300 relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 w-32 h-32 bg-rose-100 rounded-full blur-3xl opacity-50 group-hover:opacity-80 transition-opacity"></div>
+                <div class="absolute top-6 right-6">
+                    <span class="px-3 py-1 bg-rose-100 text-rose-600 text-[10px] font-bold uppercase tracking-widest rounded-full">Admin Only</span>
                 </div>
-                <h3 class="text-xl font-semibold text-slate-800 mb-2">Admin Panel</h3>
-                <p class="text-slate-400 text-sm font-light">ระบบจัดการสมาชิก แก้ไขข้อมูล และเรียกดูรายงานสรุป</p>
+                <div class="w-16 h-16 bg-rose-50 text-rose-500 rounded-[1.5rem] flex items-center justify-center mb-8 group-hover:scale-110 transition-transform shadow-sm border border-rose-100">
+                    <i data-lucide="settings-2" class="w-7 h-7"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-800 mb-2 tracking-tight">Admin Panel</h3>
+                <p class="text-slate-500 text-sm leading-relaxed">ระบบจัดการข้อมูลสมาชิก ตั้งค่าเกณฑ์เวลา และดาวน์โหลดรายงานภาพรวม</p>
+                <div class="mt-8 flex items-center text-rose-600 font-semibold text-sm opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all">
+                    เข้าสู่หลังบ้าน <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                </div>
             </a>
         </div>
     </div>
 
     <script>
-        // ใช้ URL เดียวกันทั้งหมดเพื่อความแม่นยำ
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzehwXrrfuioHK68BXQGLpKyBPM5ElXZKgRm0o55yzwXgtx_YGkItjkM090zceA_t7Jcg/exec";
-
         window.onload = function() {
             lucide.createIcons();
             
@@ -113,59 +162,24 @@
             const role = sessionStorage.getItem("userRole") || sessionStorage.getItem("role");
             const name = sessionStorage.getItem("userName");
 
-            // ตรวจสอบความปลอดภัย
+            // ตรวจสอบความปลอดภัย ถ้าไม่ได้ล็อกอินให้เด้งกลับหน้า index
             if (isLoggedIn !== "true") {
                 window.location.href = "index.html"; 
                 return;
             }
 
-            // แสดงชื่อผู้ใช้
-            document.getElementById("displayName").innerText = name ? name : "User Account";
+            // แสดงชื่อผู้ใช้ใน Header และข้อความต้อนรับ
+            const displayUser = name ? name : "User Account";
+            document.getElementById("displayName").innerText = displayUser;
+            document.getElementById("welcomeName").innerText = displayUser;
 
-            // ตรวจสอบสิทธิ์ Admin (ปรับให้รองรับตัวเล็กตัวใหญ่)
+            // ตรวจสอบสิทธิ์ Admin เพื่อเปิดปุ่มจัดการระบบ
             if (role && role.toLowerCase().trim() === "admin") {
                 const adminBtn = document.getElementById("adminMenu");
                 adminBtn.classList.remove("hidden");
                 adminBtn.classList.add("block");
             }
-
-            fetchColleagueStatus();
         };
-
-        async function fetchColleagueStatus() {
-            try {
-                const response = await fetch(WEB_APP_URL, { 
-                    method: 'POST', 
-                    body: JSON.stringify({ action: "fetchData" }) 
-                });
-                const data = await response.json();
-                
-                const today = new Date().toLocaleDateString();
-                // กรองเอาเฉพาะคนที่ Check In และยังไม่ Check Out ในวันนี้
-                const latestStatus = new Map();
-                data.forEach(d => {
-                    if (new Date(d.Timestamp).toLocaleDateString() === today) {
-                        latestStatus.set(d.Name, { type: d.Type, loc: d.Location });
-                    }
-                });
-
-                const onlineUsers = [];
-                latestStatus.forEach((val, key) => {
-                    if (val.type === "Check In") onlineUsers.push(`${key} (${val.loc})`);
-                });
-                
-                const statusText = document.getElementById("statusText");
-                if (onlineUsers.length > 0) {
-                    statusText.innerText = `มีคนเข้างานแล้ว: ${onlineUsers.join(", ")}`;
-                    statusText.classList.add("text-indigo-600");
-                } else {
-                    statusText.innerText = "ยังไม่มีเพื่อนร่วมงาน Check-in ในขณะนี้";
-                }
-            } catch (e) {
-                console.error("Status error", e);
-                document.getElementById("statusSummary").style.display = "none";
-            }
-        }
 
         function logout() {
             if (confirm("ต้องการออกจากระบบใช่หรือไม่?")) {
