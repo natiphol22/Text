@@ -531,10 +531,10 @@
                 try {
                     const paper = document.getElementById('a4-document');
                     const canvas = await html2canvas(paper, { 
-                        scale: 3, // เพิ่มความละเอียดเป็น 3 เท่า ช่วยให้ตัวอักษรคมและไม่จม
+                        scale: 3, 
                         useCORS: true, 
                         allowTaint: true, 
-                        letterRendering: true, // บังคับให้วาดตัวอักษรทีละตัว ป้องกัน offset เพี้ยน
+                        letterRendering: true, 
                         backgroundColor: "#ffffff",
                         scrollY: -window.scrollY 
                     });
@@ -557,6 +557,19 @@
         window.onload = () => {
             populateDateDropdowns();
             calc();
+
+            // ดึงชื่อจาก Session Storage มาใส่ให้โดยอัตโนมัติ
+            const savedName = sessionStorage.getItem("userName") || sessionStorage.getItem("username");
+            if (savedName) {
+                const nameInput = document.getElementById('in-name');
+                if(nameInput) {
+                    nameInput.value = savedName;
+                    // ซิงค์ข้อมูลลงในใบพรีวิว
+                    sync('in-name', 'out-name');
+                    sync('in-name', 'out-name-sign1');
+                    sync('in-name', 'out-name-sign2');
+                }
+            }
         };
     </script>
 </body>
