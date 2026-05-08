@@ -17,7 +17,7 @@
                     fontFamily: { sans: ['Kanit', 'sans-serif'] },
                     colors: {
                         brand: { 50: '#f0fdfa', 100: '#ccfbf1', 500: '#14b8a6', 600: '#0d9488', 700: '#0f766e', 900: '#134e4a' },
-                        primary: { 50: '#eef2ff', 100: '#e0e7ff', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca' }
+                        primary: { 50: '#eef2ff', 100: '#e0e7ff', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca', 800: '#3730a3' }
                     }
                 }
             }
@@ -26,55 +26,70 @@
     <style>
         body { 
             background-color: #f8fafc;
+            /* พื้นหลังสไตล์พรีเมียมคลีน อบอุ่นสบายตา */
             background-image: 
-                radial-gradient(at 10% 0%, hsla(228, 100%, 74%, 0.15) 0px, transparent 50%),
-                radial-gradient(at 80% 0%, hsla(189, 100%, 56%, 0.15) 0px, transparent 50%),
-                radial-gradient(at 0% 50%, hsla(355, 100%, 93%, 0.1) 0px, transparent 50%),
-                radial-gradient(at 80% 100%, hsla(240, 100%, 70%, 0.1) 0px, transparent 50%),
-                radial-gradient(at 0% 100%, hsla(22, 100%, 77%, 0.1) 0px, transparent 50%);
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.08) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(20, 184, 166, 0.08) 0px, transparent 50%);
             color: #334155; 
             min-height: 100vh; 
         }
         
         .glass-card { 
-            background: rgba(255, 255, 255, 0.75); 
-            backdrop-filter: blur(20px); 
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.8); 
-            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.02); 
+            background: rgba(255, 255, 255, 0.85); 
+            backdrop-filter: blur(24px); 
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 1); 
+            box-shadow: 0 15px 35px -5px rgba(15, 23, 42, 0.05), 0 5px 15px rgba(0,0,0,0.03); 
         }
 
         .input-glass {
-            background: rgba(255, 255, 255, 0.9);
-            border: 1px solid rgba(226, 232, 240, 0.8);
-            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.01);
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .input-glass:focus-within, .input-glass:focus {
+            border-color: #818cf8;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+            outline: none;
         }
 
         .tab-content { display: none; }
-        .tab-content.active { display: block; animation: slideUpFade 0.3s ease-out; }
-        @keyframes slideUpFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .tab-content.active { display: block; animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes slideUpFade { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         
         .time-picker-box { 
-            background: #f8fafc; border: 2px solid transparent; transition: all 0.2s ease; text-align: center; font-size: 1.25rem; font-weight: 600; cursor: pointer; border-radius: 1rem; 
+            background: #f1f5f9; border: 2px solid transparent; transition: all 0.2s ease; text-align: center; font-size: 1.25rem; font-weight: 600; cursor: pointer; border-radius: 1rem; 
         }
-        .time-picker-box:hover, .time-picker-box:focus-within { background: #fff; border-color: #6366f1; box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.15); transform: translateY(-1px); }
+        .time-picker-box:hover, .time-picker-box:focus-within { background: #fff; border-color: #818cf8; box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.15); transform: translateY(-1px); }
         select { -webkit-appearance: none; -moz-appearance: none; appearance: none; background: transparent; width: 100%; border: none; padding: 0.75rem 1rem; text-align: center; cursor: pointer; outline: none; }
         
-        .settings-nav-btn { position: relative; overflow: hidden; }
-        .settings-nav-btn::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: #6366f1; transform: scaleY(0); transition: transform 0.2s ease; transform-origin: left; }
-        .settings-nav-btn.active { background: #fff; color: #4f46e5; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); }
+        /* สไตล์ปุ่มเมนูตั้งค่า */
+        .settings-nav-btn { position: relative; overflow: hidden; border: 1px solid transparent; }
+        .settings-nav-btn::before { content: ''; position: absolute; left: 0; top: 15%; bottom: 15%; width: 4px; border-radius: 0 4px 4px 0; background: #6366f1; transform: scaleY(0); transition: transform 0.2s ease; transform-origin: center; }
+        .settings-nav-btn.active { background: #fff; color: #4f46e5; border-color: #e2e8f0; box-shadow: 0 4px 10px -2px rgba(0,0,0,0.03); }
         .settings-nav-btn.active::before { transform: scaleY(1); }
         
-        .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         
-        .dropdown-animate { animation: popIn 0.15s ease-out forwards; transform-origin: top; }
-        @keyframes popIn { from { opacity: 0; transform: scaleY(0.95); } to { opacity: 1; transform: scaleY(1); } }
+        .dropdown-animate { animation: popIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; transform-origin: top; }
+        @keyframes popIn { from { opacity: 0; transform: scaleY(0.95) translateY(-5px); } to { opacity: 1; transform: scaleY(1) translateY(0); } }
+
+        /* จัดแต่งปฏิทิน Native ให้ดูดีขึ้น */
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+            opacity: 0.5;
+            transition: 0.2s;
+        }
+        input[type="date"]::-webkit-calendar-picker-indicator:hover {
+            opacity: 1;
+        }
     </style>
 </head>
-<body class="p-4 md:p-8 lg:p-10 font-sans selection:bg-primary-200 selection:text-primary-900">
+<body class="p-4 md:p-8 lg:p-12 font-sans selection:bg-primary-200 selection:text-primary-900">
 
     <div class="max-w-7xl mx-auto mb-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div class="relative">
@@ -84,55 +99,52 @@
                   <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                   <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
                 </span>
-                <p class="text-slate-500 font-medium text-xs uppercase tracking-[0.2em]">Management System</p>
+                <p class="text-slate-500 font-semibold text-xs uppercase tracking-[0.2em]">Management System</p>
             </div>
         </div>
-        <button onclick="location.href='dashboard.html'" class="group flex items-center gap-2 px-6 py-3 bg-white border border-slate-200/60 rounded-2xl text-slate-600 font-semibold text-sm hover:text-primary-600 hover:border-primary-200 hover:shadow-md hover:shadow-primary-500/5 transition-all active:scale-95">
+        <button onclick="location.href='dashboard.html'" class="group flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 rounded-2xl text-slate-600 font-bold text-sm hover:text-primary-600 hover:border-primary-200 hover:shadow-md transition-all active:scale-95">
             <i data-lucide="arrow-left" class="w-4 h-4 group-hover:-translate-x-1 transition-transform"></i> กลับสู่แดชบอร์ด
         </button>
     </div>
 
     <div class="max-w-7xl mx-auto">
-        <div class="flex gap-2 p-1.5 bg-white/50 backdrop-blur-md rounded-[1.25rem] w-fit mb-8 shadow-sm border border-white/60">
-            <button id="tabReport" class="tab-btn active px-8 py-3 rounded-xl text-sm font-semibold transition-all text-slate-500 hover:text-slate-800 [&.active]:bg-primary-600 [&.active]:text-white [&.active]:shadow-md [&.active]:shadow-primary-500/20" onclick="openTab(event, 'reportTab')">
+        <div class="flex gap-2 p-1.5 bg-white/60 backdrop-blur-md rounded-[1.25rem] w-fit mb-8 shadow-sm border border-slate-200">
+            <button id="tabReport" class="tab-btn active px-8 py-3 rounded-xl text-sm font-bold transition-all text-slate-500 hover:text-slate-800 [&.active]:bg-primary-600 [&.active]:text-white [&.active]:shadow-md" onclick="openTab(event, 'reportTab')">
                 <div class="flex items-center gap-2"><i data-lucide="file-spreadsheet" class="w-4 h-4"></i> รายงานลงเวลา</div>
             </button>
-            <button id="tabSetting" class="tab-btn px-8 py-3 rounded-xl text-sm font-semibold transition-all text-slate-500 hover:text-slate-800 [&.active]:bg-primary-600 [&.active]:text-white [&.active]:shadow-md [&.active]:shadow-primary-500/20" onclick="openTab(event, 'settingTab')">
+            <button id="tabSetting" class="tab-btn px-8 py-3 rounded-xl text-sm font-bold transition-all text-slate-500 hover:text-slate-800 [&.active]:bg-primary-600 [&.active]:text-white [&.active]:shadow-md" onclick="openTab(event, 'settingTab')">
                 <div class="flex items-center gap-2"><i data-lucide="sliders-horizontal" class="w-4 h-4"></i> จัดการระบบ</div>
             </button>
         </div>
 
         <div id="reportTab" class="tab-content active">
             <div class="glass-card rounded-[2rem] overflow-hidden">
-                <div class="p-6 md:p-8 border-b border-slate-200/50 bg-white/40 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
+                <div class="p-6 md:p-8 border-b border-slate-100 bg-slate-50/50 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-5 items-end">
                     
-                    <div class="space-y-2 custom-dropdown-container relative">
-                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">ค้นหาชื่อพนักงาน</label>
+                    <div class="space-y-1.5 custom-dropdown-container relative">
+                        <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">ค้นหาชื่อพนักงาน</label>
                         <div class="relative group">
                             <i data-lucide="search" class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary-500 transition-colors"></i>
-                            <input type="text" id="filterName" autocomplete="off" class="w-full pl-11 pr-4 py-3.5 input-glass focus:border-primary-400 focus:ring-4 focus:ring-primary-50 rounded-2xl text-sm transition-all outline-none" placeholder="พิมพ์ชื่อเพื่อค้นหา...">
+                            <input type="text" id="filterName" autocomplete="off" class="w-full pl-11 pr-4 py-3.5 input-glass rounded-2xl text-sm transition-all" placeholder="พิมพ์ชื่อเพื่อค้นหา...">
                         </div>
-                        <div id="nameDropdown" class="custom-dropdown-list absolute z-50 w-full mt-2 bg-white border border-slate-100 rounded-2xl shadow-xl max-h-52 overflow-y-auto hidden custom-scrollbar dropdown-animate p-1.5"></div>
+                        <div id="nameDropdown" class="custom-dropdown-list absolute z-50 w-full mt-2 bg-white border border-slate-100 rounded-2xl shadow-[0_10px_25px_rgba(0,0,0,0.1)] max-h-52 overflow-y-auto hidden custom-scrollbar dropdown-animate p-1.5"></div>
                     </div>
 
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">ช่วงเวลา</label>
+                    <div class="space-y-1.5 relative">
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">เลือกวันที่</label>
+                            <button onclick="clearDateFilter()" class="text-[10px] text-primary-500 hover:text-primary-700 font-semibold cursor-pointer transition-colors" title="ดูข้อมูลทั้งหมด">แสดงทั้งหมด</button>
+                        </div>
                         <div class="relative group">
-                            <i data-lucide="calendar-days" class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary-500 transition-colors"></i>
-                            <select id="filterDateRange" onchange="applyFilters()" class="w-full pl-11 pr-4 py-3.5 input-glass focus:border-primary-400 focus:ring-4 focus:ring-primary-50 rounded-2xl text-sm transition-all outline-none text-left font-medium">
-                                <option value="all">ดูข้อมูลทั้งหมด</option>
-                                <option value="today">เฉพาะวันนี้</option>
-                                <option value="this_week">สัปดาห์นี้</option>
-                                <option value="this_month">เดือนนี้</option>
-                                </select>
+                            <input type="date" id="filterDate" onchange="applyFilters()" class="w-full px-4 py-3.5 input-glass rounded-2xl text-sm transition-all font-medium text-slate-600 outline-none">
                         </div>
                     </div>
                     
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">สถานที่ทำงาน</label>
+                    <div class="space-y-1.5">
+                        <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">สถานที่ทำงาน</label>
                         <div class="relative group">
                             <i data-lucide="map-pin" class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary-500 transition-colors"></i>
-                            <select id="filterLoc" onchange="applyFilters()" class="w-full pl-11 pr-4 py-3.5 input-glass focus:border-primary-400 focus:ring-4 focus:ring-primary-50 rounded-2xl text-sm transition-all outline-none text-left">
+                            <select id="filterLoc" onchange="applyFilters()" class="w-full pl-11 pr-4 py-3.5 input-glass rounded-2xl text-sm transition-all text-left font-medium">
                                 <option value="">ทุกสถานที่</option>
                                 <option value="OFFICE">OFFICE</option>
                                 <option value="ON-SITE">ON-SITE</option>
@@ -141,11 +153,11 @@
                         </div>
                     </div>
 
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">ประเภท</label>
+                    <div class="space-y-1.5">
+                        <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">ประเภท</label>
                         <div class="relative group">
                             <i data-lucide="log-in" class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary-500 transition-colors"></i>
-                            <select id="filterType" onchange="applyFilters()" class="w-full pl-11 pr-4 py-3.5 input-glass focus:border-primary-400 focus:ring-4 focus:ring-primary-50 rounded-2xl text-sm transition-all outline-none text-left">
+                            <select id="filterType" onchange="applyFilters()" class="w-full pl-11 pr-4 py-3.5 input-glass rounded-2xl text-sm transition-all text-left font-medium">
                                 <option value="">เข้า / ออกงาน</option>
                                 <option value="Check In">เข้างาน (Check In)</option>
                                 <option value="Check Out">ออกงาน (Check Out)</option>
@@ -153,38 +165,38 @@
                         </div>
                     </div>
 
-                    <button onclick="exportToCSV()" class="py-3.5 px-4 bg-slate-800 text-white rounded-2xl font-semibold text-sm flex items-center justify-center gap-2 hover:bg-slate-900 hover:shadow-lg hover:shadow-slate-900/20 hover:-translate-y-0.5 active:scale-95 transition-all w-full">
-                        <i data-lucide="download-cloud" class="w-4 h-4"></i> โหลดไฟล์ CSV
+                    <button onclick="exportToCSV()" class="py-3.5 px-4 bg-slate-800 text-white rounded-2xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-slate-900 hover:shadow-lg hover:shadow-slate-900/20 hover:-translate-y-0.5 active:scale-95 transition-all w-full">
+                        <i data-lucide="download-cloud" class="w-4 h-4"></i> โหลด CSV
                     </button>
                 </div>
 
-                <div class="overflow-x-auto custom-scrollbar bg-white/20">
+                <div class="overflow-x-auto custom-scrollbar bg-white">
                     <table id="reportTable" class="w-full text-left border-collapse min-w-[900px]">
                         <thead>
-                            <tr class="bg-slate-50/90 border-b border-slate-200/70">
-                                <th class="py-5 px-6 text-[11px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">วัน - เวลา</th>
-                                <th class="py-5 px-6 text-[11px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">ชื่อพนักงาน</th>
-                                <th class="py-5 px-6 text-[11px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">เข้า/ออก</th>
-                                <th class="py-5 px-6 text-[11px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">สถานที่</th>
-                                <th class="py-5 px-6 text-[11px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap text-center">สถานะ</th>
-                                <th class="py-5 px-6 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-center whitespace-nowrap">หมายเหตุ</th>
+                            <tr class="bg-slate-50 border-b border-slate-200">
+                                <th class="py-5 px-6 text-[11px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">วัน - เวลา</th>
+                                <th class="py-5 px-6 text-[11px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">ชื่อพนักงาน</th>
+                                <th class="py-5 px-6 text-[11px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">สถานะลงเวลา</th>
+                                <th class="py-5 px-6 text-[11px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">สถานที่</th>
+                                <th class="py-5 px-6 text-[11px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap text-center">เกณฑ์เวลา</th>
+                                <th class="py-5 px-6 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center whitespace-nowrap">หมายเหตุ</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-100/80"></tbody>
+                        <tbody class="divide-y divide-slate-100"></tbody>
                     </table>
                 </div>
             </div>
         </div>
 
         <div id="settingTab" class="tab-content">
-            <div class="flex flex-col md:flex-row gap-6">
-                <div class="w-full md:w-72 flex flex-col gap-2 shrink-0">
-                    <button onclick="openSettingSection(event, 'timeConfig')" class="settings-nav-btn active w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-sm font-semibold text-slate-600 hover:bg-white/60 transition-all text-left">
-                        <div class="w-8 h-8 rounded-full bg-primary-50 text-primary-600 flex items-center justify-center shrink-0 icon-wrapper"><i data-lucide="clock" class="w-4 h-4"></i></div>
+            <div class="flex flex-col md:flex-row gap-8">
+                <div class="w-full md:w-72 flex flex-col gap-3 shrink-0">
+                    <button onclick="openSettingSection(event, 'timeConfig')" class="settings-nav-btn active w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-sm font-bold text-slate-600 hover:bg-white/60 transition-all text-left">
+                        <div class="w-9 h-9 rounded-xl bg-primary-50 text-primary-600 flex items-center justify-center shrink-0 icon-wrapper shadow-sm"><i data-lucide="clock" class="w-4 h-4"></i></div>
                         จัดการเวลาเข้างาน
                     </button>
-                    <button onclick="openSettingSection(event, 'staffConfig')" class="settings-nav-btn w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-sm font-semibold text-slate-600 hover:bg-white/60 transition-all text-left">
-                        <div class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center shrink-0 icon-wrapper"><i data-lucide="user-plus" class="w-4 h-4"></i></div>
+                    <button onclick="openSettingSection(event, 'staffConfig')" class="settings-nav-btn w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-sm font-bold text-slate-600 hover:bg-white/60 transition-all text-left">
+                        <div class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center shrink-0 icon-wrapper shadow-sm"><i data-lucide="user-plus" class="w-4 h-4"></i></div>
                         ลงทะเบียนพนักงาน
                     </button>
                 </div>
@@ -192,18 +204,18 @@
                 <div class="flex-1">
                     <div id="timeConfig" class="setting-section block">
                         <div class="glass-card rounded-[2rem] p-8 md:p-10 relative overflow-hidden">
-                            <div class="absolute -top-24 -right-24 w-64 h-64 bg-primary-400 rounded-full blur-[80px] opacity-20 pointer-events-none"></div>
+                            <div class="absolute -top-24 -right-24 w-64 h-64 bg-primary-300 rounded-full blur-[100px] opacity-20 pointer-events-none"></div>
                             
                             <h3 class="text-2xl font-bold text-slate-800 tracking-tight">ตั้งค่าเกณฑ์เวลาเข้างาน</h3>
                             <p class="text-slate-500 text-sm mt-1 mb-8 flex items-center gap-2">
                                 ปัจจุบันระบบอ้างอิงเวลา: 
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-white border border-slate-200 text-primary-700 rounded-lg font-bold shadow-sm text-xs">
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-primary-50 border border-primary-100 text-primary-700 rounded-lg font-bold shadow-sm text-xs">
                                     <i data-lucide="alarm-clock" class="w-3.5 h-3.5"></i> <span id="curStart">-</span> ถึง <span id="curEnd">-</span>
                                 </span>
                             </p>
                             
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-                                <div class="space-y-4 bg-white/60 p-6 rounded-[1.5rem] border border-white shadow-sm hover:shadow-md transition-shadow">
+                                <div class="space-y-4 bg-white p-6 rounded-[1.5rem] border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
                                     <label class="flex items-center justify-between text-sm font-bold text-slate-700">
                                         <span class="flex items-center gap-2"><div class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.4)]"></div> เริ่มงาน (เช็คสาย)</span>
                                     </label>
@@ -219,7 +231,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="space-y-4 bg-white/60 p-6 rounded-[1.5rem] border border-white shadow-sm hover:shadow-md transition-shadow">
+                                <div class="space-y-4 bg-white p-6 rounded-[1.5rem] border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
                                     <label class="flex items-center justify-between text-sm font-bold text-slate-700">
                                         <span class="flex items-center gap-2"><div class="w-2.5 h-2.5 rounded-full bg-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.4)]"></div> เวลาเลิกงาน</span>
                                     </label>
@@ -237,7 +249,7 @@
                                 </div>
                             </div>
                             
-                            <button id="saveConfigBtn" onclick="saveSettings()" class="w-full md:w-auto px-10 py-4 bg-gradient-to-r from-primary-600 to-primary-500 text-white rounded-2xl font-bold text-sm shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40 hover:-translate-y-0.5 active:scale-95 transition-all flex items-center justify-center gap-2">
+                            <button id="saveConfigBtn" onclick="saveSettings()" class="w-full md:w-auto px-10 py-4 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 text-white rounded-2xl font-bold text-sm shadow-[0_10px_20px_rgba(99,102,241,0.25)] hover:shadow-[0_15px_30px_rgba(99,102,241,0.35)] hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all flex items-center justify-center gap-2">
                                 <i data-lucide="save" class="w-4 h-4"></i> บันทึกการตั้งค่าระบบ
                             </button>
                         </div>
@@ -248,28 +260,28 @@
                             <h3 class="text-2xl font-bold text-slate-800 tracking-tight">เพิ่มพนักงานใหม่</h3>
                             <p class="text-slate-500 text-sm mt-1 mb-8">สร้างบัญชีผู้ใช้สำหรับเข้าสู่ระบบลงเวลา</p>
                             
-                            <div class="space-y-5 max-w-2xl bg-white/40 p-6 rounded-[1.5rem] border border-white">
+                            <div class="space-y-5 max-w-2xl bg-white p-6 rounded-[1.5rem] border border-slate-100 shadow-sm">
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                     <div class="space-y-1.5">
                                         <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">ชื่อ - นามสกุล</label>
-                                        <input type="text" id="newN" class="w-full p-3.5 input-glass focus:border-primary-400 focus:ring-4 focus:ring-primary-50 rounded-xl text-sm transition-all outline-none" placeholder="เช่น สมชาย ใจดี">
+                                        <input type="text" id="newN" class="w-full p-3.5 input-glass rounded-xl text-sm font-medium outline-none" placeholder="เช่น สมชาย ใจดี">
                                     </div>
                                     <div class="space-y-1.5">
                                         <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">สิทธิ์การใช้งาน (Role)</label>
-                                        <select id="newR" class="w-full p-3.5 input-glass focus:border-primary-400 focus:ring-4 focus:ring-primary-50 rounded-xl text-sm transition-all outline-none text-left font-medium">
+                                        <select id="newR" class="w-full p-3.5 input-glass rounded-xl text-sm outline-none text-left font-medium text-slate-600">
                                             <option value="User">👤 พนักงานทั่วไป (User)</option>
                                             <option value="Admin">🛡️ ผู้ดูแลระบบ (Admin)</option>
                                         </select>
                                     </div>
                                 </div>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 pt-2 border-t border-slate-200/50">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 pt-2 border-t border-slate-100">
                                     <div class="space-y-1.5">
                                         <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">ชื่อผู้ใช้งาน (Username)</label>
-                                        <input type="text" id="newU" class="w-full p-3.5 input-glass focus:border-primary-400 focus:ring-4 focus:ring-primary-50 rounded-xl text-sm transition-all outline-none" placeholder="ภาษาอังกฤษหรือตัวเลข">
+                                        <input type="text" id="newU" class="w-full p-3.5 input-glass rounded-xl text-sm font-medium outline-none" placeholder="ภาษาอังกฤษหรือตัวเลข">
                                     </div>
                                     <div class="space-y-1.5">
                                         <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">รหัสผ่าน (Password)</label>
-                                        <input type="password" id="newP" class="w-full p-3.5 input-glass focus:border-primary-400 focus:ring-4 focus:ring-primary-50 rounded-xl text-sm transition-all outline-none" placeholder="••••••••">
+                                        <input type="password" id="newP" class="w-full p-3.5 input-glass rounded-xl text-sm font-medium outline-none" placeholder="••••••••">
                                     </div>
                                 </div>
                             </div>
@@ -286,12 +298,12 @@
         </div>
     </div>
 
-    <div id="customAlert" class="fixed inset-0 z-[100] hidden bg-slate-900/30 backdrop-blur-md items-center justify-center p-4 transition-opacity">
-        <div class="bg-white w-full max-w-sm rounded-[2rem] p-8 text-center shadow-[0_20px_50px_rgba(0,0,0,0.1)] transform scale-95 animate-[fadeInScale_0.2s_ease-out_forwards] border border-slate-100">
+    <div id="customAlert" class="fixed inset-0 z-[100] hidden bg-slate-900/40 backdrop-blur-sm items-center justify-center p-4 transition-opacity">
+        <div class="bg-white w-full max-w-sm rounded-[2rem] p-8 text-center shadow-[0_20px_50px_rgba(0,0,0,0.15)] transform scale-95 animate-[fadeInScale_0.3s_ease-out_forwards] border border-slate-100">
             <style>
                 @keyframes fadeInScale { to { opacity: 1; transform: scale(1) translateY(0); } from { opacity: 0; transform: scale(0.9) translateY(10px); } }
             </style>
-            <div id="alertIconContainer" class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-5 rotate-3">
+            <div id="alertIconContainer" class="w-16 h-16 rounded-[1.25rem] flex items-center justify-center mx-auto mb-6 rotate-3 border shadow-sm">
                 <div id="alertIcon"></div>
             </div>
             <h3 id="alertTitle" class="text-xl font-bold text-slate-800 mb-2 tracking-tight"></h3>
@@ -306,27 +318,20 @@
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxCxgtJBdY2GXJDY90emZyuw6rLP_00-yUBi7YBdLV3SQ5yn6g_8JaJCWHNUj_N036H/exec";
         let rawData = [];
 
+        // ซ่อน Dropdown ถอดคลิกด้านนอก
         document.addEventListener('click', (e) => {
             if(!e.target.closest('.custom-dropdown-container')) {
                 document.querySelectorAll('.custom-dropdown-list').forEach(el => el.classList.add('hidden'));
             }
         });
 
-        // 🟢 สร้างตัวเลือกเดือนย้อนหลังอัตโนมัติ
-        function populateDateFilters() {
-            const select = document.getElementById('filterDateRange');
-            const now = new Date();
-            const thMonths = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
-            
-            // สร้างย้อนหลังให้ 3 เดือน
-            for(let i=1; i<=3; i++) {
-                let d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-                let val = `${d.getFullYear()}-${d.getMonth()}`;
-                let label = `เดือน ${thMonths[d.getMonth()]} ${d.getFullYear() + 543}`;
-                select.insertAdjacentHTML('beforeend', `<option value="${val}">${label}</option>`);
-            }
+        // 🟢 สร้างปุ่มเคลียร์วันที่ 
+        function clearDateFilter() {
+            document.getElementById('filterDate').value = '';
+            applyFilters();
         }
 
+        // จัดการ Dropdown เวลา
         function setupCustomTimePickers() {
             const setups = [
                 { id: 'startH', max: 24, step: 1 }, { id: 'startM', max: 60, step: 5 },
@@ -340,7 +345,8 @@
                 let html = '';
                 for(let i=0; i<s.max; i+=s.step) {
                     const val = i.toString().padStart(2, '0');
-                    html += `<div class="p-3 rounded-xl hover:bg-primary-50 hover:text-primary-600 text-slate-600 cursor-pointer transition-colors" onclick="selectCustomTime('${s.id}', '${val}')">${val}</div>`;
+                    // ใช้ onmousedown แทน onclick เพื่อป้องกันการกระตุกเสียโฟกัสก่อนจะเลือกค่า
+                    html += `<div class="p-3 rounded-xl hover:bg-primary-50 hover:text-primary-600 text-slate-600 cursor-pointer transition-colors" onmousedown="selectCustomTime('${s.id}', '${val}')">${val}</div>`;
                 }
                 list.innerHTML = html;
 
@@ -356,6 +362,7 @@
             document.getElementById('list-' + id).classList.add('hidden');
         }
 
+        // 🟢 แก้ไข: ใช้ onmousedown ให้คลิกติด 100%
         function setupNameAutocomplete() {
             const input = document.getElementById('filterName');
             const list = document.getElementById('nameDropdown');
@@ -366,8 +373,12 @@
                 const filtered = uniqueNames.filter(n => n.toLowerCase().includes(val));
                 
                 if (filtered.length > 0) {
+                    // ใช้ onmousedown เพื่อการแตะที่ติดก่อน input เสีย Focus
                     list.innerHTML = filtered.map(name => 
-                        `<div class="p-3 rounded-xl hover:bg-primary-50 hover:text-primary-600 text-slate-700 font-medium cursor-pointer transition-colors text-sm flex items-center gap-2"><div class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-[10px] text-slate-500">${name.charAt(0)}</div>${name}</div>`
+                        `<div class="p-3 rounded-xl hover:bg-primary-50 hover:text-primary-600 text-slate-700 font-medium cursor-pointer transition-colors text-sm flex items-center gap-3" onmousedown="selectCustomName('${name}')">
+                            <div class="w-7 h-7 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-[10px] text-slate-500 font-bold">${name.charAt(0)}</div>
+                            ${name}
+                        </div>`
                     ).join('');
                 } else {
                     list.innerHTML = `<div class="p-4 text-slate-400 text-sm text-center italic">ไม่พบรายชื่อนี้</div>`;
@@ -377,6 +388,8 @@
 
             input.addEventListener('input', () => { updateList(); applyFilters(); });
             input.addEventListener('focus', updateList);
+            
+            // ลบการซ่อนด้วย Blur ที่ทำให้ปุ่มกดไม่ติด (ใช้ event click ของ document แทนแล้ว)
         }
 
         function selectCustomName(name) {
@@ -426,12 +439,13 @@
             }
         }
 
+        // --- Render ตาราง ---
         function renderTable(data) {
             const tbody = document.querySelector("#reportTable tbody");
             const policyStart = document.getElementById('curStart').innerText || "09:00";
             
             if (data.length === 0) {
-                tbody.innerHTML = "<tr><td colspan='6' class='py-20 text-center text-slate-400'><div class='flex flex-col items-center gap-3'><div class='w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-2'><i data-lucide='inbox' class='w-8 h-8 text-slate-300'></i></div><span class='font-medium'>ไม่พบข้อมูลตามเงื่อนไขที่เลือก</span></div></td></tr>";
+                tbody.innerHTML = "<tr><td colspan='6' class='py-24 text-center text-slate-400'><div class='flex flex-col items-center gap-3'><div class='w-16 h-16 bg-slate-50 border border-slate-100 rounded-full flex items-center justify-center mb-2'><i data-lucide='inbox' class='w-8 h-8 text-slate-300'></i></div><span class='font-medium'>ไม่พบข้อมูลตามเงื่อนไขที่เลือก</span></div></td></tr>";
                 lucide.createIcons();
                 return;
             }
@@ -457,14 +471,14 @@
                 }
 
                 htmlContent += `
-                    <tr class="hover:bg-white/60 transition-colors group">
+                    <tr class="hover:bg-slate-50/80 transition-colors group">
                         <td class="py-4 px-6 text-sm whitespace-nowrap">
                             <div class="font-bold text-slate-700">${timeStr} <span class="text-xs font-normal text-slate-400 ml-1">น.</span></div>
-                            <div class="text-[11px] text-slate-400 font-medium">${dateStr}</div>
+                            <div class="text-[11px] text-slate-500 font-medium">${dateStr}</div>
                         </td>
                         <td class="py-4 px-6 whitespace-nowrap">
                             <div class="font-semibold text-slate-700 flex items-center gap-3">
-                                <div class="w-9 h-9 rounded-full bg-gradient-to-br from-primary-100 to-primary-50 text-primary-600 flex items-center justify-center text-sm font-bold shadow-inner border border-white">${(d.Name || "U").charAt(0)}</div>
+                                <div class="w-9 h-9 rounded-full bg-gradient-to-br from-primary-100 to-primary-50 border border-primary-200 text-primary-600 flex items-center justify-center text-sm font-bold shadow-sm">${(d.Name || "U").charAt(0)}</div>
                                 ${d.Name || "-"}
                             </div>
                         </td>
@@ -473,14 +487,14 @@
                                 ${d.Type === 'Check In' ? 'เข้างาน' : 'ออกงาน'}
                             </span>
                         </td>
-                        <td class="py-4 px-6 text-sm font-medium text-slate-500 whitespace-nowrap">
+                        <td class="py-4 px-6 text-sm font-semibold text-slate-500 whitespace-nowrap">
                             <div class="flex items-center gap-2"><i data-lucide="map-pin" class="w-3.5 h-3.5 opacity-60"></i> ${d.Location || "-"}</div>
                         </td>
                         <td class="py-4 px-6 whitespace-nowrap text-center">
                             ${statusBadge}
                         </td>
                         <td class="py-4 px-6 text-center whitespace-nowrap">
-                            <button onclick="showAlert('รายละเอียดบันทึก', '${d["WorkSummary/Memo"] || "ไม่มีบันทึกหมายเหตุเพิ่มเติม"}', 'file-text', 'primary')" class="p-2.5 rounded-xl text-slate-400 hover:text-primary-600 hover:bg-primary-50 transition-all opacity-50 group-hover:opacity-100 shadow-sm border border-transparent hover:border-primary-100">
+                            <button onclick="showAlert('รายละเอียดบันทึก', '${d["WorkSummary/Memo"] || "ไม่มีบันทึกหมายเหตุเพิ่มเติม"}', 'file-text', 'primary')" class="p-2.5 rounded-xl text-slate-400 hover:text-primary-600 hover:bg-primary-50 transition-all opacity-60 group-hover:opacity-100 shadow-sm border border-transparent hover:border-primary-100">
                                 <i data-lucide="eye" class="w-4 h-4 mx-auto"></i>
                             </button>
                         </td>
@@ -542,36 +556,25 @@
             lucide.createIcons();
         }
 
-        // 🟢 อัปเดตฟังก์ชันกรองข้อมูล ให้รองรับ สัปดาห์ และ เดือน
+        // 🟢 อัปเดตฟังก์ชันให้รองรับปฏิทิน
         function applyFilters() {
             const nameF = document.getElementById('filterName').value.toLowerCase();
             const locF = document.getElementById('filterLoc').value;
             const typeF = document.getElementById('filterType').value;
-            const dateRangeF = document.getElementById('filterDateRange').value;
-            const now = new Date();
+            const dateF = document.getElementById('filterDate').value; // มาจาก input type="date"
 
             const filtered = rawData.filter(d => {
                 const itemDate = new Date(d.Timestamp);
+                
+                // กรองปฏิทินแบบเจาะจงวัน
                 let dateMatch = true;
-
-                // ตรวจสอบช่วงเวลา
-                if (dateRangeF === "today") {
-                    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-                    dateMatch = itemDate >= startOfToday;
-                } else if (dateRangeF === "this_week") {
-                    const currentDay = now.getDay();
-                    const distance = currentDay === 0 ? 6 : currentDay - 1; // นับวันจันทร์เป็นวันเริ่มสัปดาห์
-                    const startOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() - distance);
-                    dateMatch = itemDate >= startOfWeek;
-                } else if (dateRangeF === "this_month") {
-                    dateMatch = itemDate.getMonth() === now.getMonth() && itemDate.getFullYear() === now.getFullYear();
-                } else if (dateRangeF.includes("-")) {
-                    // สำหรับเดือนย้อนหลัง รูปแบบ YYYY-MM
-                    const [year, month] = dateRangeF.split('-');
-                    dateMatch = itemDate.getFullYear() === parseInt(year) && itemDate.getMonth() === parseInt(month);
+                if (dateF) {
+                    const targetDate = new Date(dateF);
+                    dateMatch = itemDate.getFullYear() === targetDate.getFullYear() && 
+                                itemDate.getMonth() === targetDate.getMonth() && 
+                                itemDate.getDate() === targetDate.getDate();
                 }
 
-                // ตรวจสอบเงื่อนไขอื่น
                 const nameMatch = (d.Name || "").toLowerCase().includes(nameF);
                 const locMatch = !locF || d.Location === locF;
                 const typeMatch = !typeF || d.Type === typeF;
@@ -644,17 +647,15 @@
             const policyStart = document.getElementById('curStart').innerText || "09:00";
             let csv = "data:text/csv;charset=utf-8,\uFEFFวันเวลา,ชื่อ,ประเภท,สถานที่,สถานะ,บันทึก\n";
             
-            // ใช้ข้อมูลที่มีอยู่ในตารางปัจจุบัน (Filtered Data) แทนการดึงทั้งหมด
             const tableRows = document.querySelectorAll("#reportTable tbody tr");
             
             tableRows.forEach(row => {
-                if (row.cells.length > 1) { // ตรวจสอบว่าไม่ใช่แถวแจ้งเตือนไม่มีข้อมูล
+                if (row.cells.length > 1) { 
                     const timeCell = row.cells[0].innerText.replace('น.', '').replace(/\n/g, ' ').trim();
                     const nameCell = row.cells[1].innerText.trim();
                     const typeCell = row.cells[2].innerText.trim();
                     const locCell = row.cells[3].innerText.trim();
                     const statusCell = row.cells[4].innerText.trim();
-                    // บันทึกหมายเหตุต้องดึงจาก onclick attribute ของปุ่ม เพราะถูกซ่อนไว้ในปุ่มตา (eye)
                     const memoMatch = row.cells[5].innerHTML.match(/showAlert\('.*?',\s*'(.*?)'/);
                     const memoCell = memoMatch ? memoMatch[1] : "-";
 
@@ -669,7 +670,6 @@
         }
 
         window.onload = () => { 
-            populateDateFilters(); // สร้างตัวกรองเดือนย้อนหลัง
             setupCustomTimePickers();
             setupNameAutocomplete();
             lucide.createIcons(); 
