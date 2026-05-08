@@ -69,6 +69,9 @@
         .fade-in-up { opacity: 0; transform: translateY(20px); animation: fadeInUp 0.5s ease-out forwards; }
         .delay-100 { animation-delay: 0.1s; }
         .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        .delay-400 { animation-delay: 0.4s; }
+        .delay-500 { animation-delay: 0.5s; }
         @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
@@ -107,31 +110,55 @@
                 </div>
             </a>
 
-            <a href="#" class="glass-card menu-card p-8 md:p-10 rounded-[2.5rem] group fade-in-up delay-100 relative overflow-hidden">
+            <a href="Form.html" class="glass-card menu-card p-8 md:p-10 rounded-[2.5rem] group fade-in-up delay-200 relative overflow-hidden">
                 <div class="absolute -top-10 -right-10 w-32 h-32 bg-indigo-100 rounded-full blur-3xl opacity-50 group-hover:opacity-80 transition-opacity"></div>
                 <div class="w-16 h-16 bg-indigo-50 text-indigo-500 rounded-[1.5rem] flex items-center justify-center mb-8 group-hover:scale-110 transition-transform shadow-sm border border-indigo-100">
                     <i data-lucide="wallet" class="w-7 h-7"></i>
                 </div>
                 <h3 class="text-xl font-bold text-slate-800 mb-2 tracking-tight">แจ้งเบิกค่าใช้จ่าย</h3>
-                <p class="text-slate-500 text-sm leading-relaxed">ส่งคำขอเบิกค่าเดินทาง ค่าใช้จ่ายบริษัท และติดตามสถานะการอนุมัติ</p>
+                <p class="text-slate-500 text-sm leading-relaxed">กรอกฟอร์มคำขอเบิกค่าเดินทาง ค่าใช้จ่ายบริษัท และติดตามสถานะ</p>
                 <div class="mt-8 flex items-center text-indigo-600 font-semibold text-sm opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all">
-                    เข้าใช้งานระบบ <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                    เข้าสู่ฟอร์มเบิกจ่าย <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
                 </div>
             </a>
 
-            <a href="#" class="glass-card menu-card p-8 md:p-10 rounded-[2.5rem] group fade-in-up delay-200 relative overflow-hidden">
+            <a href="oil.html" class="glass-card menu-card p-8 md:p-10 rounded-[2.5rem] group fade-in-up delay-300 relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 w-32 h-32 bg-cyan-100 rounded-full blur-3xl opacity-50 group-hover:opacity-80 transition-opacity"></div>
+                <div class="w-16 h-16 bg-cyan-50 text-cyan-500 rounded-[1.5rem] flex items-center justify-center mb-8 group-hover:scale-110 transition-transform shadow-sm border border-cyan-100">
+                    <i data-lucide="car" class="w-7 h-7"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-800 mb-2 tracking-tight">คำนวณค่าเดินทาง</h3>
+                <p class="text-slate-500 text-sm leading-relaxed">เครื่องมือคำนวณระยะทางและค่าน้ำมันอัตโนมัติ สำหรับเดินทางไปหาลูกค้า</p>
+                <div class="mt-8 flex items-center text-cyan-600 font-semibold text-sm opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all">
+                    คำนวณค่าเดินทาง <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                </div>
+            </a>
+
+            <a href="PDFtoJPG.html" class="glass-card menu-card p-8 md:p-10 rounded-[2.5rem] group fade-in-up delay-400 relative overflow-hidden">
                 <div class="absolute -top-10 -right-10 w-32 h-32 bg-amber-100 rounded-full blur-3xl opacity-50 group-hover:opacity-80 transition-opacity"></div>
                 <div class="w-16 h-16 bg-amber-50 text-amber-500 rounded-[1.5rem] flex items-center justify-center mb-8 group-hover:scale-110 transition-transform shadow-sm border border-amber-100">
                     <i data-lucide="file-type-2" class="w-7 h-7"></i>
                 </div>
                 <h3 class="text-xl font-bold text-slate-800 mb-2 tracking-tight">PDF to JPG</h3>
-                <p class="text-slate-500 text-sm leading-relaxed">เครื่องมือจัดการเอกสาร แปลงไฟล์ออนไลน์ได้ทันที รวดเร็วและปลอดภัย</p>
+                <p class="text-slate-500 text-sm leading-relaxed">เครื่องมือจัดการเอกสาร แปลงไฟล์ PDF เป็นรูปภาพออนไลน์ รวดเร็วและปลอดภัย</p>
                 <div class="mt-8 flex items-center text-amber-600 font-semibold text-sm opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all">
                     เข้าใช้งานเครื่องมือ <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
                 </div>
             </a>
 
-            <a href="admin.html" id="adminMenu" class="glass-card menu-card admin-card p-8 md:p-10 rounded-[2.5rem] group hidden fade-in-up delay-200 relative overflow-hidden">
+            <a href="Ai.html" class="glass-card menu-card p-8 md:p-10 rounded-[2.5rem] group fade-in-up delay-500 relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 w-32 h-32 bg-fuchsia-100 rounded-full blur-3xl opacity-50 group-hover:opacity-80 transition-opacity"></div>
+                <div class="w-16 h-16 bg-fuchsia-50 text-fuchsia-500 rounded-[1.5rem] flex items-center justify-center mb-8 group-hover:scale-110 transition-transform shadow-sm border border-fuchsia-100">
+                    <i data-lucide="sparkles" class="w-7 h-7"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-800 mb-2 tracking-tight">AI Smart Assistant</h3>
+                <p class="text-slate-500 text-sm leading-relaxed">ผู้ช่วย AI อัจฉริยะ ค้นหาข้อมูล ตอบคำถาม และช่วยซัพพอร์ตการทำงาน</p>
+                <div class="mt-8 flex items-center text-fuchsia-600 font-semibold text-sm opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all">
+                    เปิดใช้งาน AI <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                </div>
+            </a>
+
+            <a href="admin.html" id="adminMenu" class="glass-card menu-card admin-card p-8 md:p-10 rounded-[2.5rem] group hidden fade-in-up delay-[600ms] relative overflow-hidden">
                 <div class="absolute -top-10 -right-10 w-32 h-32 bg-rose-100 rounded-full blur-3xl opacity-50 group-hover:opacity-80 transition-opacity"></div>
                 <div class="absolute top-6 right-6">
                     <span class="px-3 py-1 bg-rose-100 text-rose-600 text-[10px] font-bold uppercase tracking-widest rounded-full">Admin Only</span>
