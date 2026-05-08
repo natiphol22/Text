@@ -13,7 +13,8 @@
                 extend: {
                     fontFamily: { sans: ['Kanit', 'sans-serif'] },
                     colors: {
-                        brand: { 50: '#eef2ff', 100: '#e0e7ff', 200: '#c7d2fe', 400: '#818cf8', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca' }
+                        brand: { 50: '#f0fdfa', 100: '#ccfbf1', 500: '#14b8a6', 600: '#0d9488', 700: '#0f766e', 900: '#134e4a' },
+                        primary: { 50: '#eef2ff', 100: '#e0e7ff', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca' }
                     }
                 }
             }
@@ -22,94 +23,114 @@
     <style>
         body { 
             background-color: #f8fafc;
-            background-image: radial-gradient(at 0% 0%, hsla(253,16%,7%,0.03) 0, transparent 50%), radial-gradient(at 50% 0%, hsla(225,39%,30%,0.03) 0, transparent 50%), radial-gradient(at 100% 0%, hsla(339,49%,30%,0.03) 0, transparent 50%);
+            /* Mesh Gradient Background สุดพรีเมียม */
+            background-image: 
+                radial-gradient(at 10% 0%, hsla(228, 100%, 74%, 0.15) 0px, transparent 50%),
+                radial-gradient(at 80% 0%, hsla(189, 100%, 56%, 0.15) 0px, transparent 50%),
+                radial-gradient(at 0% 50%, hsla(355, 100%, 93%, 0.1) 0px, transparent 50%),
+                radial-gradient(at 80% 100%, hsla(240, 100%, 70%, 0.1) 0px, transparent 50%),
+                radial-gradient(at 0% 100%, hsla(22, 100%, 77%, 0.1) 0px, transparent 50%);
             color: #334155; 
             min-height: 100vh; 
         }
-        .glass-panel { 
-            background: rgba(255, 255, 255, 0.85); 
-            backdrop-filter: blur(16px); 
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.4); 
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); 
+        
+        .glass-card { 
+            background: rgba(255, 255, 255, 0.75); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.8); 
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.02); 
         }
+
+        .input-glass {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.01);
+        }
+
         .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .tab-content.active { display: block; animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes slideUpFade { from { opacity: 0; transform: translateY(12px) scale(0.99); } to { opacity: 1; transform: translateY(0) scale(1); } }
         
         .time-picker-box { 
-            background: #f1f5f9; border: 2px solid transparent; transition: all 0.2s ease; text-align: center; font-size: 1.25rem; font-weight: 600; cursor: pointer; border-radius: 1rem; 
+            background: #f8fafc; border: 2px solid transparent; transition: all 0.25s ease; text-align: center; font-size: 1.25rem; font-weight: 600; cursor: pointer; border-radius: 1rem; 
         }
-        .time-picker-box:hover, .time-picker-box:focus-within { background: #fff; border-color: #818cf8; box-shadow: 0 4px 14px 0 rgba(99, 102, 241, 0.15); }
+        .time-picker-box:hover, .time-picker-box:focus-within { background: #fff; border-color: #6366f1; box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.15); transform: translateY(-1px); }
         select { -webkit-appearance: none; -moz-appearance: none; appearance: none; background: transparent; width: 100%; border: none; padding: 0.75rem 1rem; text-align: center; cursor: pointer; outline: none; }
         
-        .settings-nav-btn.active { background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%); color: #4f46e5; border-right: 3px solid #4f46e5; }
+        /* สไตล์ปุ่มเมนูตั้งค่า */
+        .settings-nav-btn { position: relative; overflow: hidden; }
+        .settings-nav-btn::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: #6366f1; transform: scaleY(0); transition: transform 0.2s ease; transform-origin: left; }
+        .settings-nav-btn.active { background: #fff; color: #4f46e5; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); }
+        .settings-nav-btn.active::before { transform: scaleY(1); }
         
-        /* Custom Scrollbar for dropdowns and table */
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        /* Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         
-        /* Dropdown Animation */
-        .dropdown-animate { animation: slideDown 0.2s ease-out forwards; transform-origin: top; }
-        @keyframes slideDown { from { opacity: 0; transform: scaleY(0.95); } to { opacity: 1; transform: scaleY(1); } }
+        .dropdown-animate { animation: popIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; transform-origin: top; }
+        @keyframes popIn { from { opacity: 0; transform: scaleY(0.95) translateY(-5px); } to { opacity: 1; transform: scaleY(1) translateY(0); } }
     </style>
 </head>
-<body class="p-4 md:p-8 lg:p-12">
+<body class="p-4 md:p-8 lg:p-10 font-sans selection:bg-primary-200 selection:text-primary-900">
 
     <div class="max-w-7xl mx-auto mb-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        <div>
-            <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-brand-700 to-indigo-400">ระบบจัดการหลังบ้าน</h1>
+        <div class="relative">
+            <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-slate-800">Cubic<span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-sky-500">Plus</span> Admin</h1>
             <div class="flex items-center gap-2 mt-2">
-                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                <p class="text-slate-500 font-medium text-[11px] uppercase tracking-[0.2em]">CubicPlus Advanced Admin</p>
+                <span class="relative flex h-2.5 w-2.5">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                </span>
+                <p class="text-slate-500 font-medium text-xs uppercase tracking-[0.2em]">Management System</p>
             </div>
         </div>
-        <button onclick="location.href='dashboard.html'" class="group flex items-center gap-2 px-5 py-2.5 bg-white/80 border border-slate-200 rounded-xl text-slate-600 font-semibold text-sm hover:text-brand-600 hover:border-brand-200 shadow-sm transition-all active:scale-95">
+        <button onclick="location.href='dashboard.html'" class="group flex items-center gap-2 px-6 py-3 bg-white border border-slate-200/60 rounded-2xl text-slate-600 font-semibold text-sm hover:text-primary-600 hover:border-primary-200 hover:shadow-md hover:shadow-primary-500/5 transition-all active:scale-95">
             <i data-lucide="arrow-left" class="w-4 h-4 group-hover:-translate-x-1 transition-transform"></i> กลับสู่แดชบอร์ด
         </button>
     </div>
 
     <div class="max-w-7xl mx-auto">
-        <div class="flex gap-1 p-1.5 bg-slate-200/60 backdrop-blur-md rounded-2xl w-fit mb-8 border border-slate-300/30">
-            <button id="tabReport" class="tab-btn active px-8 py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-500 hover:text-slate-700 [&.active]:bg-white [&.active]:text-brand-600 [&.active]:shadow-sm" onclick="openTab(event, 'reportTab'); loadReportData();">
-                <div class="flex items-center gap-2"><i data-lucide="layout-dashboard" class="w-4 h-4"></i> รายงานการเช็คอิน</div>
+        <div class="flex gap-2 p-1.5 bg-white/50 backdrop-blur-md rounded-[1.25rem] w-fit mb-8 shadow-sm border border-white/60">
+            <button id="tabReport" class="tab-btn active px-8 py-3 rounded-xl text-sm font-semibold transition-all text-slate-500 hover:text-slate-800 [&.active]:bg-primary-600 [&.active]:text-white [&.active]:shadow-md [&.active]:shadow-primary-500/20" onclick="openTab(event, 'reportTab'); loadReportData();">
+                <div class="flex items-center gap-2"><i data-lucide="file-spreadsheet" class="w-4 h-4"></i> รายงานลงเวลา</div>
             </button>
-            <button id="tabSetting" class="tab-btn px-8 py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-500 hover:text-slate-700 [&.active]:bg-white [&.active]:text-brand-600 [&.active]:shadow-sm" onclick="openTab(event, 'settingTab')">
-                <div class="flex items-center gap-2"><i data-lucide="settings" class="w-4 h-4"></i> ตั้งค่าระบบ</div>
+            <button id="tabSetting" class="tab-btn px-8 py-3 rounded-xl text-sm font-semibold transition-all text-slate-500 hover:text-slate-800 [&.active]:bg-primary-600 [&.active]:text-white [&.active]:shadow-md [&.active]:shadow-primary-500/20" onclick="openTab(event, 'settingTab')">
+                <div class="flex items-center gap-2"><i data-lucide="sliders-horizontal" class="w-4 h-4"></i> จัดการระบบ</div>
             </button>
         </div>
 
         <div id="reportTab" class="tab-content active">
-            <div class="glass-panel rounded-3xl overflow-hidden">
-                <div class="p-6 md:p-8 border-b border-slate-100 bg-white/40 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-5 items-end">
+            <div class="glass-card rounded-[2rem] overflow-hidden">
+                <div class="p-6 md:p-8 border-b border-slate-200/50 bg-white/40 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
                     
-                    <div class="space-y-1.5 custom-dropdown-container relative">
-                        <label class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider ml-1">ค้นหาชื่อ</label>
-                        <div class="relative">
-                            <i data-lucide="search" class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                            <input type="text" id="filterName" autocomplete="off" class="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 focus:border-brand-400 focus:ring-2 focus:ring-brand-50 rounded-xl text-sm transition-all outline-none shadow-sm" placeholder="พิมพ์ชื่อพนักงาน...">
+                    <div class="space-y-2 custom-dropdown-container relative">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">ค้นหาชื่อพนักงาน</label>
+                        <div class="relative group">
+                            <i data-lucide="search" class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary-500 transition-colors"></i>
+                            <input type="text" id="filterName" autocomplete="off" class="w-full pl-11 pr-4 py-3.5 input-glass focus:border-primary-400 focus:ring-4 focus:ring-primary-50 rounded-2xl text-sm transition-all outline-none" placeholder="พิมพ์ชื่อเพื่อค้นหา...">
                         </div>
-                        <div id="nameDropdown" class="custom-dropdown-list absolute z-50 w-full mt-1 bg-white border border-slate-100 rounded-xl shadow-xl max-h-48 overflow-y-auto hidden custom-scrollbar dropdown-animate p-1"></div>
+                        <div id="nameDropdown" class="custom-dropdown-list absolute z-50 w-full mt-2 bg-white border border-slate-100 rounded-2xl shadow-xl max-h-52 overflow-y-auto hidden custom-scrollbar dropdown-animate p-1.5"></div>
                     </div>
 
-                    <div class="space-y-1.5">
-                        <label class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider ml-1">ช่วงเวลา</label>
-                        <div class="relative">
-                            <i data-lucide="calendar" class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                            <select id="filterDateRange" onchange="applyFilters()" class="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 focus:border-brand-400 focus:ring-2 focus:ring-brand-50 rounded-xl text-sm transition-all outline-none shadow-sm text-left">
-                                <option value="all">ทั้งหมด</option>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">ช่วงเวลา</label>
+                        <div class="relative group">
+                            <i data-lucide="calendar-days" class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary-500 transition-colors"></i>
+                            <select id="filterDateRange" onchange="applyFilters()" class="w-full pl-11 pr-4 py-3.5 input-glass focus:border-primary-400 focus:ring-4 focus:ring-primary-50 rounded-2xl text-sm transition-all outline-none text-left">
+                                <option value="all">ดูข้อมูลทั้งหมด</option>
                                 <option value="today">เฉพาะวันนี้</option>
                             </select>
                         </div>
                     </div>
                     
-                    <div class="space-y-1.5">
-                        <label class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider ml-1">สถานที่</label>
-                        <div class="relative">
-                            <i data-lucide="map-pin" class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                            <select id="filterLoc" onchange="applyFilters()" class="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 focus:border-brand-400 focus:ring-2 focus:ring-brand-50 rounded-xl text-sm transition-all outline-none shadow-sm text-left">
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">สถานที่ทำงาน</label>
+                        <div class="relative group">
+                            <i data-lucide="map-pin" class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary-500 transition-colors"></i>
+                            <select id="filterLoc" onchange="applyFilters()" class="w-full pl-11 pr-4 py-3.5 input-glass focus:border-primary-400 focus:ring-4 focus:ring-primary-50 rounded-2xl text-sm transition-all outline-none text-left">
                                 <option value="">ทุกสถานที่</option>
                                 <option value="OFFICE">OFFICE</option>
                                 <option value="ON-SITE">ON-SITE</option>
@@ -118,139 +139,142 @@
                         </div>
                     </div>
 
-                    <div class="space-y-1.5">
-                        <label class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider ml-1">ประเภท</label>
-                        <div class="relative">
-                            <i data-lucide="activity" class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                            <select id="filterType" onchange="applyFilters()" class="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 focus:border-brand-400 focus:ring-2 focus:ring-brand-50 rounded-xl text-sm transition-all outline-none shadow-sm text-left">
-                                <option value="">ทั้งหมด</option>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">ประเภท</label>
+                        <div class="relative group">
+                            <i data-lucide="log-in" class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary-500 transition-colors"></i>
+                            <select id="filterType" onchange="applyFilters()" class="w-full pl-11 pr-4 py-3.5 input-glass focus:border-primary-400 focus:ring-4 focus:ring-primary-50 rounded-2xl text-sm transition-all outline-none text-left">
+                                <option value="">เข้า / ออกงาน</option>
                                 <option value="Check In">เข้างาน (Check In)</option>
                                 <option value="Check Out">ออกงาน (Check Out)</option>
                             </select>
                         </div>
                     </div>
-                    <button onclick="exportToCSV()" class="py-3 px-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl font-semibold text-sm flex items-center justify-center gap-2 shadow-md shadow-emerald-500/20 hover:shadow-lg hover:shadow-emerald-500/30 hover:-translate-y-0.5 active:scale-95 transition-all">
-                        <i data-lucide="download" class="w-4 h-4"></i> Export CSV
+
+                    <button onclick="exportToCSV()" class="py-3.5 px-4 bg-slate-800 text-white rounded-2xl font-semibold text-sm flex items-center justify-center gap-2 hover:bg-slate-900 hover:shadow-lg hover:shadow-slate-900/20 hover:-translate-y-0.5 active:scale-95 transition-all w-full">
+                        <i data-lucide="download-cloud" class="w-4 h-4"></i> โหลดไฟล์ CSV
                     </button>
                 </div>
 
-                <div class="overflow-x-auto custom-scrollbar">
-                    <table id="reportTable" class="w-full text-left border-collapse min-w-[800px]">
+                <div class="overflow-x-auto custom-scrollbar bg-white/20">
+                    <table id="reportTable" class="w-full text-left border-collapse min-w-[900px]">
                         <thead>
-                            <tr class="bg-slate-50/80 border-b border-slate-200">
-                                <th class="py-4 px-6 text-[11px] font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">วัน - เวลา</th>
-                                <th class="py-4 px-6 text-[11px] font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">ชื่อ-นามสกุล</th>
-                                <th class="py-4 px-6 text-[11px] font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">ประเภท</th>
-                                <th class="py-4 px-6 text-[11px] font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">สถานที่</th>
-                                <th class="py-4 px-6 text-[11px] font-semibold text-slate-500 uppercase tracking-wider text-center whitespace-nowrap">บันทึก</th>
+                            <tr class="bg-slate-50/90 border-b border-slate-200/70">
+                                <th class="py-5 px-6 text-[11px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">วัน - เวลา</th>
+                                <th class="py-5 px-6 text-[11px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">ชื่อพนักงาน</th>
+                                <th class="py-5 px-6 text-[11px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">เข้า/ออก</th>
+                                <th class="py-5 px-6 text-[11px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">สถานที่</th>
+                                <th class="py-5 px-6 text-[11px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap text-center">สถานะ</th>
+                                <th class="py-5 px-6 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-center whitespace-nowrap">หมายเหตุ</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-100 bg-white/30"></tbody>
+                        <tbody class="divide-y divide-slate-100/80"></tbody>
                     </table>
                 </div>
             </div>
         </div>
 
         <div id="settingTab" class="tab-content">
-            <div class="flex flex-col md:flex-row gap-8">
+            <div class="flex flex-col md:flex-row gap-6">
                 <div class="w-full md:w-72 flex flex-col gap-2 shrink-0">
-                    <button onclick="openSettingSection(event, 'timeConfig')" class="settings-nav-btn active w-full flex items-center gap-3 px-6 py-4 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100/50 transition-all border-r-[3px] border-transparent text-left">
-                        <div class="p-2 bg-white rounded-lg shadow-sm text-brand-600"><i data-lucide="clock" class="w-4 h-4"></i></div>
-                        ตั้งค่าเวลาเข้างาน
+                    <button onclick="openSettingSection(event, 'timeConfig')" class="settings-nav-btn active w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-sm font-semibold text-slate-600 hover:bg-white/60 transition-all text-left">
+                        <div class="w-8 h-8 rounded-full bg-primary-50 text-primary-600 flex items-center justify-center shrink-0 icon-wrapper"><i data-lucide="clock" class="w-4 h-4"></i></div>
+                        จัดการเวลาเข้างาน
                     </button>
-                    <button onclick="openSettingSection(event, 'staffConfig')" class="settings-nav-btn w-full flex items-center gap-3 px-6 py-4 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100/50 transition-all border-r-[3px] border-transparent text-left">
-                        <div class="p-2 bg-white rounded-lg shadow-sm text-slate-500"><i data-lucide="users" class="w-4 h-4"></i></div>
+                    <button onclick="openSettingSection(event, 'staffConfig')" class="settings-nav-btn w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-sm font-semibold text-slate-600 hover:bg-white/60 transition-all text-left">
+                        <div class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center shrink-0 icon-wrapper"><i data-lucide="user-plus" class="w-4 h-4"></i></div>
                         ลงทะเบียนพนักงาน
                     </button>
                 </div>
 
                 <div class="flex-1">
                     <div id="timeConfig" class="setting-section block">
-                        <div class="glass-panel rounded-3xl p-8 md:p-10 border-t-4 border-t-brand-500 relative overflow-hidden">
-                            <div class="absolute top-0 right-0 -mt-4 -mr-4 w-32 h-32 bg-brand-50 rounded-full blur-3xl opacity-60 pointer-events-none"></div>
+                        <div class="glass-card rounded-[2rem] p-8 md:p-10 relative overflow-hidden">
+                            <div class="absolute -top-24 -right-24 w-64 h-64 bg-primary-400 rounded-full blur-[80px] opacity-20 pointer-events-none"></div>
                             
-                            <h3 class="text-2xl font-bold text-slate-800 mb-2">กำหนดเกณฑ์เวลา</h3>
-                            <p class="text-slate-500 text-sm mb-8">
-                                ปัจจุบันตั้งค่าไว้ที่: 
-                                <span class="inline-flex items-center gap-1 px-3 py-1 bg-brand-50 text-brand-700 rounded-md font-semibold ml-2 shadow-sm border border-brand-100">
-                                    <i data-lucide="clock" class="w-3 h-3"></i> <span id="curStart">-</span> - <span id="curEnd">-</span>
+                            <h3 class="text-2xl font-bold text-slate-800 tracking-tight">ตั้งค่าเกณฑ์เวลาเข้างาน</h3>
+                            <p class="text-slate-500 text-sm mt-1 mb-8 flex items-center gap-2">
+                                ปัจจุบันระบบอ้างอิงเวลา: 
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-white border border-slate-200 text-primary-700 rounded-lg font-bold shadow-sm text-xs">
+                                    <i data-lucide="alarm-clock" class="w-3.5 h-3.5"></i> <span id="curStart">-</span> ถึง <span id="curEnd">-</span>
                                 </span>
                             </p>
                             
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
-                                <div class="space-y-3 bg-white/50 p-6 rounded-2xl border border-slate-100 shadow-sm">
-                                    <label class="flex items-center gap-2 text-sm font-semibold text-slate-700">
-                                        <div class="w-2 h-2 rounded-full bg-emerald-500"></div> เวลาเริ่มงาน (เช็คสาย)
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+                                <div class="space-y-4 bg-white/60 p-6 rounded-[1.5rem] border border-white shadow-sm hover:shadow-md transition-shadow">
+                                    <label class="flex items-center justify-between text-sm font-bold text-slate-700">
+                                        <span class="flex items-center gap-2"><div class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.4)]"></div> เริ่มงาน (เช็คสาย)</span>
                                     </label>
                                     <div class="flex items-center gap-3">
                                         <div class="time-picker-box flex-1 relative custom-dropdown-container">
-                                            <input type="text" id="startH" readonly class="w-full bg-transparent border-none text-center outline-none cursor-pointer py-3 font-bold text-slate-700" value="09">
+                                            <input type="text" id="startH" readonly class="w-full bg-transparent border-none text-center outline-none cursor-pointer py-3.5 font-bold text-slate-700" value="09">
                                             <div id="list-startH" class="custom-dropdown-list absolute z-50 w-full mt-2 bg-white border border-slate-100 rounded-xl shadow-xl max-h-48 overflow-y-auto hidden custom-scrollbar dropdown-animate p-1 text-sm font-medium"></div>
                                         </div>
-                                        <span class="font-bold text-slate-400">:</span>
+                                        <span class="font-bold text-slate-300 text-xl">:</span>
                                         <div class="time-picker-box flex-1 relative custom-dropdown-container">
-                                            <input type="text" id="startM" readonly class="w-full bg-transparent border-none text-center outline-none cursor-pointer py-3 font-bold text-slate-700" value="00">
+                                            <input type="text" id="startM" readonly class="w-full bg-transparent border-none text-center outline-none cursor-pointer py-3.5 font-bold text-slate-700" value="00">
                                             <div id="list-startM" class="custom-dropdown-list absolute z-50 w-full mt-2 bg-white border border-slate-100 rounded-xl shadow-xl max-h-48 overflow-y-auto hidden custom-scrollbar dropdown-animate p-1 text-sm font-medium"></div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="space-y-3 bg-white/50 p-6 rounded-2xl border border-slate-100 shadow-sm">
-                                    <label class="flex items-center gap-2 text-sm font-semibold text-slate-700">
-                                        <div class="w-2 h-2 rounded-full bg-rose-500"></div> เวลาเลิกงาน
+                                <div class="space-y-4 bg-white/60 p-6 rounded-[1.5rem] border border-white shadow-sm hover:shadow-md transition-shadow">
+                                    <label class="flex items-center justify-between text-sm font-bold text-slate-700">
+                                        <span class="flex items-center gap-2"><div class="w-2.5 h-2.5 rounded-full bg-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.4)]"></div> เวลาเลิกงาน</span>
                                     </label>
                                     <div class="flex items-center gap-3">
                                         <div class="time-picker-box flex-1 relative custom-dropdown-container">
-                                            <input type="text" id="endH" readonly class="w-full bg-transparent border-none text-center outline-none cursor-pointer py-3 font-bold text-slate-700" value="18">
+                                            <input type="text" id="endH" readonly class="w-full bg-transparent border-none text-center outline-none cursor-pointer py-3.5 font-bold text-slate-700" value="18">
                                             <div id="list-endH" class="custom-dropdown-list absolute z-50 w-full mt-2 bg-white border border-slate-100 rounded-xl shadow-xl max-h-48 overflow-y-auto hidden custom-scrollbar dropdown-animate p-1 text-sm font-medium"></div>
                                         </div>
-                                        <span class="font-bold text-slate-400">:</span>
+                                        <span class="font-bold text-slate-300 text-xl">:</span>
                                         <div class="time-picker-box flex-1 relative custom-dropdown-container">
-                                            <input type="text" id="endM" readonly class="w-full bg-transparent border-none text-center outline-none cursor-pointer py-3 font-bold text-slate-700" value="00">
+                                            <input type="text" id="endM" readonly class="w-full bg-transparent border-none text-center outline-none cursor-pointer py-3.5 font-bold text-slate-700" value="00">
                                             <div id="list-endM" class="custom-dropdown-list absolute z-50 w-full mt-2 bg-white border border-slate-100 rounded-xl shadow-xl max-h-48 overflow-y-auto hidden custom-scrollbar dropdown-animate p-1 text-sm font-medium"></div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             
-                            <button id="saveConfigBtn" onclick="saveSettings()" class="w-full md:w-auto px-10 py-3.5 bg-gradient-to-r from-brand-600 to-brand-500 text-white rounded-xl font-semibold text-sm shadow-lg shadow-brand-500/30 hover:shadow-brand-500/40 hover:-translate-y-0.5 active:scale-95 transition-all flex items-center justify-center gap-2">
-                                <i data-lucide="save" class="w-4 h-4"></i> บันทึกการตั้งค่า
+                            <button id="saveConfigBtn" onclick="saveSettings()" class="w-full md:w-auto px-10 py-4 bg-gradient-to-r from-primary-600 to-primary-500 text-white rounded-2xl font-bold text-sm shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40 hover:-translate-y-0.5 active:scale-95 transition-all flex items-center justify-center gap-2">
+                                <i data-lucide="save" class="w-4 h-4"></i> บันทึกการตั้งค่าระบบ
                             </button>
                         </div>
                     </div>
 
                     <div id="staffConfig" class="setting-section hidden">
-                        <div class="glass-panel rounded-3xl p-8 md:p-10 border-t-4 border-t-slate-800 relative overflow-hidden">
-                            <h3 class="text-2xl font-bold text-slate-800 mb-8">เพิ่มพนักงานใหม่เข้าสู่ระบบ</h3>
+                        <div class="glass-card rounded-[2rem] p-8 md:p-10 relative overflow-hidden">
+                            <h3 class="text-2xl font-bold text-slate-800 tracking-tight">เพิ่มพนักงานใหม่</h3>
+                            <p class="text-slate-500 text-sm mt-1 mb-8">สร้างบัญชีผู้ใช้สำหรับเข้าสู่ระบบลงเวลา</p>
                             
-                            <div class="space-y-6 max-w-xl">
+                            <div class="space-y-5 max-w-2xl bg-white/40 p-6 rounded-[1.5rem] border border-white">
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                    <div class="space-y-2">
-                                        <label class="text-xs font-semibold text-slate-500 ml-1">ชื่อ - นามสกุล</label>
-                                        <input type="text" id="newN" class="w-full p-3.5 bg-white border border-slate-200 focus:border-brand-400 focus:ring-2 focus:ring-brand-50 rounded-xl text-sm transition-all outline-none" placeholder="เช่น สมชาย ใจดี">
+                                    <div class="space-y-1.5">
+                                        <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">ชื่อ - นามสกุล</label>
+                                        <input type="text" id="newN" class="w-full p-3.5 input-glass focus:border-primary-400 focus:ring-4 focus:ring-primary-50 rounded-xl text-sm transition-all outline-none" placeholder="เช่น สมชาย ใจดี">
                                     </div>
-                                    <div class="space-y-2">
-                                        <label class="text-xs font-semibold text-slate-500 ml-1">ระดับสิทธิ์ (Role)</label>
-                                        <select id="newR" class="w-full p-3.5 bg-white border border-slate-200 focus:border-brand-400 focus:ring-2 focus:ring-brand-50 rounded-xl text-sm transition-all outline-none text-left">
-                                            <option value="User">พนักงานทั่วไป (User)</option>
-                                            <option value="Admin">ผู้ดูแลระบบ (Admin)</option>
+                                    <div class="space-y-1.5">
+                                        <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">สิทธิ์การใช้งาน (Role)</label>
+                                        <select id="newR" class="w-full p-3.5 input-glass focus:border-primary-400 focus:ring-4 focus:ring-primary-50 rounded-xl text-sm transition-all outline-none text-left font-medium">
+                                            <option value="User">👤 พนักงานทั่วไป (User)</option>
+                                            <option value="Admin">🛡️ ผู้ดูแลระบบ (Admin)</option>
                                         </select>
                                     </div>
                                 </div>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                    <div class="space-y-2">
-                                        <label class="text-xs font-semibold text-slate-500 ml-1">ชื่อผู้ใช้ (Username)</label>
-                                        <input type="text" id="newU" class="w-full p-3.5 bg-white border border-slate-200 focus:border-brand-400 focus:ring-2 focus:ring-brand-50 rounded-xl text-sm transition-all outline-none" placeholder="Username สำหรับ Login">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 pt-2 border-t border-slate-200/50">
+                                    <div class="space-y-1.5">
+                                        <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">ชื่อผู้ใช้งาน (Username)</label>
+                                        <input type="text" id="newU" class="w-full p-3.5 input-glass focus:border-primary-400 focus:ring-4 focus:ring-primary-50 rounded-xl text-sm transition-all outline-none" placeholder="ภาษาอังกฤษหรือตัวเลข">
                                     </div>
-                                    <div class="space-y-2">
-                                        <label class="text-xs font-semibold text-slate-500 ml-1">รหัสผ่าน (Password)</label>
-                                        <input type="password" id="newP" class="w-full p-3.5 bg-white border border-slate-200 focus:border-brand-400 focus:ring-2 focus:ring-brand-50 rounded-xl text-sm transition-all outline-none" placeholder="ตั้งรหัสผ่าน">
+                                    <div class="space-y-1.5">
+                                        <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">รหัสผ่าน (Password)</label>
+                                        <input type="password" id="newP" class="w-full p-3.5 input-glass focus:border-primary-400 focus:ring-4 focus:ring-primary-50 rounded-xl text-sm transition-all outline-none" placeholder="••••••••">
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="mt-10 border-t border-slate-100 pt-8">
-                                <button id="addBtn" onclick="handleAddUser()" class="w-full md:w-auto px-10 py-3.5 bg-slate-800 text-white rounded-xl font-semibold text-sm shadow-lg shadow-slate-800/20 hover:bg-slate-900 hover:-translate-y-0.5 active:scale-95 transition-all flex items-center justify-center gap-2">
-                                    <i data-lucide="user-plus" class="w-4 h-4"></i> ลงทะเบียนพนักงาน
+                            <div class="mt-8">
+                                <button id="addBtn" onclick="handleAddUser()" class="w-full md:w-auto px-10 py-4 bg-slate-800 text-white rounded-2xl font-bold text-sm shadow-lg shadow-slate-800/20 hover:bg-slate-900 hover:-translate-y-0.5 active:scale-95 transition-all flex items-center justify-center gap-2">
+                                    <i data-lucide="user-plus" class="w-4 h-4"></i> ยืนยันการเพิ่มพนักงาน
                                 </button>
                             </div>
                         </div>
@@ -260,41 +284,37 @@
         </div>
     </div>
 
-    <div id="customAlert" class="fixed inset-0 z-[100] hidden bg-slate-900/40 backdrop-blur-sm items-center justify-center p-4 transition-opacity">
-        <div class="bg-white w-full max-w-sm rounded-3xl p-8 text-center shadow-2xl transform scale-95 animate-[fadeInScale_0.3s_ease-out_forwards]">
+    <div id="customAlert" class="fixed inset-0 z-[100] hidden bg-slate-900/30 backdrop-blur-md items-center justify-center p-4 transition-opacity">
+        <div class="bg-white w-full max-w-sm rounded-[2rem] p-8 text-center shadow-[0_20px_50px_rgba(0,0,0,0.1)] transform scale-95 animate-[fadeInScale_0.3s_ease-out_forwards] border border-slate-100">
             <style>
-                @keyframes fadeInScale { to { opacity: 1; transform: scale(1); } }
+                @keyframes fadeInScale { to { opacity: 1; transform: scale(1) translateY(0); } from { opacity: 0; transform: scale(0.9) translateY(10px); } }
             </style>
-            <div id="alertIconContainer" class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-5">
+            <div id="alertIconContainer" class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-5 rotate-3">
                 <div id="alertIcon"></div>
             </div>
-            <h3 id="alertTitle" class="text-xl font-bold text-slate-800 mb-2"></h3>
+            <h3 id="alertTitle" class="text-xl font-bold text-slate-800 mb-2 tracking-tight"></h3>
             <p id="alertMsg" class="text-slate-500 text-sm mb-8 leading-relaxed"></p>
-            <button onclick="closeAlert()" class="w-full py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl font-semibold text-sm transition-all active:scale-95">
-                ตกลง / ปิดหน้าต่าง
+            <button onclick="closeAlert()" class="w-full py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold text-sm transition-all active:scale-95">
+                ตกลง
             </button>
         </div>
     </div>
 
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzaonlmo7WYUqXCeN2ZGyZfp0TaIP4edfRsK_91HVdxo3ItuTpDn5yNsaz7217zqouC6Q/exec";
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxCxgtJBdY2GXJDY90emZyuw6rLP_00-yUBi7YBdLV3SQ5yn6g_8JaJCWHNUj_N036H/exec";
         let rawData = [];
 
         // --- Custom Dropdown Logic ---
-        // ปิด Dropdown เมื่อคลิกพื้นที่อื่น
         document.addEventListener('click', (e) => {
             if(!e.target.closest('.custom-dropdown-container')) {
                 document.querySelectorAll('.custom-dropdown-list').forEach(el => el.classList.add('hidden'));
             }
         });
 
-        // 1. สร้าง Custom Dropdown สำหรับเวลา
         function setupCustomTimePickers() {
             const setups = [
-                { id: 'startH', max: 24, step: 1 },
-                { id: 'startM', max: 60, step: 5 },
-                { id: 'endH', max: 24, step: 1 },
-                { id: 'endM', max: 60, step: 5 }
+                { id: 'startH', max: 24, step: 1 }, { id: 'startM', max: 60, step: 5 },
+                { id: 'endH', max: 24, step: 1 }, { id: 'endM', max: 60, step: 5 }
             ];
 
             setups.forEach(s => {
@@ -304,12 +324,11 @@
                 let html = '';
                 for(let i=0; i<s.max; i+=s.step) {
                     const val = i.toString().padStart(2, '0');
-                    html += `<div class="p-2.5 rounded-lg hover:bg-brand-50 hover:text-brand-600 text-slate-600 cursor-pointer transition-colors" onclick="selectCustomTime('${s.id}', '${val}')">${val}</div>`;
+                    html += `<div class="p-3 rounded-xl hover:bg-primary-50 hover:text-primary-600 text-slate-600 cursor-pointer transition-colors" onclick="selectCustomTime('${s.id}', '${val}')">${val}</div>`;
                 }
                 list.innerHTML = html;
 
                 input.addEventListener('click', () => {
-                    // ปิดอันอื่นก่อน
                     document.querySelectorAll('.custom-dropdown-list').forEach(el => el.classList.add('hidden'));
                     list.classList.remove('hidden');
                 });
@@ -321,7 +340,6 @@
             document.getElementById('list-' + id).classList.add('hidden');
         }
 
-        // 2. Custom Autocomplete สำหรับค้นหาชื่อ
         function setupNameAutocomplete() {
             const input = document.getElementById('filterName');
             const list = document.getElementById('nameDropdown');
@@ -333,10 +351,10 @@
                 
                 if (filtered.length > 0) {
                     list.innerHTML = filtered.map(name => 
-                        `<div class="p-3 rounded-lg hover:bg-brand-50 hover:text-brand-600 text-slate-600 cursor-pointer transition-colors text-sm" onclick="selectCustomName('${name}')">${name}</div>`
+                        `<div class="p-3 rounded-xl hover:bg-primary-50 hover:text-primary-600 text-slate-700 font-medium cursor-pointer transition-colors text-sm flex items-center gap-2"><div class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-[10px] text-slate-500">${name.charAt(0)}</div>${name}</div>`
                     ).join('');
                 } else {
-                    list.innerHTML = `<div class="p-3 text-slate-400 text-sm text-center">ไม่พบชื่อนี้</div>`;
+                    list.innerHTML = `<div class="p-4 text-slate-400 text-sm text-center italic">ไม่พบรายชื่อนี้</div>`;
                 }
                 list.classList.remove('hidden');
             };
@@ -350,8 +368,6 @@
             document.getElementById('nameDropdown').classList.add('hidden');
             applyFilters();
         }
-        // --- จบ Custom Dropdown Logic ---
-
 
         async function loadCurrentConfig() {
             try {
@@ -374,21 +390,22 @@
 
         async function loadReportData() {
             const tbody = document.querySelector("#reportTable tbody");
-            tbody.innerHTML = "<tr><td colspan='5' class='py-16 text-center text-slate-400'><div class='flex flex-col items-center gap-3'><i data-lucide='loader-2' class='w-6 h-6 animate-spin text-brand-500'></i><span>กำลังโหลดข้อมูล...</span></div></td></tr>";
+            tbody.innerHTML = "<tr><td colspan='6' class='py-20 text-center text-slate-400'><div class='flex flex-col items-center gap-3'><i data-lucide='loader-2' class='w-8 h-8 animate-spin text-primary-500'></i><span class='text-sm font-medium'>กำลังดึงข้อมูลล่าสุด...</span></div></td></tr>";
             lucide.createIcons();
             try {
                 const resp = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "fetchData" }) });
                 rawData = await resp.json();
                 applyFilters();
-            } catch (e) { showAlert("แจ้งเตือน", "ไม่สามารถดึงข้อมูลได้", "alert-triangle", "rose"); }
+            } catch (e) { showAlert("แจ้งเตือน", "ไม่สามารถเชื่อมต่อฐานข้อมูลได้", "wifi-off", "rose"); }
         }
 
+        // --- Render Table & แยกคอลัมน์สถานะ ---
         function renderTable(data) {
             const tbody = document.querySelector("#reportTable tbody");
-            const policyStart = document.getElementById('curStart').innerText;
+            const policyStart = document.getElementById('curStart').innerText || "09:00";
             
             if (data.length === 0) {
-                tbody.innerHTML = "<tr><td colspan='5' class='py-16 text-center text-slate-400'><div class='flex flex-col items-center gap-3'><i data-lucide='inbox' class='w-8 h-8 text-slate-300'></i><span>ไม่พบข้อมูลการเช็คอิน</span></div></td></tr>";
+                tbody.innerHTML = "<tr><td colspan='6' class='py-20 text-center text-slate-400'><div class='flex flex-col items-center gap-3'><div class='w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-2'><i data-lucide='inbox' class='w-8 h-8 text-slate-300'></i></div><span class='font-medium'>ยังไม่มีประวัติการลงเวลา</span></div></td></tr>";
                 lucide.createIcons();
                 return;
             }
@@ -399,39 +416,49 @@
                 const dateObj = new Date(d.Timestamp);
                 const timeStr = dateObj.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
                 const dateStr = dateObj.toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric' });
+                
+                // เช็คสาย
                 const isLate = (d.Type === 'Check In' && timeStr > policyStart);
                 
                 const typeStyle = d.Type === 'Check In' 
-                    ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' 
-                    : 'bg-rose-50 text-rose-600 border border-rose-200';
+                    ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' 
+                    : 'bg-slate-100 text-slate-500 border border-slate-200';
                 
-                const lateBadge = isLate 
-                    ? `<span class="ml-2 px-2 py-0.5 bg-amber-100 text-amber-700 text-[10px] font-bold rounded-md border border-amber-200">สาย</span>` 
-                    : '';
+                // แยกคอลัมน์สถานะ
+                let statusBadge = '<span class="text-slate-300">-</span>';
+                if (d.Type === 'Check In') {
+                    if (isLate) {
+                        statusBadge = `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-rose-50 text-rose-600 text-[11px] font-bold border border-rose-100 shadow-sm"><div class="w-1.5 h-1.5 rounded-full bg-rose-500"></div> สาย</span>`;
+                    } else {
+                        statusBadge = `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-emerald-50 text-emerald-600 text-[11px] font-bold border border-emerald-100 shadow-sm"><div class="w-1.5 h-1.5 rounded-full bg-emerald-500"></div> ปกติ</span>`;
+                    }
+                }
 
                 tbody.insertAdjacentHTML('beforeend', `
-                    <tr class="hover:bg-slate-50/80 transition-colors group">
-                        <td class="py-4 px-6 text-sm text-slate-600 whitespace-nowrap">
-                            <div class="font-medium text-slate-800">${timeStr} น.</div>
-                            <div class="text-[11px] text-slate-400">${dateStr}</div>
+                    <tr class="hover:bg-white/60 transition-colors group">
+                        <td class="py-4 px-6 text-sm whitespace-nowrap">
+                            <div class="font-bold text-slate-700">${timeStr} <span class="text-xs font-normal text-slate-400 ml-1">น.</span></div>
+                            <div class="text-[11px] text-slate-400 font-medium">${dateStr}</div>
                         </td>
                         <td class="py-4 px-6 whitespace-nowrap">
-                            <div class="font-semibold text-slate-800 flex items-center gap-2">
-                                <div class="w-8 h-8 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center text-xs font-bold">${(d.Name || "U").charAt(0)}</div>
+                            <div class="font-semibold text-slate-700 flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-full bg-gradient-to-br from-primary-100 to-primary-50 text-primary-600 flex items-center justify-center text-sm font-bold shadow-inner border border-white">${(d.Name || "U").charAt(0)}</div>
                                 ${d.Name || "-"}
                             </div>
                         </td>
                         <td class="py-4 px-6 whitespace-nowrap">
-                            <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold ${typeStyle}">
+                            <span class="inline-flex items-center px-3 py-1 rounded-lg text-xs font-bold ${typeStyle}">
                                 ${d.Type === 'Check In' ? 'เข้างาน' : 'ออกงาน'}
                             </span>
-                            ${lateBadge}
                         </td>
                         <td class="py-4 px-6 text-sm font-medium text-slate-500 whitespace-nowrap">
-                            <div class="flex items-center gap-1.5"><i data-lucide="map-pin" class="w-3.5 h-3.5 opacity-70"></i> ${d.Location || "-"}</div>
+                            <div class="flex items-center gap-2"><i data-lucide="map-pin" class="w-3.5 h-3.5 opacity-60"></i> ${d.Location || "-"}</div>
+                        </td>
+                        <td class="py-4 px-6 whitespace-nowrap text-center">
+                            ${statusBadge}
                         </td>
                         <td class="py-4 px-6 text-center whitespace-nowrap">
-                            <button onclick="showAlert('รายละเอียดบันทึก', '${d["WorkSummary/Memo"] || "ไม่มีบันทึกเพิ่มเติม"}', 'file-text', 'brand')" class="p-2 rounded-lg text-slate-400 hover:text-brand-600 hover:bg-brand-50 transition-all opacity-70 group-hover:opacity-100">
+                            <button onclick="showAlert('รายละเอียดบันทึก', '${d["WorkSummary/Memo"] || "ไม่มีบันทึกหมายเหตุเพิ่มเติม"}', 'file-text', 'primary')" class="p-2.5 rounded-xl text-slate-400 hover:text-primary-600 hover:bg-primary-50 transition-all opacity-50 group-hover:opacity-100 shadow-sm border border-transparent hover:border-primary-100">
                                 <i data-lucide="eye" class="w-4 h-4 mx-auto"></i>
                             </button>
                         </td>
@@ -448,17 +475,17 @@
             const originalText = btn.innerHTML;
             
             btn.disabled = true; 
-            btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> กำลังบันทึก...`;
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> ระบบกำลังบันทึก...`;
             lucide.createIcons();
 
             try {
                 const resp = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "saveConfig", startTime: start, endTime: end }) });
                 const res = await resp.json();
                 if (res.status === "success") {
-                    showAlert("บันทึกสำเร็จ", "ระบบได้อัปเดตเกณฑ์เวลาเรียบร้อยแล้ว", "check-circle", "emerald");
+                    showAlert("บันทึกสำเร็จ", "ระบบได้อัปเดตเกณฑ์เวลาเรียบร้อยแล้ว การเปลี่ยนแปลงจะมีผลทันที", "check-circle-2", "emerald");
                     await loadCurrentConfig(); 
                 }
-            } catch (e) { showAlert("ล้มเหลว", "เกิดข้อผิดพลาดในการบันทึก กรุณาลองใหม่", "x-circle", "rose"); }
+            } catch (e) { showAlert("ล้มเหลว", "เกิดข้อผิดพลาดในการบันทึก กรุณาลองใหม่อีกครั้ง", "x-octagon", "rose"); }
             finally { 
                 btn.disabled = false; 
                 btn.innerHTML = originalText; 
@@ -479,13 +506,15 @@
             document.querySelectorAll('.setting-section').forEach(s => s.classList.add('hidden'));
             document.querySelectorAll('.settings-nav-btn').forEach(b => {
                 b.classList.remove('active');
-                b.querySelector('div').classList.remove('text-brand-600');
-                b.querySelector('div').classList.add('text-slate-500');
+                const iconWrap = b.querySelector('.icon-wrapper');
+                iconWrap.classList.remove('bg-primary-50', 'text-primary-600');
+                iconWrap.classList.add('bg-slate-100', 'text-slate-500');
             });
             document.getElementById(sectionId).classList.remove('hidden');
             evt.currentTarget.classList.add('active');
-            evt.currentTarget.querySelector('div').classList.add('text-brand-600');
-            evt.currentTarget.querySelector('div').classList.remove('text-slate-500');
+            const activeIconWrap = evt.currentTarget.querySelector('.icon-wrapper');
+            activeIconWrap.classList.add('bg-primary-50', 'text-primary-600');
+            activeIconWrap.classList.remove('bg-slate-100', 'text-slate-500');
             lucide.createIcons();
         }
 
@@ -510,22 +539,22 @@
 
         async function handleAddUser() {
             const u = document.getElementById('newU').value, p = document.getElementById('newP').value, n = document.getElementById('newN').value, r = document.getElementById('newR').value;
-            if (!u || !p || !n) return showAlert("ข้อมูลไม่ครบ", "กรุณาระบุข้อมูลพนักงานให้ครบทุกช่อง", "alert-circle", "amber");
+            if (!u || !p || !n) return showAlert("ข้อมูลไม่ครบถ้วน", "กรุณาระบุข้อมูลพนักงานให้ครบทุกช่องก่อนกดยืนยัน", "alert-circle", "amber");
             
             const btn = document.getElementById('addBtn');
             const originalText = btn.innerHTML;
             btn.disabled = true;
-            btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> กำลังดำเนินการ...`;
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> กำลังสร้างบัญชี...`;
             lucide.createIcons();
 
             try {
                 const resp = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "addUser", newUsername: u, newPassword: p, newName: n, newRole: r }) });
                 const res = await resp.json();
                 if (res.status === "added") {
-                    showAlert("ลงทะเบียนเรียบร้อย", `เพิ่มพนักงานคุณ ${n} เข้าสู่ระบบสำเร็จ`, "user-check", "brand");
+                    showAlert("ลงทะเบียนเรียบร้อย", `เพิ่มบัญชีคุณ ${n} เข้าสู่ระบบสำเร็จแล้ว`, "user-check", "primary");
                     document.getElementById('newU').value = ''; document.getElementById('newP').value = ''; document.getElementById('newN').value = '';
                 }
-            } catch (e) { showAlert("ผิดพลาด", "ไม่สามารถส่งข้อมูลได้", "x-circle", "rose"); }
+            } catch (e) { showAlert("ผิดพลาด", "ไม่สามารถส่งข้อมูลไปที่เซิร์ฟเวอร์ได้", "server-crash", "rose"); }
             finally { 
                 btn.disabled = false; 
                 btn.innerHTML = originalText;
@@ -533,17 +562,17 @@
             }
         }
 
-        function showAlert(title, msg, icon = "info", theme = "brand") {
+        function showAlert(title, msg, icon = "info", theme = "primary") {
             const modal = document.getElementById('customAlert');
             const iconContainer = document.getElementById('alertIconContainer');
             
-            iconContainer.className = `w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-5`;
+            iconContainer.className = `w-16 h-16 rounded-[1.25rem] flex items-center justify-center mx-auto mb-6 rotate-3 shadow-sm border`;
             let iconColorClass = "text-slate-500";
             
-            if(theme === 'emerald') { iconContainer.classList.add('bg-emerald-50'); iconColorClass = "text-emerald-500"; }
-            else if(theme === 'rose') { iconContainer.classList.add('bg-rose-50'); iconColorClass = "text-rose-500"; }
-            else if(theme === 'amber') { iconContainer.classList.add('bg-amber-50'); iconColorClass = "text-amber-500"; }
-            else { iconContainer.classList.add('bg-brand-50'); iconColorClass = "text-brand-500"; }
+            if(theme === 'emerald') { iconContainer.classList.add('bg-emerald-50', 'border-emerald-100'); iconColorClass = "text-emerald-500"; }
+            else if(theme === 'rose') { iconContainer.classList.add('bg-rose-50', 'border-rose-100'); iconColorClass = "text-rose-500"; }
+            else if(theme === 'amber') { iconContainer.classList.add('bg-amber-50', 'border-amber-100'); iconColorClass = "text-amber-500"; }
+            else { iconContainer.classList.add('bg-primary-50', 'border-primary-100'); iconColorClass = "text-primary-600"; }
 
             document.getElementById('alertTitle').innerText = title;
             document.getElementById('alertMsg').innerText = msg;
@@ -559,24 +588,36 @@
             setTimeout(() => {
                 modal.style.display = 'none'; 
                 modal.querySelector('.bg-white').classList.remove('scale-95', 'opacity-0');
-            }, 200);
+            }, 300);
         }
 
+        // --- อัปเดตการ Export CSV ให้มีคอลัมน์สถานะ ---
         function exportToCSV() {
             if (rawData.length === 0) {
-                showAlert("ไม่พบข้อมูล", "ไม่มีข้อมูลสำหรับการ Export", "file-x", "amber");
+                showAlert("ไม่พบข้อมูล", "ไม่มีข้อมูลสำหรับการดาวน์โหลด", "file-x", "amber");
                 return;
             }
-            let csv = "data:text/csv;charset=utf-8,\uFEFFวันเวลา,ชื่อ,ประเภท,สถานที่,บันทึก\n";
+            const policyStart = document.getElementById('curStart').innerText || "09:00";
+            let csv = "data:text/csv;charset=utf-8,\uFEFFวันเวลา,ชื่อ,ประเภท,สถานที่,สถานะ,บันทึก\n";
+            
             rawData.forEach(d => { 
                 const dateObj = new Date(d.Timestamp);
                 const dateStr = dateObj.toLocaleString('th-TH');
+                const timeStr = dateObj.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
                 const typeStr = d.Type === 'Check In' ? 'เข้างาน' : 'ออกงาน';
-                csv += `"${dateStr}","${d.Name || "-"}","${typeStr}","${d.Location || "-"}","${d["WorkSummary/Memo"] || "-"}"\n`; 
+                
+                // คำนวณสถานะก่อน Export
+                let statusText = '-';
+                if (d.Type === 'Check In') {
+                    statusText = (timeStr > policyStart) ? 'สาย' : 'ปกติ';
+                }
+
+                csv += `"${dateStr}","${d.Name || "-"}","${typeStr}","${d.Location || "-"}","${statusText}","${d["WorkSummary/Memo"] || "-"}"\n`; 
             });
+            
             const link = document.createElement("a");
             link.href = encodeURI(csv);
-            link.download = `Report_Attendance_${new Date().toISOString().split('T')[0]}.csv`;
+            link.download = `CubicPlus_Report_${new Date().toISOString().split('T')[0]}.csv`;
             link.click();
         }
 
