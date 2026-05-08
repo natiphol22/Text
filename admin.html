@@ -119,10 +119,12 @@
                         <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">ช่วงเวลา</label>
                         <div class="relative group">
                             <i data-lucide="calendar-days" class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary-500 transition-colors"></i>
-                            <select id="filterDateRange" onchange="applyFilters()" class="w-full pl-11 pr-4 py-3.5 input-glass focus:border-primary-400 focus:ring-4 focus:ring-primary-50 rounded-2xl text-sm transition-all outline-none text-left">
+                            <select id="filterDateRange" onchange="applyFilters()" class="w-full pl-11 pr-4 py-3.5 input-glass focus:border-primary-400 focus:ring-4 focus:ring-primary-50 rounded-2xl text-sm transition-all outline-none text-left font-medium">
                                 <option value="all">ดูข้อมูลทั้งหมด</option>
                                 <option value="today">เฉพาะวันนี้</option>
-                            </select>
+                                <option value="this_week">สัปดาห์นี้</option>
+                                <option value="this_month">เดือนนี้</option>
+                                </select>
                         </div>
                     </div>
                     
@@ -310,6 +312,21 @@
             }
         });
 
+        // 🟢 สร้างตัวเลือกเดือนย้อนหลังอัตโนมัติ
+        function populateDateFilters() {
+            const select = document.getElementById('filterDateRange');
+            const now = new Date();
+            const thMonths = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+            
+            // สร้างย้อนหลังให้ 3 เดือน
+            for(let i=1; i<=3; i++) {
+                let d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                let val = `${d.getFullYear()}-${d.getMonth()}`;
+                let label = `เดือน ${thMonths[d.getMonth()]} ${d.getFullYear() + 543}`;
+                select.insertAdjacentHTML('beforeend', `<option value="${val}">${label}</option>`);
+            }
+        }
+
         function setupCustomTimePickers() {
             const setups = [
                 { id: 'startH', max: 24, step: 1 }, { id: 'startM', max: 60, step: 5 },
@@ -349,7 +366,6 @@
                 const filtered = uniqueNames.filter(n => n.toLowerCase().includes(val));
                 
                 if (filtered.length > 0) {
-                    // Optimization: Batch HTML creation
                     list.innerHTML = filtered.map(name => 
                         `<div class="p-3 rounded-xl hover:bg-primary-50 hover:text-primary-600 text-slate-700 font-medium cursor-pointer transition-colors text-sm flex items-center gap-2"><div class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-[10px] text-slate-500">${name.charAt(0)}</div>${name}</div>`
                     ).join('');
@@ -369,7 +385,6 @@
             applyFilters();
         }
 
-        // ระบบดึงข้อมูลเวลาแบบทนทาน (Robust Fetch)
         async function loadCurrentConfig() {
             let start = "09:00"; 
             let end = "18:00";
@@ -411,13 +426,12 @@
             }
         }
 
-        // Optimization: สร้าง HTML String ทีเดียวแล้วค่อยยัดลงตาราง (Batch Rendering)
         function renderTable(data) {
             const tbody = document.querySelector("#reportTable tbody");
             const policyStart = document.getElementById('curStart').innerText || "09:00";
             
             if (data.length === 0) {
-                tbody.innerHTML = "<tr><td colspan='6' class='py-20 text-center text-slate-400'><div class='flex flex-col items-center gap-3'><div class='w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-2'><i data-lucide='inbox' class='w-8 h-8 text-slate-300'></i></div><span class='font-medium'>ไม่พบข้อมูลการลงเวลา</span></div></td></tr>";
+                tbody.innerHTML = "<tr><td colspan='6' class='py-20 text-center text-slate-400'><div class='flex flex-col items-center gap-3'><div class='w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-2'><i data-lucide='inbox' class='w-8 h-8 text-slate-300'></i></div><span class='font-medium'>ไม่พบข้อมูลตามเงื่อนไขที่เลือก</span></div></td></tr>";
                 lucide.createIcons();
                 return;
             }
@@ -494,7 +508,7 @@
                 if (res.status === "success") {
                     showAlert("บันทึกสำเร็จ", "ระบบได้อัปเดตเกณฑ์เวลาเรียบร้อยแล้ว การเปลี่ยนแปลงจะมีผลทันที", "check-circle-2", "emerald");
                     await loadCurrentConfig(); 
-                    applyFilters(); // อัปเดตตารางให้แสดงผลสาย/ปกติใหม่
+                    applyFilters();
                 }
             } catch (e) { showAlert("ล้มเหลว", "เกิดข้อผิดพลาดในการบันทึก กรุณาลองใหม่อีกครั้ง", "x-octagon", "rose"); }
             finally { 
@@ -528,22 +542,43 @@
             lucide.createIcons();
         }
 
+        // 🟢 อัปเดตฟังก์ชันกรองข้อมูล ให้รองรับ สัปดาห์ และ เดือน
         function applyFilters() {
             const nameF = document.getElementById('filterName').value.toLowerCase();
             const locF = document.getElementById('filterLoc').value;
             const typeF = document.getElementById('filterType').value;
             const dateRangeF = document.getElementById('filterDateRange').value;
             const now = new Date();
-            const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
             const filtered = rawData.filter(d => {
                 const itemDate = new Date(d.Timestamp);
-                const dateMatch = dateRangeF === "today" ? itemDate >= startOfToday : true;
+                let dateMatch = true;
+
+                // ตรวจสอบช่วงเวลา
+                if (dateRangeF === "today") {
+                    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                    dateMatch = itemDate >= startOfToday;
+                } else if (dateRangeF === "this_week") {
+                    const currentDay = now.getDay();
+                    const distance = currentDay === 0 ? 6 : currentDay - 1; // นับวันจันทร์เป็นวันเริ่มสัปดาห์
+                    const startOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() - distance);
+                    dateMatch = itemDate >= startOfWeek;
+                } else if (dateRangeF === "this_month") {
+                    dateMatch = itemDate.getMonth() === now.getMonth() && itemDate.getFullYear() === now.getFullYear();
+                } else if (dateRangeF.includes("-")) {
+                    // สำหรับเดือนย้อนหลัง รูปแบบ YYYY-MM
+                    const [year, month] = dateRangeF.split('-');
+                    dateMatch = itemDate.getFullYear() === parseInt(year) && itemDate.getMonth() === parseInt(month);
+                }
+
+                // ตรวจสอบเงื่อนไขอื่น
                 const nameMatch = (d.Name || "").toLowerCase().includes(nameF);
                 const locMatch = !locF || d.Location === locF;
                 const typeMatch = !typeF || d.Type === typeF;
+                
                 return dateMatch && nameMatch && locMatch && typeMatch;
             });
+            
             renderTable(filtered);
         }
 
@@ -598,7 +633,7 @@
             setTimeout(() => {
                 modal.style.display = 'none'; 
                 modal.querySelector('.bg-white').classList.remove('scale-95', 'opacity-0');
-            }, 200); // ปรับเวลาปิดให้เร็วขึ้น
+            }, 200); 
         }
 
         function exportToCSV() {
@@ -609,18 +644,22 @@
             const policyStart = document.getElementById('curStart').innerText || "09:00";
             let csv = "data:text/csv;charset=utf-8,\uFEFFวันเวลา,ชื่อ,ประเภท,สถานที่,สถานะ,บันทึก\n";
             
-            rawData.forEach(d => { 
-                const dateObj = new Date(d.Timestamp);
-                const dateStr = dateObj.toLocaleString('th-TH');
-                const timeStr = dateObj.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-                const typeStr = d.Type === 'Check In' ? 'เข้างาน' : 'ออกงาน';
-                
-                let statusText = '-';
-                if (d.Type === 'Check In') {
-                    statusText = (timeStr > policyStart) ? 'สาย' : 'ปกติ';
-                }
+            // ใช้ข้อมูลที่มีอยู่ในตารางปัจจุบัน (Filtered Data) แทนการดึงทั้งหมด
+            const tableRows = document.querySelectorAll("#reportTable tbody tr");
+            
+            tableRows.forEach(row => {
+                if (row.cells.length > 1) { // ตรวจสอบว่าไม่ใช่แถวแจ้งเตือนไม่มีข้อมูล
+                    const timeCell = row.cells[0].innerText.replace('น.', '').replace(/\n/g, ' ').trim();
+                    const nameCell = row.cells[1].innerText.trim();
+                    const typeCell = row.cells[2].innerText.trim();
+                    const locCell = row.cells[3].innerText.trim();
+                    const statusCell = row.cells[4].innerText.trim();
+                    // บันทึกหมายเหตุต้องดึงจาก onclick attribute ของปุ่ม เพราะถูกซ่อนไว้ในปุ่มตา (eye)
+                    const memoMatch = row.cells[5].innerHTML.match(/showAlert\('.*?',\s*'(.*?)'/);
+                    const memoCell = memoMatch ? memoMatch[1] : "-";
 
-                csv += `"${dateStr}","${d.Name || "-"}","${typeStr}","${d.Location || "-"}","${statusText}","${d["WorkSummary/Memo"] || "-"}"\n`; 
+                    csv += `"${timeCell}","${nameCell}","${typeCell}","${locCell}","${statusCell}","${memoCell}"\n`; 
+                }
             });
             
             const link = document.createElement("a");
@@ -629,8 +668,8 @@
             link.click();
         }
 
-        // Optimization: โหลดข้อมูลคู่ขนาน (Parallel Loading)
         window.onload = () => { 
+            populateDateFilters(); // สร้างตัวกรองเดือนย้อนหลัง
             setupCustomTimePickers();
             setupNameAutocomplete();
             lucide.createIcons(); 
@@ -641,12 +680,10 @@
             tbody.innerHTML = "<tr><td colspan='6' class='py-20 text-center text-slate-400'><div class='flex flex-col items-center gap-3'><i data-lucide='loader-2' class='w-8 h-8 animate-spin text-primary-500'></i><span class='text-sm font-medium'>กำลังดึงข้อมูล...</span></div></td></tr>";
             lucide.createIcons();
 
-            // ไม่ต้องรอให้ Config โหลดเสร็จก่อนค่อยดึงข้อมูล ให้ดึงพร้อมกันเลยประหยัดเวลา
             Promise.all([
                 loadCurrentConfig(),
                 loadReportData()
             ]).then(() => {
-                // อัปเดตตารางอีกครั้งเพื่อให้การคำนวณสาย/ปกติ ตรงกับ Config ที่เพิ่งดึงมา
                 applyFilters(); 
             });
         };
