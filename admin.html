@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Admin Panel | CubicPlus</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script>
         tailwind.config = {
@@ -23,7 +26,6 @@
     <style>
         body { 
             background-color: #f8fafc;
-            /* Mesh Gradient Background สุดพรีเมียม */
             background-image: 
                 radial-gradient(at 10% 0%, hsla(228, 100%, 74%, 0.15) 0px, transparent 50%),
                 radial-gradient(at 80% 0%, hsla(189, 100%, 56%, 0.15) 0px, transparent 50%),
@@ -49,29 +51,27 @@
         }
 
         .tab-content { display: none; }
-        .tab-content.active { display: block; animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-        @keyframes slideUpFade { from { opacity: 0; transform: translateY(12px) scale(0.99); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        .tab-content.active { display: block; animation: slideUpFade 0.3s ease-out; }
+        @keyframes slideUpFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
         .time-picker-box { 
-            background: #f8fafc; border: 2px solid transparent; transition: all 0.25s ease; text-align: center; font-size: 1.25rem; font-weight: 600; cursor: pointer; border-radius: 1rem; 
+            background: #f8fafc; border: 2px solid transparent; transition: all 0.2s ease; text-align: center; font-size: 1.25rem; font-weight: 600; cursor: pointer; border-radius: 1rem; 
         }
         .time-picker-box:hover, .time-picker-box:focus-within { background: #fff; border-color: #6366f1; box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.15); transform: translateY(-1px); }
         select { -webkit-appearance: none; -moz-appearance: none; appearance: none; background: transparent; width: 100%; border: none; padding: 0.75rem 1rem; text-align: center; cursor: pointer; outline: none; }
         
-        /* สไตล์ปุ่มเมนูตั้งค่า */
         .settings-nav-btn { position: relative; overflow: hidden; }
         .settings-nav-btn::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: #6366f1; transform: scaleY(0); transition: transform 0.2s ease; transform-origin: left; }
         .settings-nav-btn.active { background: #fff; color: #4f46e5; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); }
         .settings-nav-btn.active::before { transform: scaleY(1); }
         
-        /* Scrollbar */
         .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         
-        .dropdown-animate { animation: popIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; transform-origin: top; }
-        @keyframes popIn { from { opacity: 0; transform: scaleY(0.95) translateY(-5px); } to { opacity: 1; transform: scaleY(1) translateY(0); } }
+        .dropdown-animate { animation: popIn 0.15s ease-out forwards; transform-origin: top; }
+        @keyframes popIn { from { opacity: 0; transform: scaleY(0.95); } to { opacity: 1; transform: scaleY(1); } }
     </style>
 </head>
 <body class="p-4 md:p-8 lg:p-10 font-sans selection:bg-primary-200 selection:text-primary-900">
@@ -94,7 +94,7 @@
 
     <div class="max-w-7xl mx-auto">
         <div class="flex gap-2 p-1.5 bg-white/50 backdrop-blur-md rounded-[1.25rem] w-fit mb-8 shadow-sm border border-white/60">
-            <button id="tabReport" class="tab-btn active px-8 py-3 rounded-xl text-sm font-semibold transition-all text-slate-500 hover:text-slate-800 [&.active]:bg-primary-600 [&.active]:text-white [&.active]:shadow-md [&.active]:shadow-primary-500/20" onclick="openTab(event, 'reportTab'); loadReportData();">
+            <button id="tabReport" class="tab-btn active px-8 py-3 rounded-xl text-sm font-semibold transition-all text-slate-500 hover:text-slate-800 [&.active]:bg-primary-600 [&.active]:text-white [&.active]:shadow-md [&.active]:shadow-primary-500/20" onclick="openTab(event, 'reportTab')">
                 <div class="flex items-center gap-2"><i data-lucide="file-spreadsheet" class="w-4 h-4"></i> รายงานลงเวลา</div>
             </button>
             <button id="tabSetting" class="tab-btn px-8 py-3 rounded-xl text-sm font-semibold transition-all text-slate-500 hover:text-slate-800 [&.active]:bg-primary-600 [&.active]:text-white [&.active]:shadow-md [&.active]:shadow-primary-500/20" onclick="openTab(event, 'settingTab')">
@@ -285,7 +285,7 @@
     </div>
 
     <div id="customAlert" class="fixed inset-0 z-[100] hidden bg-slate-900/30 backdrop-blur-md items-center justify-center p-4 transition-opacity">
-        <div class="bg-white w-full max-w-sm rounded-[2rem] p-8 text-center shadow-[0_20px_50px_rgba(0,0,0,0.1)] transform scale-95 animate-[fadeInScale_0.3s_ease-out_forwards] border border-slate-100">
+        <div class="bg-white w-full max-w-sm rounded-[2rem] p-8 text-center shadow-[0_20px_50px_rgba(0,0,0,0.1)] transform scale-95 animate-[fadeInScale_0.2s_ease-out_forwards] border border-slate-100">
             <style>
                 @keyframes fadeInScale { to { opacity: 1; transform: scale(1) translateY(0); } from { opacity: 0; transform: scale(0.9) translateY(10px); } }
             </style>
@@ -304,7 +304,6 @@
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxCxgtJBdY2GXJDY90emZyuw6rLP_00-yUBi7YBdLV3SQ5yn6g_8JaJCWHNUj_N036H/exec";
         let rawData = [];
 
-        // --- Custom Dropdown Logic ---
         document.addEventListener('click', (e) => {
             if(!e.target.closest('.custom-dropdown-container')) {
                 document.querySelectorAll('.custom-dropdown-list').forEach(el => el.classList.add('hidden'));
@@ -350,6 +349,7 @@
                 const filtered = uniqueNames.filter(n => n.toLowerCase().includes(val));
                 
                 if (filtered.length > 0) {
+                    // Optimization: Batch HTML creation
                     list.innerHTML = filtered.map(name => 
                         `<div class="p-3 rounded-xl hover:bg-primary-50 hover:text-primary-600 text-slate-700 font-medium cursor-pointer transition-colors text-sm flex items-center gap-2"><div class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-[10px] text-slate-500">${name.charAt(0)}</div>${name}</div>`
                     ).join('');
@@ -369,38 +369,28 @@
             applyFilters();
         }
 
-        // --- ระบบดึงข้อมูลเวลาแบบทนทาน (Robust Fetch) ---
+        // ระบบดึงข้อมูลเวลาแบบทนทาน (Robust Fetch)
         async function loadCurrentConfig() {
             let start = "09:00"; 
             let end = "18:00";
             
-            // แสดงสถานะกำลังโหลด
-            document.getElementById('curStart').innerHTML = `<i data-lucide="loader-2" class="w-3 h-3 animate-spin inline"></i>`;
-            document.getElementById('curEnd').innerHTML = `<i data-lucide="loader-2" class="w-3 h-3 animate-spin inline"></i>`;
-            lucide.createIcons();
-
             try {
                 const response = await fetch(WEB_APP_URL, { 
                     method: 'POST', 
                     body: JSON.stringify({ action: "fetchConfig" }) 
                 });
-                
-                // อ่านข้อมูลเป็น Text เพื่อความชัวร์ ป้องกันปัญหา Parse JSON จากฝั่ง Google Script
                 const textResult = await response.text(); 
-                
                 if(textResult) {
                     const config = JSON.parse(textResult);
                     if (config.StartTime) start = config.StartTime;
                     if (config.EndTime) end = config.EndTime;
                 }
             } catch (e) { 
-                console.warn("ไม่สามารถดึงข้อมูล Config ได้ ระบบจะใช้ค่าเริ่มต้นแทน:", e);
+                console.warn("ไม่สามารถดึงข้อมูล Config ได้ ระบบจะใช้ค่าเริ่มต้นแทน");
             } finally {
-                // อัปเดตข้อมูลบนหน้าจอ
                 document.getElementById('curStart').innerText = start;
                 document.getElementById('curEnd').innerText = end;
 
-                // หั่นเวลาใส่ใน Input
                 const [sh, sm] = start.split(':');
                 const [eh, em] = end.split(':');
                 document.getElementById('startH').value = sh;
@@ -411,42 +401,38 @@
         }
 
         async function loadReportData() {
-            const tbody = document.querySelector("#reportTable tbody");
-            tbody.innerHTML = "<tr><td colspan='6' class='py-20 text-center text-slate-400'><div class='flex flex-col items-center gap-3'><i data-lucide='loader-2' class='w-8 h-8 animate-spin text-primary-500'></i><span class='text-sm font-medium'>กำลังดึงข้อมูลล่าสุด...</span></div></td></tr>";
-            lucide.createIcons();
             try {
                 const resp = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "fetchData" }) });
                 rawData = await resp.json();
                 applyFilters();
-            } catch (e) { showAlert("แจ้งเตือน", "ไม่สามารถเชื่อมต่อฐานข้อมูลได้", "wifi-off", "rose"); }
+            } catch (e) { 
+                showAlert("แจ้งเตือน", "ไม่สามารถเชื่อมต่อฐานข้อมูลได้", "wifi-off", "rose"); 
+                renderTable([]);
+            }
         }
 
-        // --- Render Table & แยกคอลัมน์สถานะ ---
+        // Optimization: สร้าง HTML String ทีเดียวแล้วค่อยยัดลงตาราง (Batch Rendering)
         function renderTable(data) {
             const tbody = document.querySelector("#reportTable tbody");
             const policyStart = document.getElementById('curStart').innerText || "09:00";
             
             if (data.length === 0) {
-                tbody.innerHTML = "<tr><td colspan='6' class='py-20 text-center text-slate-400'><div class='flex flex-col items-center gap-3'><div class='w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-2'><i data-lucide='inbox' class='w-8 h-8 text-slate-300'></i></div><span class='font-medium'>ยังไม่มีประวัติการลงเวลา</span></div></td></tr>";
+                tbody.innerHTML = "<tr><td colspan='6' class='py-20 text-center text-slate-400'><div class='flex flex-col items-center gap-3'><div class='w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-2'><i data-lucide='inbox' class='w-8 h-8 text-slate-300'></i></div><span class='font-medium'>ไม่พบข้อมูลการลงเวลา</span></div></td></tr>";
                 lucide.createIcons();
                 return;
             }
             
-            tbody.innerHTML = "";
-            
+            let htmlContent = "";
             data.forEach(d => {
                 const dateObj = new Date(d.Timestamp);
                 const timeStr = dateObj.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
                 const dateStr = dateObj.toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric' });
                 
-                // เช็คสาย
                 const isLate = (d.Type === 'Check In' && timeStr > policyStart);
-                
                 const typeStyle = d.Type === 'Check In' 
                     ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' 
                     : 'bg-slate-100 text-slate-500 border border-slate-200';
                 
-                // แยกคอลัมน์สถานะ
                 let statusBadge = '<span class="text-slate-300">-</span>';
                 if (d.Type === 'Check In') {
                     if (isLate) {
@@ -456,7 +442,7 @@
                     }
                 }
 
-                tbody.insertAdjacentHTML('beforeend', `
+                htmlContent += `
                     <tr class="hover:bg-white/60 transition-colors group">
                         <td class="py-4 px-6 text-sm whitespace-nowrap">
                             <div class="font-bold text-slate-700">${timeStr} <span class="text-xs font-normal text-slate-400 ml-1">น.</span></div>
@@ -485,8 +471,10 @@
                             </button>
                         </td>
                     </tr>
-                `);
+                `;
             });
+            
+            tbody.innerHTML = htmlContent;
             lucide.createIcons();
         }
 
@@ -506,6 +494,7 @@
                 if (res.status === "success") {
                     showAlert("บันทึกสำเร็จ", "ระบบได้อัปเดตเกณฑ์เวลาเรียบร้อยแล้ว การเปลี่ยนแปลงจะมีผลทันที", "check-circle-2", "emerald");
                     await loadCurrentConfig(); 
+                    applyFilters(); // อัปเดตตารางให้แสดงผลสาย/ปกติใหม่
                 }
             } catch (e) { showAlert("ล้มเหลว", "เกิดข้อผิดพลาดในการบันทึก กรุณาลองใหม่อีกครั้ง", "x-octagon", "rose"); }
             finally { 
@@ -515,7 +504,6 @@
             }
         }
 
-        // --- Tab & Nav Logic ---
         function openTab(evt, tabId) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -610,10 +598,9 @@
             setTimeout(() => {
                 modal.style.display = 'none'; 
                 modal.querySelector('.bg-white').classList.remove('scale-95', 'opacity-0');
-            }, 300);
+            }, 200); // ปรับเวลาปิดให้เร็วขึ้น
         }
 
-        // --- อัปเดตการ Export CSV ให้มีคอลัมน์สถานะ ---
         function exportToCSV() {
             if (rawData.length === 0) {
                 showAlert("ไม่พบข้อมูล", "ไม่มีข้อมูลสำหรับการดาวน์โหลด", "file-x", "amber");
@@ -628,7 +615,6 @@
                 const timeStr = dateObj.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
                 const typeStr = d.Type === 'Check In' ? 'เข้างาน' : 'ออกงาน';
                 
-                // คำนวณสถานะก่อน Export
                 let statusText = '-';
                 if (d.Type === 'Check In') {
                     statusText = (timeStr > policyStart) ? 'สาย' : 'ปกติ';
@@ -643,12 +629,26 @@
             link.click();
         }
 
-        window.onload = async () => { 
+        // Optimization: โหลดข้อมูลคู่ขนาน (Parallel Loading)
+        window.onload = () => { 
             setupCustomTimePickers();
             setupNameAutocomplete();
             lucide.createIcons(); 
-            await loadCurrentConfig(); 
-            loadReportData(); 
+            
+            document.getElementById('curStart').innerHTML = `<i data-lucide="loader-2" class="w-3 h-3 animate-spin inline"></i>`;
+            document.getElementById('curEnd').innerHTML = `<i data-lucide="loader-2" class="w-3 h-3 animate-spin inline"></i>`;
+            const tbody = document.querySelector("#reportTable tbody");
+            tbody.innerHTML = "<tr><td colspan='6' class='py-20 text-center text-slate-400'><div class='flex flex-col items-center gap-3'><i data-lucide='loader-2' class='w-8 h-8 animate-spin text-primary-500'></i><span class='text-sm font-medium'>กำลังดึงข้อมูล...</span></div></td></tr>";
+            lucide.createIcons();
+
+            // ไม่ต้องรอให้ Config โหลดเสร็จก่อนค่อยดึงข้อมูล ให้ดึงพร้อมกันเลยประหยัดเวลา
+            Promise.all([
+                loadCurrentConfig(),
+                loadReportData()
+            ]).then(() => {
+                // อัปเดตตารางอีกครั้งเพื่อให้การคำนวณสาย/ปกติ ตรงกับ Config ที่เพิ่งดึงมา
+                applyFilters(); 
+            });
         };
     </script>
 </body>
