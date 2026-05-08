@@ -6,6 +6,7 @@
     <title>AI Expense Form - Pro Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
     
     <script>
@@ -37,12 +38,11 @@
             flex-shrink: 0;
         }
         
-        /* แก้ไข: ป้องกันตัวอักษรจมตอน Render เป็นภาพ */
         .field-box {
             display: inline-flex;
             border-bottom: 1.5px dotted #666;
             align-items: flex-end;
-            min-height: 24px; /* เพิ่มความสูงขั้นต่ำ */
+            min-height: 24px;
             white-space: nowrap;
             overflow: hidden;
             padding: 0 4px;
@@ -51,9 +51,10 @@
             color: #000000 !important; 
             font-weight: 600;
             white-space: nowrap;
-            line-height: 1; /* บังคับความสูงบรรทัดให้คงที่ */
-            margin-bottom: 2px; /* ดันขึ้นจากเส้นเล็กน้อย */
+            line-height: 1;
+            margin-bottom: 2px; 
             display: inline-block;
+            transition: transform 0.1s; /* เตรียมรับแอนิเมชันดันฟอนต์ตอนแคปเจอร์ */
         }
 
         .doc-row { margin-bottom: 8px; display: flex; align-items: flex-end; flex-wrap: wrap; }
@@ -117,7 +118,7 @@
                 <svg class="w-7 h-7 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                 เบิกค่าใช้จ่าย
             </h1>
-            <p class="text-xs text-slate-400 mt-1">V.1.2 - Anti Sink Font</p>
+            <p class="text-xs text-slate-400 mt-1">V.1.3 - Fixed Fonts & Auto PDF</p>
         </div>
 
         <div class="p-6 overflow-y-auto flex-1 space-y-8">
@@ -246,17 +247,17 @@
         </div>
 
         <div class="p-5 border-t border-white/10 bg-black/40 backdrop-blur-md grid grid-cols-2 gap-4">
-            <button onclick="exportDoc('jpg')" class="group relative py-3 px-4 rounded-xl font-medium text-white overflow-hidden bg-slate-800 hover:bg-slate-700 transition-all">
+            <button id="btn-export-jpg" onclick="exportDoc('jpg')" class="group relative py-3 px-4 rounded-xl font-medium text-white overflow-hidden bg-slate-800 hover:bg-slate-700 transition-all disabled:opacity-50">
                 <div class="relative flex items-center justify-center gap-2">
                     <svg class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                    Save JPG
+                    <span id="txt-export-jpg">Save JPG</span>
                 </div>
             </button>
-            <button onclick="exportDoc('pdf')" class="group relative py-3 px-4 rounded-xl font-medium text-white overflow-hidden transition-all shadow-[0_0_20px_rgba(6,182,212,0.3)] hover:shadow-[0_0_30px_rgba(6,182,212,0.5)]">
+            <button id="btn-export-pdf" onclick="exportDoc('pdf')" class="group relative py-3 px-4 rounded-xl font-medium text-white overflow-hidden transition-all shadow-[0_0_20px_rgba(6,182,212,0.3)] hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] disabled:opacity-50">
                 <div class="absolute inset-0 bg-gradient-to-r from-cyan-500 to-blue-500 group-hover:scale-105 transition-transform duration-300"></div>
                 <div class="relative flex items-center justify-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                    Save / Print PDF
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    <span id="txt-export-pdf">Download PDF</span>
                 </div>
             </button>
         </div>
@@ -524,33 +525,66 @@
             return BahtText + "บาทถ้วน";
         }
 
+        // --- ระบบ Export PDF & JPG ฉบับแก้ไขฟอนต์จม ---
         async function exportDoc(type) {
-            if (type === 'pdf') {
-                window.print(); 
-            } else if (type === 'jpg') {
-                try {
-                    const paper = document.getElementById('a4-document');
+            const paper = document.getElementById('a4-document');
+            const personName = document.getElementById('in-name').value || 'ค่าใช้จ่าย';
+            const fileName = 'ใบเบิก_' + personName;
+            
+            const btnJpg = document.getElementById('btn-export-jpg');
+            const btnPdf = document.getElementById('btn-export-pdf');
+            const txtJpg = document.getElementById('txt-export-jpg');
+            const txtPdf = document.getElementById('txt-export-pdf');
+
+            // 🛠️ ทริคแก้ตัวอักษรจม: ดันข้อความขึ้นชั่วคราวก่อน Capture
+            const textValues = document.querySelectorAll('.text-value');
+            textValues.forEach(el => el.style.transform = 'translateY(-3.5px)');
+
+            try {
+                if (type === 'pdf') {
+                    btnPdf.disabled = true;
+                    btnJpg.disabled = true;
+                    txtPdf.innerText = "⏳ กำลังสร้าง PDF...";
+                    
+                    const opt = {
+                        margin: 0,
+                        filename: fileName + '.pdf',
+                        image: { type: 'jpeg', quality: 1.0 },
+                        html2canvas: { scale: 3, useCORS: true, backgroundColor: "#ffffff", scrollY: 0 },
+                        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                    };
+                    await html2pdf().set(opt).from(paper).save();
+                    
+                } else if (type === 'jpg') {
+                    btnPdf.disabled = true;
+                    btnJpg.disabled = true;
+                    txtJpg.innerText = "⏳ กำลังสร้าง JPG...";
+                    
                     const canvas = await html2canvas(paper, { 
                         scale: 3, 
                         useCORS: true, 
-                        allowTaint: true, 
-                        letterRendering: true, 
                         backgroundColor: "#ffffff",
-                        scrollY: -window.scrollY 
+                        scrollY: 0 
                     });
                     
                     const imgData = canvas.toDataURL('image/jpeg', 1.0);
-                    const personName = document.getElementById('in-name').value || 'ค่าใช้จ่าย';
-                    const fileName = 'ใบเบิก_' + personName;
-
                     const link = document.createElement('a');
                     link.download = fileName + '.jpg';
                     link.href = imgData;
                     link.click();
-                } catch (err) {
-                    alert('แนะนำให้รันบน Live Server ครับ');
-                    console.error("html2canvas Error: ", err);
                 }
+            } catch (err) {
+                console.error("Export Error: ", err);
+                alert("เกิดข้อผิดพลาดในการสร้างไฟล์ กรุณาลองใหม่อีกครั้ง");
+            } finally {
+                // คืนค่าตำแหน่งตัวอักษรกลับมาเหมือนเดิม
+                textValues.forEach(el => el.style.transform = 'none');
+                
+                // คืนค่าปุ่ม
+                btnPdf.disabled = false;
+                btnJpg.disabled = false;
+                txtPdf.innerText = "Download PDF";
+                txtJpg.innerText = "Save JPG";
             }
         }
 
@@ -564,7 +598,6 @@
                 const nameInput = document.getElementById('in-name');
                 if(nameInput) {
                     nameInput.value = savedName;
-                    // ซิงค์ข้อมูลลงในใบพรีวิว
                     sync('in-name', 'out-name');
                     sync('in-name', 'out-name-sign1');
                     sync('in-name', 'out-name-sign2');
