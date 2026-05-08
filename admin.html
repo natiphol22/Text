@@ -13,7 +13,7 @@
                 extend: {
                     fontFamily: { sans: ['Kanit', 'sans-serif'] },
                     colors: {
-                        brand: { 50: '#eef2ff', 100: '#e0e7ff', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca' }
+                        brand: { 50: '#eef2ff', 100: '#e0e7ff', 200: '#c7d2fe', 400: '#818cf8', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca' }
                     }
                 }
             }
@@ -45,16 +45,19 @@
         
         .settings-nav-btn.active { background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%); color: #4f46e5; border-right: 3px solid #4f46e5; }
         
-        /* Custom Scrollbar for table */
+        /* Custom Scrollbar for dropdowns and table */
         .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* Dropdown Animation */
+        .dropdown-animate { animation: slideDown 0.2s ease-out forwards; transform-origin: top; }
+        @keyframes slideDown { from { opacity: 0; transform: scaleY(0.95); } to { opacity: 1; transform: scaleY(1); } }
     </style>
 </head>
 <body class="p-4 md:p-8 lg:p-12">
 
-    <!-- Header Section -->
     <div class="max-w-7xl mx-auto mb-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
             <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-brand-700 to-indigo-400">ระบบจัดการหลังบ้าน</h1>
@@ -63,13 +66,12 @@
                 <p class="text-slate-500 font-medium text-[11px] uppercase tracking-[0.2em]">CubicPlus Advanced Admin</p>
             </div>
         </div>
-        <button onclick="location.href='index.html'" class="group flex items-center gap-2 px-5 py-2.5 bg-white/80 border border-slate-200 rounded-xl text-slate-600 font-semibold text-sm hover:text-brand-600 hover:border-brand-200 shadow-sm transition-all active:scale-95">
-            <i data-lucide="arrow-left" class="w-4 h-4 group-hover:-translate-x-1 transition-transform"></i> กลับหน้าหลัก
+        <button onclick="location.href='dashboard.html'" class="group flex items-center gap-2 px-5 py-2.5 bg-white/80 border border-slate-200 rounded-xl text-slate-600 font-semibold text-sm hover:text-brand-600 hover:border-brand-200 shadow-sm transition-all active:scale-95">
+            <i data-lucide="arrow-left" class="w-4 h-4 group-hover:-translate-x-1 transition-transform"></i> กลับสู่แดชบอร์ด
         </button>
     </div>
 
     <div class="max-w-7xl mx-auto">
-        <!-- Tabs -->
         <div class="flex gap-1 p-1.5 bg-slate-200/60 backdrop-blur-md rounded-2xl w-fit mb-8 border border-slate-300/30">
             <button id="tabReport" class="tab-btn active px-8 py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-500 hover:text-slate-700 [&.active]:bg-white [&.active]:text-brand-600 [&.active]:shadow-sm" onclick="openTab(event, 'reportTab'); loadReportData();">
                 <div class="flex items-center gap-2"><i data-lucide="layout-dashboard" class="w-4 h-4"></i> รายงานการเช็คอิน</div>
@@ -79,19 +81,19 @@
             </button>
         </div>
 
-        <!-- Tab 1: Report -->
         <div id="reportTab" class="tab-content active">
             <div class="glass-panel rounded-3xl overflow-hidden">
-                <!-- Filters -->
                 <div class="p-6 md:p-8 border-b border-slate-100 bg-white/40 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-5 items-end">
-                    <div class="space-y-1.5">
+                    
+                    <div class="space-y-1.5 custom-dropdown-container relative">
                         <label class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider ml-1">ค้นหาชื่อ</label>
                         <div class="relative">
                             <i data-lucide="search" class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                            <input list="nameOptions" id="filterName" oninput="applyFilters()" class="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 focus:border-brand-400 focus:ring-2 focus:ring-brand-50 rounded-xl text-sm transition-all outline-none shadow-sm" placeholder="พิมพ์ชื่อพนักงาน...">
+                            <input type="text" id="filterName" autocomplete="off" class="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 focus:border-brand-400 focus:ring-2 focus:ring-brand-50 rounded-xl text-sm transition-all outline-none shadow-sm" placeholder="พิมพ์ชื่อพนักงาน...">
                         </div>
-                        <datalist id="nameOptions"></datalist>
+                        <div id="nameDropdown" class="custom-dropdown-list absolute z-50 w-full mt-1 bg-white border border-slate-100 rounded-xl shadow-xl max-h-48 overflow-y-auto hidden custom-scrollbar dropdown-animate p-1"></div>
                     </div>
+
                     <div class="space-y-1.5">
                         <label class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider ml-1">ช่วงเวลา</label>
                         <div class="relative">
@@ -102,6 +104,7 @@
                             </select>
                         </div>
                     </div>
+                    
                     <div class="space-y-1.5">
                         <label class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider ml-1">สถานที่</label>
                         <div class="relative">
@@ -109,10 +112,12 @@
                             <select id="filterLoc" onchange="applyFilters()" class="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 focus:border-brand-400 focus:ring-2 focus:ring-brand-50 rounded-xl text-sm transition-all outline-none shadow-sm text-left">
                                 <option value="">ทุกสถานที่</option>
                                 <option value="OFFICE">OFFICE</option>
+                                <option value="ON-SITE">ON-SITE</option>
                                 <option value="WFH">WFH</option>
                             </select>
                         </div>
                     </div>
+
                     <div class="space-y-1.5">
                         <label class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider ml-1">ประเภท</label>
                         <div class="relative">
@@ -129,7 +134,6 @@
                     </button>
                 </div>
 
-                <!-- Table -->
                 <div class="overflow-x-auto custom-scrollbar">
                     <table id="reportTable" class="w-full text-left border-collapse min-w-[800px]">
                         <thead>
@@ -147,10 +151,8 @@
             </div>
         </div>
 
-        <!-- Tab 2: Settings -->
         <div id="settingTab" class="tab-content">
             <div class="flex flex-col md:flex-row gap-8">
-                <!-- Sidebar Nav -->
                 <div class="w-full md:w-72 flex flex-col gap-2 shrink-0">
                     <button onclick="openSettingSection(event, 'timeConfig')" class="settings-nav-btn active w-full flex items-center gap-3 px-6 py-4 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100/50 transition-all border-r-[3px] border-transparent text-left">
                         <div class="p-2 bg-white rounded-lg shadow-sm text-brand-600"><i data-lucide="clock" class="w-4 h-4"></i></div>
@@ -162,9 +164,7 @@
                     </button>
                 </div>
 
-                <!-- Settings Content -->
                 <div class="flex-1">
-                    <!-- Section: Time Config -->
                     <div id="timeConfig" class="setting-section block">
                         <div class="glass-panel rounded-3xl p-8 md:p-10 border-t-4 border-t-brand-500 relative overflow-hidden">
                             <div class="absolute top-0 right-0 -mt-4 -mr-4 w-32 h-32 bg-brand-50 rounded-full blur-3xl opacity-60 pointer-events-none"></div>
@@ -183,9 +183,15 @@
                                         <div class="w-2 h-2 rounded-full bg-emerald-500"></div> เวลาเริ่มงาน (เช็คสาย)
                                     </label>
                                     <div class="flex items-center gap-3">
-                                        <div class="time-picker-box flex-1"><select id="startH"></select></div>
+                                        <div class="time-picker-box flex-1 relative custom-dropdown-container">
+                                            <input type="text" id="startH" readonly class="w-full bg-transparent border-none text-center outline-none cursor-pointer py-3 font-bold text-slate-700" value="09">
+                                            <div id="list-startH" class="custom-dropdown-list absolute z-50 w-full mt-2 bg-white border border-slate-100 rounded-xl shadow-xl max-h-48 overflow-y-auto hidden custom-scrollbar dropdown-animate p-1 text-sm font-medium"></div>
+                                        </div>
                                         <span class="font-bold text-slate-400">:</span>
-                                        <div class="time-picker-box flex-1"><select id="startM"></select></div>
+                                        <div class="time-picker-box flex-1 relative custom-dropdown-container">
+                                            <input type="text" id="startM" readonly class="w-full bg-transparent border-none text-center outline-none cursor-pointer py-3 font-bold text-slate-700" value="00">
+                                            <div id="list-startM" class="custom-dropdown-list absolute z-50 w-full mt-2 bg-white border border-slate-100 rounded-xl shadow-xl max-h-48 overflow-y-auto hidden custom-scrollbar dropdown-animate p-1 text-sm font-medium"></div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="space-y-3 bg-white/50 p-6 rounded-2xl border border-slate-100 shadow-sm">
@@ -193,9 +199,15 @@
                                         <div class="w-2 h-2 rounded-full bg-rose-500"></div> เวลาเลิกงาน
                                     </label>
                                     <div class="flex items-center gap-3">
-                                        <div class="time-picker-box flex-1"><select id="endH"></select></div>
+                                        <div class="time-picker-box flex-1 relative custom-dropdown-container">
+                                            <input type="text" id="endH" readonly class="w-full bg-transparent border-none text-center outline-none cursor-pointer py-3 font-bold text-slate-700" value="18">
+                                            <div id="list-endH" class="custom-dropdown-list absolute z-50 w-full mt-2 bg-white border border-slate-100 rounded-xl shadow-xl max-h-48 overflow-y-auto hidden custom-scrollbar dropdown-animate p-1 text-sm font-medium"></div>
+                                        </div>
                                         <span class="font-bold text-slate-400">:</span>
-                                        <div class="time-picker-box flex-1"><select id="endM"></select></div>
+                                        <div class="time-picker-box flex-1 relative custom-dropdown-container">
+                                            <input type="text" id="endM" readonly class="w-full bg-transparent border-none text-center outline-none cursor-pointer py-3 font-bold text-slate-700" value="00">
+                                            <div id="list-endM" class="custom-dropdown-list absolute z-50 w-full mt-2 bg-white border border-slate-100 rounded-xl shadow-xl max-h-48 overflow-y-auto hidden custom-scrollbar dropdown-animate p-1 text-sm font-medium"></div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -206,7 +218,6 @@
                         </div>
                     </div>
 
-                    <!-- Section: Add Staff -->
                     <div id="staffConfig" class="setting-section hidden">
                         <div class="glass-panel rounded-3xl p-8 md:p-10 border-t-4 border-t-slate-800 relative overflow-hidden">
                             <h3 class="text-2xl font-bold text-slate-800 mb-8">เพิ่มพนักงานใหม่เข้าสู่ระบบ</h3>
@@ -249,7 +260,6 @@
         </div>
     </div>
 
-    <!-- Custom Alert Modal -->
     <div id="customAlert" class="fixed inset-0 z-[100] hidden bg-slate-900/40 backdrop-blur-sm items-center justify-center p-4 transition-opacity">
         <div class="bg-white w-full max-w-sm rounded-3xl p-8 text-center shadow-2xl transform scale-95 animate-[fadeInScale_0.3s_ease-out_forwards]">
             <style>
@@ -270,25 +280,78 @@
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxCxgtJBdY2GXJDY90emZyuw6rLP_00-yUBi7YBdLV3SQ5yn6g_8JaJCWHNUj_N036H/exec";
         let rawData = [];
 
-        function populateTimeDropdowns() {
-            const hSelects = ['startH', 'endH'], mSelects = ['startM', 'endM'];
-            hSelects.forEach(id => {
-                let html = "";
-                for(let i=0; i<24; i++) {
+        // --- Custom Dropdown Logic ---
+        // ปิด Dropdown เมื่อคลิกพื้นที่อื่น
+        document.addEventListener('click', (e) => {
+            if(!e.target.closest('.custom-dropdown-container')) {
+                document.querySelectorAll('.custom-dropdown-list').forEach(el => el.classList.add('hidden'));
+            }
+        });
+
+        // 1. สร้าง Custom Dropdown สำหรับเวลา
+        function setupCustomTimePickers() {
+            const setups = [
+                { id: 'startH', max: 24, step: 1 },
+                { id: 'startM', max: 60, step: 5 },
+                { id: 'endH', max: 24, step: 1 },
+                { id: 'endM', max: 60, step: 5 }
+            ];
+
+            setups.forEach(s => {
+                const input = document.getElementById(s.id);
+                const list = document.getElementById('list-' + s.id);
+                
+                let html = '';
+                for(let i=0; i<s.max; i+=s.step) {
                     const val = i.toString().padStart(2, '0');
-                    html += `<option value="${val}">${val}</option>`;
+                    html += `<div class="p-2.5 rounded-lg hover:bg-brand-50 hover:text-brand-600 text-slate-600 cursor-pointer transition-colors" onclick="selectCustomTime('${s.id}', '${val}')">${val}</div>`;
                 }
-                document.getElementById(id).innerHTML = html;
-            });
-            mSelects.forEach(id => {
-                let html = "";
-                for(let i=0; i<60; i+=5) {
-                    const val = i.toString().padStart(2, '0');
-                    html += `<option value="${val}">${val}</option>`;
-                }
-                document.getElementById(id).innerHTML = html;
+                list.innerHTML = html;
+
+                input.addEventListener('click', () => {
+                    // ปิดอันอื่นก่อน
+                    document.querySelectorAll('.custom-dropdown-list').forEach(el => el.classList.add('hidden'));
+                    list.classList.remove('hidden');
+                });
             });
         }
+
+        function selectCustomTime(id, val) {
+            document.getElementById(id).value = val;
+            document.getElementById('list-' + id).classList.add('hidden');
+        }
+
+        // 2. Custom Autocomplete สำหรับค้นหาชื่อ
+        function setupNameAutocomplete() {
+            const input = document.getElementById('filterName');
+            const list = document.getElementById('nameDropdown');
+
+            const updateList = () => {
+                const val = input.value.toLowerCase();
+                const uniqueNames = [...new Set(rawData.map(d => d.Name).filter(Boolean))];
+                const filtered = uniqueNames.filter(n => n.toLowerCase().includes(val));
+                
+                if (filtered.length > 0) {
+                    list.innerHTML = filtered.map(name => 
+                        `<div class="p-3 rounded-lg hover:bg-brand-50 hover:text-brand-600 text-slate-600 cursor-pointer transition-colors text-sm" onclick="selectCustomName('${name}')">${name}</div>`
+                    ).join('');
+                } else {
+                    list.innerHTML = `<div class="p-3 text-slate-400 text-sm text-center">ไม่พบชื่อนี้</div>`;
+                }
+                list.classList.remove('hidden');
+            };
+
+            input.addEventListener('input', () => { updateList(); applyFilters(); });
+            input.addEventListener('focus', updateList);
+        }
+
+        function selectCustomName(name) {
+            document.getElementById('filterName').value = name;
+            document.getElementById('nameDropdown').classList.add('hidden');
+            applyFilters();
+        }
+        // --- จบ Custom Dropdown Logic ---
+
 
         async function loadCurrentConfig() {
             try {
@@ -316,7 +379,6 @@
             try {
                 const resp = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "fetchData" }) });
                 rawData = await resp.json();
-                updateNameDatalist();
                 applyFilters();
             } catch (e) { showAlert("แจ้งเตือน", "ไม่สามารถดึงข้อมูลได้", "alert-triangle", "rose"); }
         }
@@ -417,13 +479,11 @@
             document.querySelectorAll('.setting-section').forEach(s => s.classList.add('hidden'));
             document.querySelectorAll('.settings-nav-btn').forEach(b => {
                 b.classList.remove('active');
-                // Change icon styling back to default
                 b.querySelector('div').classList.remove('text-brand-600');
                 b.querySelector('div').classList.add('text-slate-500');
             });
             document.getElementById(sectionId).classList.remove('hidden');
             evt.currentTarget.classList.add('active');
-            // Highlight active icon
             evt.currentTarget.querySelector('div').classList.add('text-brand-600');
             evt.currentTarget.querySelector('div').classList.remove('text-slate-500');
             lucide.createIcons();
@@ -446,12 +506,6 @@
                 return dateMatch && nameMatch && locMatch && typeMatch;
             });
             renderTable(filtered);
-        }
-
-        function updateNameDatalist() {
-            const list = document.getElementById('nameOptions');
-            const uniqueNames = [...new Set(rawData.map(d => d.Name).filter(Boolean))];
-            list.innerHTML = uniqueNames.map(name => `<option value="${name}">`).join('');
         }
 
         async function handleAddUser() {
@@ -483,7 +537,6 @@
             const modal = document.getElementById('customAlert');
             const iconContainer = document.getElementById('alertIconContainer');
             
-            // Set colors based on theme
             iconContainer.className = `w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-5`;
             let iconColorClass = "text-slate-500";
             
@@ -528,7 +581,8 @@
         }
 
         window.onload = async () => { 
-            populateTimeDropdowns();
+            setupCustomTimePickers();
+            setupNameAutocomplete();
             lucide.createIcons(); 
             await loadCurrentConfig(); 
             loadReportData(); 
