@@ -90,6 +90,7 @@
         <p class="text-slate-500 font-medium mt-1">Cubic<span class="text-primary-600">Plus</span> System</p>
     </div>
 
+    <!-- Header / User Info -->
     <div class="max-w-6xl mx-auto mb-8 flex justify-between items-center px-2 md:px-4">
         <div class="flex items-center gap-4">
             <div class="w-12 h-12 rounded-full bg-gradient-to-br from-primary-100 to-white flex items-center justify-center border-2 border-white shadow-sm text-primary-600 font-bold text-xl" id="userInitial">U</div>
@@ -106,6 +107,7 @@
         </button>
     </div>
 
+    <!-- Modals -->
     <div id="customAlert" class="modal">
         <div class="glass-card modal-content w-full max-w-sm rounded-[2.5rem] p-10 text-center shadow-2xl relative overflow-hidden">
             <div id="alertIcon" class="w-20 h-20 bg-primary-50 text-primary-500 rounded-[1.5rem] flex items-center justify-center mx-auto mb-6 rotate-3 border border-white shadow-sm"></div>
@@ -118,13 +120,10 @@
     <div id="locationModal" class="modal">
         <div class="glass-card modal-content w-full max-w-[28rem] rounded-[2.5rem] p-8 md:p-10 shadow-2xl relative overflow-hidden">
             <div class="text-center mb-8 relative z-10">
-                <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm border border-slate-100 text-primary-500">
-                    <i data-lucide="map-pin" class="w-6 h-6"></i>
-                </div>
+                <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm border border-slate-100 text-primary-500"><i data-lucide="map-pin" class="w-6 h-6"></i></div>
                 <h3 class="font-bold text-slate-800 tracking-tight text-2xl">สถานที่ปฏิบัติงาน</h3>
                 <p class="text-slate-500 text-xs mt-1">กรุณาเลือกสถานที่ที่คุณทำงานในวันนี้</p>
             </div>
-
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 relative z-10">
                 <button onclick="confirmRecord('OFFICE')" class="group flex flex-col items-center justify-center p-6 bg-white/60 hover:bg-white border border-white hover:border-indigo-200 rounded-[1.5rem] transition-all hover:shadow-xl hover:shadow-indigo-500/10 hover:-translate-y-1">
                     <div class="w-14 h-14 rounded-full bg-indigo-50 text-indigo-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><i data-lucide="building-2" class="w-7 h-7"></i></div>
@@ -139,11 +138,11 @@
                     <span class="font-bold text-slate-700 text-sm">ON-SITE</span>
                 </button>
             </div>
-            
             <button onclick="closeLocation()" class="w-full mt-8 py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-2xl font-bold text-xs uppercase tracking-widest transition-all active:scale-95 relative z-10">ยกเลิก</button>
         </div>
     </div>
 
+    <!-- Main Content -->
     <div class="max-w-6xl mx-auto">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
             
@@ -154,26 +153,27 @@
                     <div id="todayDate" class="text-[11px] uppercase tracking-[0.4em] text-primary-500 font-bold mb-4"></div>
                     <div id="clock" class="text-7xl md:text-[5.5rem] font-light text-transparent bg-clip-text bg-gradient-to-br from-slate-800 to-slate-500 tracking-tighter mb-10 leading-none pb-2">00:00:00</div>
                     
-                    <div class="w-full max-w-md mx-auto space-y-6">
+                    <div class="w-full max-w-lg mx-auto space-y-8">
                         <div class="grid grid-cols-2 gap-4 md:gap-6">
                             <button id="inBtn" onclick="openLocationModal('Check In')" class="py-5 md:py-6 bg-gradient-to-br from-primary-600 to-primary-500 text-white rounded-[1.8rem] font-bold text-sm uppercase tracking-widest shadow-[0_10px_20px_rgba(99,102,241,0.3)] hover:shadow-[0_15px_30px_rgba(99,102,241,0.4)] hover:-translate-y-1 active:translate-y-0 active:scale-95 transition-all flex flex-col items-center justify-center gap-2">
-                                <i data-lucide="log-in" class="w-5 h-5 opacity-80"></i>
-                                Check In
+                                <i data-lucide="log-in" class="w-5 h-5 opacity-80"></i> Check In
                             </button>
                             <button id="outBtn" onclick="confirmRecord('-')" class="py-5 md:py-6 bg-white/80 text-slate-700 border border-slate-200 rounded-[1.8rem] font-bold text-sm uppercase tracking-widest shadow-sm hover:shadow-md hover:border-slate-300 hover:bg-white hover:-translate-y-1 active:translate-y-0 active:scale-95 transition-all flex flex-col items-center justify-center gap-2">
-                                <i data-lucide="log-out" class="w-5 h-5 opacity-60"></i>
-                                Check Out
+                                <i data-lucide="log-out" class="w-5 h-5 opacity-60"></i> Check Out
                             </button>
                         </div>
-                        <div class="text-left bg-white/50 p-6 rounded-[2rem] border border-white shadow-sm">
-                            <label class="text-[11px] font-bold text-slate-500 uppercase ml-1 block mb-3 tracking-widest flex items-center gap-2">
-                                <i data-lucide="edit-3" class="w-3.5 h-3.5 text-primary-400"></i> Daily Summary
+
+                        <!-- 🟢 Daily Summary (ปรับขนาดใหญ่ขึ้น) -->
+                        <div class="text-left bg-white/60 p-8 rounded-[2.5rem] border border-white shadow-sm">
+                            <label class="text-[12px] font-bold text-slate-600 uppercase ml-1 block mb-3 tracking-[0.1em] flex items-center gap-2">
+                                <i data-lucide="edit-3" class="w-4 h-4 text-primary-500"></i> Daily Summary & Notes
                             </label>
-                            <textarea id="memo" rows="2" class="w-full input-glass rounded-xl text-sm font-medium text-slate-700 placeholder:text-slate-400 placeholder:font-normal p-4 resize-none custom-scrollbar" placeholder="วันนี้คุณทำงานอะไรเสร็จบ้าง? (บันทึกตอนเลิกงาน)"></textarea>
+                            <textarea id="memo" rows="6" class="w-full input-glass rounded-2xl text-base font-medium text-slate-700 placeholder:text-slate-400 placeholder:font-normal p-6 resize-none custom-scrollbar min-h-[180px]" placeholder="วันนี้คุณทำงานอะไรเสร็จบ้าง? ระบุรายละเอียดที่นี่... (จะถูกบันทึกเมื่อกด Check Out)"></textarea>
                         </div>
                     </div>
                 </div>
 
+                <!-- Activity Cards -->
                 <div class="px-2">
                     <h4 class="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
                         <i data-lucide="activity" class="w-4 h-4 text-primary-400"></i> My Today Activity
@@ -205,35 +205,23 @@
                 </div>
             </div>
 
+            <!-- Side Panels -->
             <div class="lg:col-span-5 flex flex-col gap-8">
                 <div class="glass-card rounded-[2.5rem] p-8">
                     <div class="flex justify-between items-center mb-6">
-                        <h4 class="text-sm font-bold text-slate-800 tracking-tight flex items-center gap-2">
-                            <i data-lucide="users" class="w-4 h-4 text-primary-500"></i> Team Status
-                        </h4>
-                        <span id="activeCount" class="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-3 py-1 rounded-full uppercase flex items-center gap-1.5 shadow-sm">
-                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> 0 Online
-                        </span>
+                        <h4 class="text-sm font-bold text-slate-800 tracking-tight flex items-center gap-2"><i data-lucide="users" class="w-4 h-4 text-primary-500"></i> Team Status</h4>
+                        <span id="activeCount" class="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-3 py-1 rounded-full uppercase flex items-center gap-1.5">0 Online</span>
                     </div>
                     <div id="colleagueStatus" class="space-y-3 max-h-[250px] overflow-y-auto pr-2 custom-scrollbar"></div>
                 </div>
-
                 <div class="glass-card rounded-[2.5rem] p-8 flex-1 flex flex-col">
                     <div class="flex justify-between items-center mb-6">
-                        <h4 class="text-sm font-bold text-slate-800 tracking-tight flex items-center gap-2">
-                            <i data-lucide="bar-chart-2" class="w-4 h-4 text-primary-500"></i> My Reports
-                        </h4>
+                        <h4 class="text-sm font-bold text-slate-800 tracking-tight flex items-center gap-2"><i data-lucide="bar-chart-2" class="w-4 h-4 text-primary-500"></i> My Reports</h4>
                         <div class="flex bg-slate-100 p-1 rounded-xl">
                             <button onclick="updateRange(7)" id="btn7" class="px-4 py-1.5 rounded-lg font-bold text-xs transition-all bg-white shadow-sm text-primary-600">7 Days</button>
                             <button onclick="updateRange(30)" id="btn30" class="px-4 py-1.5 rounded-lg font-bold text-xs transition-all text-slate-400 hover:text-slate-600">30 Days</button>
                         </div>
                     </div>
-                    
-                    <div class="flex justify-between items-center px-4 py-2 mb-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-200/50">
-                        <span class="w-16">Date</span>
-                        <div class="flex gap-8"><span class="w-10 text-center">In</span><span class="w-10 text-center">Out</span></div>
-                    </div>
-                    
                     <div id="historyTable" class="space-y-1.5 overflow-y-auto custom-scrollbar flex-1 max-h-[250px] pr-1"></div>
                 </div>
             </div>
@@ -245,9 +233,7 @@
         const user = sessionStorage.getItem("userName") || sessionStorage.getItem("username");
         const name = sessionStorage.getItem("userName") || "พนักงาน";
         let globalData = [];
-        let pendingType = '';
 
-        // Initial setup
         document.getElementById('userDisp').innerText = name;
         document.getElementById('userInitial').innerText = name.charAt(0).toUpperCase();
 
@@ -264,7 +250,6 @@
             document.getElementById('alertTitle').innerText = title;
             document.getElementById('alertMsg').innerText = msg;
             const iconBox = document.getElementById('alertIcon');
-            
             iconBox.className = `w-20 h-20 bg-${color}-50 text-${color}-500 rounded-[1.5rem] flex items-center justify-center mx-auto mb-6 rotate-3 border border-white shadow-sm`;
             iconBox.innerHTML = `<i data-lucide="${icon}" class="w-10 h-10"></i>`;
             lucide.createIcons();
@@ -272,25 +257,21 @@
         }
 
         function closeAlert() { document.getElementById('customAlert').classList.remove('active'); }
-        function openLocationModal(type) { pendingType = type; document.getElementById('locationModal').classList.add('active'); }
+        function openLocationModal(type) { document.getElementById('locationModal').classList.add('active'); }
         function closeLocation() { document.getElementById('locationModal').classList.remove('active'); }
 
         async function confirmRecord(loc) {
+            const todayStr = new Date().toLocaleDateString('th-TH');
             const typeToSend = (loc === '-') ? 'Check Out' : 'Check In';
             
-            // 🛑 ด่านป้องกันที่ 1: ตรวจสอบเบื้องต้นจากข้อมูลในมือ (Client-side check)
-            const todayStr = new Date().toLocaleDateString('th-TH');
-            const myRecordsToday = globalData.filter(d => 
-                (d.Username === user || d.Name === name) && 
-                new Date(d.Timestamp).toLocaleDateString('th-TH') === todayStr
-            );
-
-            if (typeToSend === 'Check In' && myRecordsToday.some(r => r.Type === 'Check In')) {
+            // 🛑 ระบบป้องกัน: ตรวจสอบข้อมูลจาก globalData ล่าสุดก่อนส่ง
+            const myTodayLogs = globalData.filter(d => (d.Username === user || d.Name === name) && new Date(d.Timestamp).toLocaleDateString('th-TH') === todayStr);
+            
+            if (typeToSend === 'Check In' && myTodayLogs.some(l => l.Type === 'Check In')) {
                 showCustomAlert("ทำรายการไม่สำเร็จ", "คุณได้เช็คอินของวันนี้ไปเรียบร้อยแล้ว", "alert-triangle", "rose");
-                closeLocation();
-                return;
+                closeLocation(); return;
             }
-            if (typeToSend === 'Check Out' && myRecordsToday.some(r => r.Type === 'Check Out')) {
+            if (typeToSend === 'Check Out' && myTodayLogs.some(l => l.Type === 'Check Out')) {
                 showCustomAlert("ทำรายการไม่สำเร็จ", "คุณได้เช็คเอาต์ของวันนี้ไปเรียบร้อยแล้ว", "alert-triangle", "rose");
                 return;
             }
@@ -298,25 +279,28 @@
             closeLocation();
             const btn = typeToSend === 'Check In' ? document.getElementById('inBtn') : document.getElementById('outBtn');
             const originalHTML = btn.innerHTML;
-            
             btn.disabled = true;
             btn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Processing...`;
             lucide.createIcons();
 
-            const payload = { action: "recordTime", username: user, name: name, type: typeToSend, location: loc === '-' ? "" : loc, memo: (typeToSend === 'Check Out') ? document.getElementById('memo').value : "-" };
-            
             try {
+                const payload = { 
+                    action: "recordTime", 
+                    username: user, 
+                    name: name, 
+                    type: typeToSend, 
+                    location: loc === '-' ? "" : loc, 
+                    memo: (typeToSend === 'Check Out') ? document.getElementById('memo').value : "-" 
+                };
                 await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
-                showCustomAlert("บันทึกสำเร็จ", `ระบบได้บันทึกเวลา ${typeToSend} ของคุณเรียบร้อยแล้ว`, "check-circle-2", "emerald");
+                showCustomAlert("บันทึกสำเร็จ", `บันทึกเวลา ${typeToSend} ของคุณเรียบร้อยแล้ว`, "check-circle-2", "emerald");
                 if(typeToSend === 'Check Out') document.getElementById('memo').value = "";
-                await loadData(); // โหลดใหม่เพื่ออัปเดตสถานะปุ่ม
+                await loadData();
             } catch(e) { 
-                showCustomAlert("เกิดข้อผิดพลาด", "ไม่สามารถบันทึกข้อมูลได้ กรุณาลองใหม่อีกครั้ง", "x-octagon", "rose");
+                showCustomAlert("เกิดข้อผิดพลาด", "ไม่สามารถบันทึกได้ กรุณาลองใหม่อีกครั้ง", "x-octagon", "rose");
                 await loadData(); 
             } finally { 
-                btn.disabled = false; 
-                btn.innerHTML = originalHTML; 
-                lucide.createIcons();
+                btn.disabled = false; btn.innerHTML = originalHTML; lucide.createIcons();
             }
         }
 
@@ -324,8 +308,6 @@
             try {
                 const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({action: "fetchData"}) });
                 globalData = await res.json();
-                
-                // Hide loader
                 document.getElementById('loader').style.opacity = '0';
                 setTimeout(() => document.getElementById('loader').style.display = 'none', 500);
                 
@@ -335,7 +317,7 @@
                 const hasIn = myToday.some(d => d.Type === "Check In");
                 const hasOut = myToday.some(d => d.Type === "Check Out");
                 
-                // 🛑 ด่านป้องกันที่ 2: ควบคุมการกดปุ่ม (Button Control)
+                // 🛑 ควบคุมปุ่มตามสถานะจริง
                 document.getElementById('inBtn').disabled = hasIn;
                 document.getElementById('outBtn').disabled = !hasIn || hasOut;
                 
@@ -349,7 +331,7 @@
                     document.getElementById('inTimeText').innerText = "--:--";
                     document.getElementById('inLocText').innerHTML = `<i data-lucide="map-pin" class="w-3 h-3"></i> Ready`;
                 }
-                
+
                 if(outLog) {
                     document.getElementById('outTimeText').innerText = new Date(outLog.Timestamp).toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'});
                     document.getElementById('outLocText').innerHTML = `<i data-lucide="check-circle-2" class="w-3 h-3 text-emerald-500"></i> COMPLETED`;
@@ -361,7 +343,6 @@
                 renderUI();
                 lucide.createIcons();
             } catch(e) { 
-                console.log(e); 
                 document.getElementById('loader').innerHTML = `<div class="p-4 bg-rose-50 text-rose-500 rounded-2xl"><i data-lucide="wifi-off" class="w-8 h-8 mx-auto mb-2"></i><p class="font-bold">Connection Error</p></div>`;
                 lucide.createIcons();
             }
@@ -372,59 +353,35 @@
             colleagueBox.innerHTML = "";
             const today = new Date().toLocaleDateString('th-TH');
             const latestMap = new Map();
-            
-            globalData.forEach(d => { 
-                if (new Date(d.Timestamp).toLocaleDateString('th-TH') === today) latestMap.set(d.Name, d); 
-            });
+            globalData.forEach(d => { if (new Date(d.Timestamp).toLocaleDateString('th-TH') === today) latestMap.set(d.Name, d); });
             
             let activeCount = 0;
             let htmlContent = "";
-            
             latestMap.forEach((v, k) => {
                 const isOnline = v.Type === "Check In";
                 if(isOnline) activeCount++;
-                
-                let locIconHTML = `<i data-lucide="clock" class="w-3 h-3"></i>`;
-                if(v.Location === 'OFFICE') locIconHTML = `<i data-lucide="building-2" class="w-3 h-3 text-indigo-400"></i>`;
-                else if(v.Location === 'WFH') locIconHTML = `<i data-lucide="home" class="w-3 h-3 text-emerald-400"></i>`;
-                else if(v.Location === 'ON-SITE') locIconHTML = `<i data-lucide="car" class="w-3 h-3 text-amber-400"></i>`;
-                
                 htmlContent += `
                 <div class="flex items-center justify-between p-3.5 bg-white/50 hover:bg-white rounded-2xl border border-white shadow-sm transition-colors">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 bg-gradient-to-br from-slate-100 to-slate-50 text-slate-500 rounded-full flex items-center justify-center text-xs font-bold border border-slate-200 shadow-sm">${k.charAt(0)}</div>
-                        <div>
-                            <p class="font-bold text-slate-700 text-xs">${k}</p>
-                            <p class="text-[10px] text-slate-400 font-medium flex items-center gap-1.5 uppercase tracking-wide mt-0.5">${locIconHTML} ${v.Location || 'Finished'}</p>
-                        </div>
+                        <div><p class="font-bold text-slate-700 text-xs">${k}</p><p class="text-[10px] text-slate-400 font-medium flex items-center gap-1.5 uppercase tracking-wide mt-0.5">${v.Location || 'Finished'}</p></div>
                     </div>
                     <div class="w-2.5 h-2.5 rounded-full ${isOnline ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-slate-300'}"></div>
                 </div>`;
             });
-            
-            if(htmlContent === "") {
-                htmlContent = `<div class="text-center p-6 text-slate-400 text-sm italic">ยังไม่มีเพื่อนร่วมงานเช็คอินวันนี้</div>`;
-            }
-            
-            colleagueBox.innerHTML = htmlContent;
+            colleagueBox.innerHTML = htmlContent || `<div class="text-center p-6 text-slate-400 text-sm italic">ยังไม่มีเพื่อนร่วมงานเช็คอิน</div>`;
             document.getElementById('activeCount').innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> ${activeCount} Online`;
-            
             updateRange(7);
         }
 
         function updateRange(days) {
             document.getElementById('btn7').className = days === 7 ? "px-4 py-1.5 rounded-lg font-bold text-xs transition-all bg-white shadow-sm text-primary-600" : "px-4 py-1.5 rounded-lg font-bold text-xs transition-all text-slate-400 hover:text-slate-600";
             document.getElementById('btn30').className = days === 30 ? "px-4 py-1.5 rounded-lg font-bold text-xs transition-all bg-white shadow-sm text-primary-600" : "px-4 py-1.5 rounded-lg font-bold text-xs transition-all text-slate-400 hover:text-slate-600";
-
             const table = document.getElementById("historyTable");
             table.innerHTML = "";
-            
             const myLogs = globalData.filter(d => d.Username === user || d.Name === name);
             const reportMap = new Map();
-            const cutoff = new Date();
-            cutoff.setHours(0,0,0,0);
-            cutoff.setDate(cutoff.getDate() - days + 1);
-            
+            const cutoff = new Date(); cutoff.setHours(0,0,0,0); cutoff.setDate(cutoff.getDate() - days + 1);
             myLogs.forEach(log => {
                 const logDate = new Date(log.Timestamp);
                 if (logDate >= cutoff) {
@@ -434,33 +391,23 @@
                     if (log.Type === "Check Out") reportMap.get(dStr).out = logDate.toLocaleTimeString('th-TH', {hour:'2-digit', minute:'2-digit'});
                 }
             });
-            
             let htmlRows = "";
             const sortedDates = Array.from(reportMap.keys()).reverse();
-            
-            if(sortedDates.length === 0) {
-                htmlRows = `<div class="text-center p-6 text-slate-400 text-sm italic">ไม่พบประวัติใน ${days} วันที่ผ่านมา</div>`;
-            } else {
-                sortedDates.forEach(date => {
-                    const v = reportMap.get(date);
-                    htmlRows += `
-                    <div class="flex justify-between items-center p-4 bg-white/40 hover:bg-white rounded-2xl text-xs font-bold border border-white shadow-sm transition-all group">
-                        <span class="text-slate-500 tracking-wide">${date}</span>
-                        <div class="flex gap-8 text-slate-700">
-                            <span class="w-10 text-center ${v.in !== '-' ? 'text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md' : 'text-slate-300'}">${v.in}</span>
-                            <span class="w-10 text-center ${v.out !== '-' ? 'text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md' : 'text-slate-300'}">${v.out}</span>
-                        </div>
-                    </div>`;
-                });
-            }
-            
-            table.innerHTML = htmlRows;
+            sortedDates.forEach(date => {
+                const v = reportMap.get(date);
+                htmlRows += `
+                <div class="flex justify-between items-center p-4 bg-white/40 hover:bg-white rounded-2xl text-xs font-bold border border-white shadow-sm transition-all group">
+                    <span class="text-slate-500 tracking-wide">${date}</span>
+                    <div class="flex gap-8 text-slate-700">
+                        <span class="w-10 text-center ${v.in !== '-' ? 'text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md' : 'text-slate-300'}">${v.in}</span>
+                        <span class="w-10 text-center ${v.out !== '-' ? 'text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md' : 'text-slate-300'}">${v.out}</span>
+                    </div>
+                </div>`;
+            });
+            table.innerHTML = htmlRows || `<div class="text-center p-6 text-slate-400 text-sm italic">ไม่พบประวัติ</div>`;
         }
 
-        window.onload = () => { 
-            lucide.createIcons(); 
-            loadData(); 
-        };
+        window.onload = () => { lucide.createIcons(); loadData(); };
     </script>
 </body>
 </html>
