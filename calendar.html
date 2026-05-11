@@ -164,11 +164,10 @@
         // --- 1. System Setup & Context ---
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz4XoAF5nH_x9X_g4K0I7ZOwgmc3StS12JNFBVIAwgjOpcGmlMPS9APpQ70Juwuhbs/exec"; 
         
-        // เช็ค Session พนักงานและ Role
         const username = sessionStorage.getItem("userLoginName") || "Natiphol"; 
         const userRole = sessionStorage.getItem("userRole") || "Admin"; 
         
-        let actualToday = new Date(); // ใช้วันที่ปัจจุบัน
+        let actualToday = new Date(); 
         let currentMonth = actualToday.getMonth();
         let currentYear = actualToday.getFullYear();
         const monthNames = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
@@ -177,6 +176,7 @@
         let holidaysDB = [];
         let eventsDB = [];
         let myLeavesDB = [];
+        let usersListDB = []; // เก็บรายชื่อ User ทั้งหมด
 
         // --- 2. ฟังก์ชันแปลฟอร์แมตวันที่จาก Google Sheets ---
         function safeDateFormat(dateObjOrString) {
@@ -194,8 +194,8 @@
             lucide.createIcons();
             setupHeaderButtons();
             
-            // ดึงข้อมูลจากฐานข้อมูลจริงทันทีที่โหลดหน้าจอ
-            await fetchAllDataFromAPI();
+            // ดึงข้อมูลทั้งหมด รวมถึงรายชื่อพนักงานด้วย
+            await Promise.all([fetchAllDataFromAPI(), fetchUsersList()]);
 
             setTimeout(() => {
                 document.getElementById('loader').style.opacity = '0';
@@ -219,7 +219,6 @@
                 const result = await response.json();
                 
                 if (result.status === "success") {
-                    // จัดการ Format วันที่ให้เป็น 'YYYY-MM-DD' เพื่อเอาไปจับคู่ตอนแสดงผล
                     holidaysDB = (result.holidays || []).map(h => ({...h, date: safeDateFormat(h.date)}));
                     eventsDB = (result.events || []).map(e => ({...e, date: safeDateFormat(e.date)}));
                     myLeavesDB = (result.myLeaves || []).map(l => ({
@@ -230,12 +229,24 @@
                 }
             } catch (error) {
                 console.error("Fetch Error:", error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'ข้อผิดพลาด',
-                    text: 'ไม่สามารถโหลดข้อมูลจากเซิร์ฟเวอร์ได้ ลองรีเฟรชหน้าใหม่อีกครั้ง',
-                    customClass: { popup: 'rounded-3xl' }
+                Swal.fire('ข้อผิดพลาด', 'ไม่สามารถโหลดข้อมูลจากเซิร์ฟเวอร์ได้ ลองรีเฟรชหน้าใหม่อีกครั้ง', 'error');
+            }
+        }
+
+        // ดึงรายชื่อพนักงาน
+        async function fetchUsersList() {
+            if (userRole !== "Admin") return; // ดึงเฉพาะ Admin
+            try {
+                const response = await fetch(WEB_APP_URL, {
+                    method: "POST",
+                    body: JSON.stringify({ action: "fetchUsersList" })
                 });
+                const result = await response.json();
+                if (result.status === "success") {
+                    usersListDB = result.users || [];
+                }
+            } catch (error) {
+                console.error("Fetch Users Error:", error);
             }
         }
 
@@ -273,9 +284,12 @@
                     cell.classList.add('today');
                 }
 
-                // Gather data for this specific day
+                // กรองข้อมูลเฉพาะของวันนี้ (และถ้าเป็นกิจกรรม ให้แสดงเฉพาะกิจกรรมของตัวเองหรือของทุกคน)
                 const dayHolidays = holidaysDB.filter(h => h.date === dateString);
-                const dayEvents = eventsDB.filter(e => e.date === dateString);
+                
+                // สำหรับพนักงานทั่วไป เห็นเฉพาะ Event ของตัวเอง, Admin เห็นทั้งหมด
+                const dayEvents = eventsDB.filter(e => e.date === dateString && (userRole === 'Admin' || e.username === username || !e.username || e.username === 'All'));
+                
                 const dayLeaves = myLeavesDB.filter(l => isDateInRange(dateString, l.startDate, l.endDate));
 
                 let tagsHtml = '';
@@ -296,7 +310,6 @@
 
                 cell.innerHTML = `<span class="date-num">${i}</span><div class="tag-container">${tagsHtml}</div>`;
                 
-                // Interaction
                 cell.onclick = () => handleDayClick(dateString, dayHolidays, dayEvents, dayLeaves);
                 grid.appendChild(cell);
             }
@@ -309,9 +322,11 @@
 
             const todayStr = `${actualToday.getFullYear()}-${String(actualToday.getMonth() + 1).padStart(2, '0')}-${String(actualToday.getDate()).padStart(2, '0')}`;
             
-            // Combine Holidays and Events
-            let combined = [...holidaysDB, ...eventsDB].filter(item => item.date >= todayStr);
-            combined.sort((a, b) => new Date(a.date) - new Date(b.date)); // Sort by date ascending
+            // กรอง Event แบบเดียวกับในปฏิทิน
+            const filteredEvents = eventsDB.filter(e => userRole === 'Admin' || e.username === username || !e.username || e.username === 'All');
+            let combined = [...holidaysDB, ...filteredEvents].filter(item => item.date >= todayStr);
+            
+            combined.sort((a, b) => new Date(a.date) - new Date(b.date)); 
 
             if (combined.length === 0) {
                 list.innerHTML = `<div class="text-center p-6 text-slate-400 bg-slate-50 rounded-2xl text-sm">ไม่มีกิจกรรมเร็วๆ นี้</div>`;
@@ -351,12 +366,11 @@
             const hasContent = hList.length > 0 || eList.length > 0 || lList.length > 0;
 
             if (userRole === "Admin") {
-                // Admin Flow
                 let contentHtml = '';
                 if (hasContent) {
                     contentHtml = `<div class="bg-slate-50 p-3 rounded-xl border border-slate-100 text-sm text-left mb-4 space-y-2">`;
                     hList.forEach(h => contentHtml += `<div class="font-bold text-rose-500">📌 ${h.name}</div>`);
-                    eList.forEach(e => contentHtml += `<div class="font-bold text-purple-600">💼 ${e.name}</div>`);
+                    eList.forEach(e => contentHtml += `<div class="font-bold text-purple-600">💼 ${e.name} ${e.username && e.username !== 'All' ? `(${e.username})` : ''}</div>`);
                     lList.forEach(l => contentHtml += `<div class="font-bold text-amber-500">🏖️ ${l.type} (${l.status})</div>`);
                     contentHtml += `</div>`;
                 } else {
@@ -378,7 +392,6 @@
                 });
 
             } else {
-                // User Flow
                 if (!hasContent) return; 
                 let itemToView = hList[0] || eList[0] || lList[0];
                 
@@ -417,13 +430,25 @@
             });
         }
 
-        // --- 6. Admin Forms (เชื่อมกับ API ฝั่ง Server) ---
+        // --- 6. Admin Forms ---
         function adminShowAddEventForm(dateStr) {
+            // สร้างตัวเลือก Dropdown จากข้อมูล usersListDB
+            let userOptions = `<option value="All">ทุกคน (All)</option>`;
+            usersListDB.forEach(u => {
+                userOptions += `<option value="${u.username}">${u.name} (${u.username})</option>`;
+            });
+
             Swal.fire({
                 title: 'เพิ่มงาน/กิจกรรมใหม่',
                 html: `
                     <div class="text-left space-y-3 mt-4">
                         <div><label class="text-xs font-bold text-slate-500">วันที่</label><input type="text" value="${dateStr}" readonly class="w-full mt-1 p-2.5 bg-slate-100 border border-slate-200 rounded-lg text-sm outline-none"></div>
+                        <div>
+                            <label class="text-xs font-bold text-slate-500">เลือกพนักงาน (ผู้รับมอบหมาย)</label>
+                            <select id="evUser" class="w-full mt-1 p-2.5 bg-white border border-slate-200 focus:border-primary-500 rounded-lg text-sm outline-none">
+                                ${userOptions}
+                            </select>
+                        </div>
                         <div><label class="text-xs font-bold text-slate-500">ชื่องาน <span class="text-red-500">*</span></label><input type="text" id="evName" class="w-full mt-1 p-2.5 bg-white border border-slate-200 focus:border-primary-500 rounded-lg text-sm outline-none"></div>
                         <div><label class="text-xs font-bold text-slate-500">รายละเอียด</label><textarea id="evDetail" class="w-full mt-1 p-2.5 bg-white border border-slate-200 focus:border-primary-500 rounded-lg text-sm outline-none" rows="2"></textarea></div>
                         <div><label class="text-xs font-bold text-slate-500">ลิงก์ Google Maps (ถ้ามี)</label><input type="text" id="evMap" placeholder="https://maps.app.goo.gl/..." class="w-full mt-1 p-2.5 bg-white border border-slate-200 focus:border-primary-500 rounded-lg text-sm outline-none"></div>
@@ -439,7 +464,7 @@
                         detail: document.getElementById('evDetail').value, 
                         mapUrl: document.getElementById('evMap').value, 
                         type: 'event',
-                        username: username // แนบ username ไปด้วย
+                        username: document.getElementById('evUser').value // รับค่า Username จาก Dropdown
                     };
                 }
             }).then((result) => {
