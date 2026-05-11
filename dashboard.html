@@ -184,11 +184,20 @@
             const isLoggedIn = sessionStorage.getItem("isLoggedIn");
             const role = sessionStorage.getItem("userRole") || sessionStorage.getItem("role");
             const name = sessionStorage.getItem("userName");
+            const username = sessionStorage.getItem("userLoginName"); // ดึง Username ที่ล็อกอินเข้ามา
 
             if (isLoggedIn !== "true") { window.location.href = "index.html"; return; }
 
             const displayUser = name || "User Account";
-            document.getElementById("displayName").innerText = displayUser;
+            
+            // แสดงชื่อจริง พร้อม (Username) ในส่วน Logged in as
+            if(username) {
+                document.getElementById("displayName").innerText = `${displayUser} (${username})`;
+            } else {
+                document.getElementById("displayName").innerText = displayUser;
+            }
+            
+            // แสดงแค่ชื่อจริงในคำกล่าวทักทาย
             document.getElementById("welcomeName").innerText = displayUser;
 
             if (role && role.toLowerCase().trim() === "admin") {
