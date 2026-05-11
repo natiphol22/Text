@@ -185,10 +185,10 @@
         // --- 1. System Setup & Context ---
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz4XoAF5nH_x9X_g4K0I7ZOwgmc3StS12JNFBVIAwgjOpcGmlMPS9APpQ70Juwuhbs/exec"; 
         
+        // ดึงชื่อคนที่ล็อกอินอยู่ (เพื่อเอาไว้เช็คว่าอันไหนงานตัวเอง อันไหนงานคนอื่น)
         const username = sessionStorage.getItem("userLoginName") || "Natiphol"; 
         const userRole = sessionStorage.getItem("userRole") || "Admin"; 
         
-        // เช็คสถานะ Admin ให้ยืดหยุ่น ป้องกันเคสตัวพิมพ์เล็ก/ใหญ่ หรือชื่อเรียกที่ต่างกัน
         const roleStr = String(userRole).trim().toLowerCase();
         const isAdmin = roleStr === "admin" || roleStr === "ผู้ดูแลระบบ";
         
@@ -323,8 +323,10 @@
                 dayLeaves.forEach(l => {
                     const statusIcon = l.status === 'รออนุมัติ' ? '⏳ ' : '✅ ';
                     const shortName = l.name ? String(l.name).split(' ')[0] : (l.username || 'พนักงาน');
-                    // ถ้าเป็นแอดมิน โชว์ชื่อชัดๆ เลย
-                    const labelText = isAdmin ? `${shortName} ลา` : l.type;
+                    
+                    // 💡 หัวใจสำคัญ: เช็คว่าวันลานี้เป็นของ "คนอื่น" หรือไม่? ถ้าใช่ บังคับโชว์ชื่อไปเลย!
+                    const isMyLeave = String(l.username).trim().toLowerCase() === String(username).trim().toLowerCase();
+                    const labelText = isMyLeave ? l.type : `${shortName} ลา`;
                     
                     tagsHtml += `<div class="tag-label tag-leave" title="พนักงาน: ${l.name}\nประเภท: ${l.type}\nสถานะ: ${l.status}">${statusIcon}${labelText}</div>`;
                 });
@@ -345,15 +347,18 @@
             
             const filteredEvents = eventsDB.filter(e => isAdmin || e.username === username || !e.username || e.username === 'All');
             
-            // เช็ค endDate เพื่อให้วันลาที่กำลังดำเนินการอยู่ไม่หลุดหายไปจากหน้าจอ Admin
-            const upcomingLeaves = myLeavesDB.filter(l => l.endDate >= todayStr).map(l => ({
-                id: l.id,
-                date: l.startDate >= todayStr ? l.startDate : todayStr, // ถ้าคร่อมวันมา ให้แสดงในลิสต์ของวันนี้เป็นต้นไป
-                name: isAdmin ? `${l.name} (${l.type})` : `วัน${l.type}ของคุณ`,
-                type: 'leave',
-                detail: `พนักงาน: ${l.name}\nสถานะ: ${l.status}\nตั้งแต่วันที่ ${formatThaiDateFull(l.startDate)} ถึง ${formatThaiDateFull(l.endDate)}`,
-                mapUrl: ''
-            }));
+            const upcomingLeaves = myLeavesDB.filter(l => l.endDate >= todayStr).map(l => {
+                const isMyLeave = String(l.username).trim().toLowerCase() === String(username).trim().toLowerCase();
+                return {
+                    id: l.id,
+                    date: l.startDate >= todayStr ? l.startDate : todayStr,
+                    // โชว์ชื่อชัดเจนถ้าไม่ใช่ใบลาตัวเอง
+                    name: isMyLeave ? `วัน${l.type}ของคุณ` : `${l.name} (${l.type})`,
+                    type: 'leave',
+                    detail: `พนักงาน: ${l.name}\nสถานะ: ${l.status}\nตั้งแต่วันที่ ${formatThaiDateFull(l.startDate)} ถึง ${formatThaiDateFull(l.endDate)}`,
+                    mapUrl: ''
+                };
+            });
 
             let combined = [...holidaysDB, ...filteredEvents, ...upcomingLeaves].filter(item => item.date >= todayStr);
             combined.sort((a, b) => new Date(a.date) - new Date(b.date)); 
@@ -399,7 +404,6 @@
             const hasContent = hList.length > 0 || eList.length > 0 || lList.length > 0;
             let contentHtml = '';
 
-            // ประมวลผลข้อมูลลงใน contentHtml เพื่อแสดงใน Modal (ทำระบบให้พนักงาน/แอดมินเห็นรายการทั้งหมดในวันนั้นเหมือนกัน)
             if (hasContent) {
                 contentHtml = `<div class="bg-slate-50 p-2 md:p-3 rounded-xl border border-slate-100 text-xs md:text-sm text-left mb-4 space-y-2 max-h-[300px] overflow-y-auto custom-scrollbar">`;
                 
@@ -416,16 +420,18 @@
                     </div>`);
                     
                 lList.forEach(l => {
-                    const leaveTitle = isAdmin ? `วันลาของ ${l.name}` : `วัน${l.type}ของคุณ`;
+                    // ใช้ตรรกะเช็คผู้ใช้ด้วย
+                    const isMyLeave = String(l.username).trim().toLowerCase() === String(username).trim().toLowerCase();
+                    const leaveTitle = isMyLeave ? `วัน${l.type}ของคุณ` : `วันลาของ ${l.name}`;
                     const statusBadge = l.status === 'รออนุมัติ' ? '⏳ รออนุมัติ' : '✅ อนุมัติแล้ว';
-                    const details = isAdmin 
-                        ? `พนักงาน: ${l.name}\\nประเภท: ${l.type}\\nสถานะ: ${l.status}\\nตั้งแต่: ${formatThaiDateFull(l.startDate)}\\nถึง: ${formatThaiDateFull(l.endDate)}`
-                        : `สถานะ: ${l.status}\\nตั้งแต่: ${formatThaiDateFull(l.startDate)}\\nถึง: ${formatThaiDateFull(l.endDate)}`;
+                    const details = isMyLeave 
+                        ? `สถานะ: ${l.status}\\nตั้งแต่: ${formatThaiDateFull(l.startDate)}\\nถึง: ${formatThaiDateFull(l.endDate)}`
+                        : `พนักงาน: ${l.name}\\nประเภท: ${l.type}\\nสถานะ: ${l.status}\\nตั้งแต่: ${formatThaiDateFull(l.startDate)}\\nถึง: ${formatThaiDateFull(l.endDate)}`;
                         
                     contentHtml += `
                     <div class="flex flex-col bg-white p-2 rounded-lg border border-amber-100 shadow-sm cursor-pointer hover:border-amber-300 transition-colors" onclick="showDetailModal('${leaveTitle}', '${dateStr}', '${details}', '', 'leave')">
                         <div class="flex justify-between items-center w-full">
-                            <span class="font-bold text-amber-600 truncate pr-2 flex items-center gap-1">🏖️ ${isAdmin ? l.name + ' ลา' : l.type}</span>
+                            <span class="font-bold text-amber-600 truncate pr-2 flex items-center gap-1">🏖️ ${isMyLeave ? l.type : l.name + ' ลา'}</span>
                             <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 shrink-0"></i>
                         </div>
                         <span class="text-[10px] text-slate-500 mt-1 ml-5">${l.type} - ${statusBadge}</span>
@@ -436,7 +442,7 @@
             } else if (isAdmin) {
                 contentHtml = `<p class="text-sm text-slate-400 mb-4">ไม่มีข้อมูลงานหรือวันหยุดในวันนี้</p>`;
             } else {
-                return; // สำหรับพนักงานทั่วไป ถ้าวันนั้นไม่มีอะไรเลยก็กดแล้วไม่ต้องโชว์อะไร
+                return; 
             }
 
             if (isAdmin) {
