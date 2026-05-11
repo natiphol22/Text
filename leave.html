@@ -101,6 +101,18 @@
 </head>
 <body class="p-4 md:p-8 lg:p-12 selection:bg-primary-200 selection:text-primary-900">
 
+    <!-- 🟢 Loader แบบเต็มจอเหมือน Admin -->
+    <div id="loadingState" class="fixed inset-0 z-[999] bg-slate-50/90 backdrop-blur-sm flex flex-col items-center justify-center transition-opacity duration-300">
+        <div class="relative flex h-20 w-20 mb-6">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-60"></span>
+          <span class="relative inline-flex rounded-full h-20 w-20 bg-primary-600 flex items-center justify-center shadow-lg shadow-primary-500/30">
+              <i data-lucide="calendar-clock" class="w-10 h-10 text-white animate-pulse"></i>
+          </span>
+        </div>
+        <h2 class="text-xl font-bold text-slate-700">กำลังเตรียมข้อมูล</h2>
+        <p class="text-slate-500 font-medium mt-1">Cubic<span class="text-primary-600">Plus</span> System</p>
+    </div>
+
     <div class="max-w-[1200px] mx-auto flex justify-between items-center gap-4 mb-8 fade-in-up">
         <div class="flex-1">
             <h1 class="text-xl md:text-3xl font-bold text-slate-800 tracking-tight">ระบบลางาน</h1>
@@ -154,11 +166,6 @@
                 <div class="text-xl md:text-2xl font-black text-slate-800"><span id="annualDays">-</span><span class="text-[10px] md:text-xs font-medium text-slate-500 ml-1">วัน</span></div>
                 <h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-wide md:hidden mt-1">พักร้อน</h3>
             </div>
-        </div>
-
-        <div id="loadingState" class="flex flex-col items-center justify-center py-10 fade-in-up">
-            <i data-lucide="loader-2" class="w-8 h-8 text-primary-500 animate-spin mb-3"></i>
-            <p class="text-slate-500 text-sm font-medium">กำลังโหลดข้อมูลของคุณ...</p>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8 hidden" id="mainContent">
