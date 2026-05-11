@@ -162,7 +162,7 @@
 
     <script>
         // --- 1. System Setup & Context ---
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz4XoAF5nH_x9X_g4K0I7ZOwgmc3StS12JNFBVIAwgjOpcGmlMPS9APpQ70Juwuhbs/exec"; // เปลี่ยนเป็นลิงก์ที่ Deploy ใหม่
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz4XoAF5nH_x9X_g4K0I7ZOwgmc3StS12JNFBVIAwgjOpcGmlMPS9APpQ70Juwuhbs/exec"; 
         
         // เช็ค Session พนักงานและ Role
         const username = sessionStorage.getItem("userLoginName") || "Natiphol"; 
@@ -433,7 +433,14 @@
                 preConfirm: () => {
                     const name = document.getElementById('evName').value;
                     if(!name) { Swal.showValidationMessage('กรุณากรอกชื่องาน'); return false; }
-                    return { date: dateStr, name: name, detail: document.getElementById('evDetail').value, mapUrl: document.getElementById('evMap').value, type: 'event' };
+                    return { 
+                        date: dateStr, 
+                        name: name, 
+                        detail: document.getElementById('evDetail').value, 
+                        mapUrl: document.getElementById('evMap').value, 
+                        type: 'event',
+                        username: username // แนบ username ไปด้วย
+                    };
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
