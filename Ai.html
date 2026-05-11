@@ -56,7 +56,7 @@
             transition: background-color 0.3s, color 0.3s; 
             overflow: hidden; 
             height: 100vh; 
-            height: 100dvh; /* For mobile browsers */
+            height: 100dvh; 
         }
         
         .app { 
@@ -70,7 +70,6 @@
             box-shadow: 0 0 30px rgba(0,0,0,0.1);
         }
         
-        /* --- Floating Back Button --- */
         .btn-floating-back {
             position: fixed;
             top: 24px;
@@ -99,9 +98,7 @@
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(14, 165, 233, 0.3);
         }
-        .btn-floating-back:active {
-            transform: scale(0.95);
-        }
+        .btn-floating-back:active { transform: scale(0.95); }
         @media (max-width: 1000px) {
             .btn-floating-back {
                 top: auto;
@@ -110,12 +107,9 @@
                 padding: 12px;
                 border-radius: 50%;
             }
-            .btn-floating-back span {
-                display: none;
-            }
+            .btn-floating-back span { display: none; }
         }
 
-        /* --- Header --- */
         .header { 
             padding: 12px 16px; 
             display: flex; 
@@ -132,7 +126,6 @@
         .header-right { display: flex; gap: 8px; align-items: center; }
         .header-title { font-weight: 600; font-size: 1.1rem; letter-spacing: 0.3px;}
 
-        /* --- Buttons & Switches --- */
         .btn-icon { 
             background: var(--input-bg); 
             border: 1px solid var(--border); 
@@ -160,7 +153,6 @@
         input:checked + .ai-slider:after { content: "AI"; left: 8px; right: auto; color: white; }
         input:checked + .ai-slider:before { transform: translateX(22px); }
 
-        /* --- Chat Area --- */
         .chat { flex: 1; overflow-y: auto; padding: 20px 16px; display: flex; flex-direction: column; gap: 16px; scroll-behavior: smooth; }
         .row { display: flex; width: 100%; opacity: 0; transform: translateY(15px); animation: appear 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         .row.user { justify-content: flex-end; }
@@ -182,7 +174,6 @@
         .btn-copy-bubble { position: absolute; right: 10px; top: 10px; background: var(--bg); border: 1px solid var(--border); color: var(--text); width: 28px; height: 28px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
         .btn-copy-bubble:hover, .btn-copy-bubble:active { background: var(--ai-glow); color: white; border-color: var(--ai-glow); }
 
-        /* --- Input Area --- */
         .input-area { 
             padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); 
             flex-shrink: 0; 
@@ -200,7 +191,6 @@
         .btn-send { background: var(--user-bubble); color: white; border: none; padding: 10px 20px; border-radius: 24px; cursor: pointer; font-weight: 500; font-size: 0.95rem; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
         .btn-send:hover, .btn-send:active { transform: scale(0.95); opacity: 0.9; }
 
-        /* --- Modals --- */
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: flex-end; z-index: 1000; backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); opacity: 0; transition: opacity 0.3s; }
         .modal.active { display: flex; opacity: 1; }
         .modal-content { 
@@ -230,11 +220,8 @@
             display: flex; 
             flex-direction: column; 
             gap: 12px; 
-            -webkit-overflow-scrolling: touch; 
-            overscroll-behavior: contain; 
         }
 
-        /* --- Form Elements --- */
         .input-wrapper { position: relative; display: flex; align-items: center; width: 100%; }
         .btn-paste-mini { position: absolute; right: 6px; background: var(--panel); border: 1px solid var(--border); border-radius: 10px; width: 36px; height: 36px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1rem; transition: 0.2s; color: var(--text); z-index: 5; }
         .btn-paste-mini:active { background: var(--ai-glow); color: white; border-color: var(--ai-glow); }
@@ -259,7 +246,6 @@
         .form-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
         .full-width { grid-column: span 1; }
 
-        /* --- Tabs --- */
         .tab-container { 
             display: flex; 
             flex-wrap: wrap; 
@@ -288,7 +274,6 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
         }
 
-        /* --- Custom UI Elements --- */
         .quick-action-card { display: flex; align-items: center; gap: 16px; background: var(--input-bg); padding: 16px; border-radius: 16px; border: 1px solid var(--border); transition: 0.2s; }
         .quick-action-card:active { transform: scale(0.98); }
         .quick-action-link { display: flex; align-items: center; gap: 16px; text-decoration: none; color: var(--text); flex: 1; }
@@ -319,7 +304,6 @@
         .toast.success { border-color: var(--success); }
         .toast.error { border-color: var(--danger); }
 
-        /* --- Media Queries for larger screens --- */
         @media (min-width: 600px) {
             .form-grid { grid-template-columns: 1fr 1fr; }
             .full-width { grid-column: span 2; }
@@ -336,7 +320,6 @@
 </head>
 <body>
 
-<!-- 🟢 Loader หน้าเตรียมข้อมูล -->
 <div id="loader" class="fixed inset-0 z-[9999] flex flex-col items-center justify-center transition-opacity duration-500" style="background: var(--bg); backdrop-filter: blur(8px);">
     <div class="relative flex h-20 w-20 mb-6">
       <span class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-60" style="background-color: var(--ai-glow);"></span>
@@ -640,9 +623,11 @@
 <div id="toast-container"></div>
 
 <script>
-    const API_BASE = "https://script.google.com/macros/s/AKfycbx4pPQsedTw8gBpR94u8uC0i7Au8-IJGacbBMBRoHtvoRIMmxPrKr5Lf7xfdIy4P3W7/exec";
-    const API_SHEET1 = `${API_BASE}/tabs/Sheet1`;
-    const API_SHEET2 = `${API_BASE}/tabs/Sheet2`;
+    // 🔗 เปลี่ยนเป็น URL ของ Apps Script ตัวใหม่
+    const API_BASE = "https://script.google.com/macros/s/AKfycbyYcORO1VqTb0y4woquQ2mtddlw3rJEUZvz9IOlbQs/exec";
+    const API_SHEET1 = `${API_BASE}?tabs=Sheet1`;
+    const API_SHEET2 = `${API_BASE}?tabs=Sheet2`;
+    
     const PASS = "synology123";
     let GROQ_KEY = localStorage.getItem("stored_groq_key") || "";
     let cachedSheet1 = [];
@@ -651,35 +636,24 @@
     let currentFAQFilter = 'General';
     let currentToolTab = 1;
 
-    // --- Toast Notifications ---
     function showToast(message, type = 'info') {
         const container = document.getElementById('toast-container');
         const toast = document.createElement('div');
         toast.className = `toast ${type}`;
         toast.innerText = message;
         container.appendChild(toast);
-        
-        // Trigger reflow to start animation
         void toast.offsetWidth;
         toast.classList.add('show');
-        
         setTimeout(() => {
             toast.classList.remove('show');
             setTimeout(() => toast.remove(), 300);
         }, 3000);
     }
 
-    // --- Data Caching ---
     async function loadInitialData(isRefresh = false) {
         const loader = document.getElementById('loader');
-        if (isRefresh) {
-            showToast("กำลังซิงค์ข้อมูล...", "info");
-        } else {
-            if (loader) {
-                loader.style.display = 'flex';
-                loader.style.opacity = '1';
-            }
-        }
+        if (isRefresh) showToast("กำลังซิงค์ข้อมูล...", "info");
+        else if (loader) { loader.style.display = 'flex'; loader.style.opacity = '1'; }
         
         try {
             const [res1, res2] = await Promise.all([fetch(API_SHEET1), fetch(API_SHEET2)]);
@@ -697,11 +671,8 @@
         }
     }
 
-    function refreshData() {
-        loadInitialData(true);
-    }
+    function refreshData() { loadInitialData(true); }
 
-    // --- Clipboard Paste ---
     async function pasteFromClipboard(targetId, autoExtract = false) {
         const target = document.getElementById(targetId);
         try {
@@ -709,11 +680,11 @@
             const text = await navigator.clipboard.readText();
             target.value = text;
             target.style.borderColor = "var(--success)";
-            target.dispatchEvent(new Event('input')); // Trigger auto-resize
+            target.dispatchEvent(new Event('input'));
             setTimeout(() => target.style.borderColor = "var(--border)", 600);
             if(autoExtract) extractCustomerData();
         } catch (err) {
-            showToast("กรุณาอนุญาตการเข้าถึง Clipboard หรือใช้วิธีกดค้างแล้ววาง", "error");
+            showToast("กรุณาอนุญาตการเข้าถึง Clipboard", "error");
         }
     }
 
@@ -722,7 +693,6 @@
         showToast("คัดลอกสำเร็จ", "success");
     }
 
-    // --- Core Chat Logic ---
     function clearChat() {
         document.getElementById("chat").innerHTML = "";
         addMsg("สวัสดีครับ 👋 แชทถูกล้างแล้ว มีอะไรให้ช่วยบอกได้เลยครับ", "bot");
@@ -739,14 +709,12 @@
         document.getElementById("chat").scrollTop = document.getElementById("chat").scrollHeight;
 
         try {
-            if (!isDataLoaded) await loadInitialData(); // Load on demand if failed earlier
-
-            // 1. Check Sheet 2 (ARS) First
+            if (!isDataLoaded) await loadInitialData();
             const arsMatch = cachedSheet2.find(item => {
                 if (!item.SN) return false;
-                const dbSN = item.SN.toUpperCase().trim();
+                const dbSN = item.SN.toString().toUpperCase().trim();
                 const query = q.toUpperCase().trim();
-                return query === dbSN || new RegExp(`\\b${dbSN}\\b`).test(query);
+                return query === dbSN || query.includes(dbSN);
             });
             
             if(arsMatch) {
@@ -756,15 +724,13 @@
                 return;
             }
 
-            // 2. Check Sheet 1 (Normal FAQ)
             const match = findBestMatch(q, cachedSheet1);
-            
             hideTyping();
             if(match) renderResponse(match);
             else if(document.getElementById("aiMode").checked && GROQ_KEY) askGroq(q);
-            else typeWriter(addMsg("", "bot"), "ไม่พบข้อมูลที่ตรงกับคำถามครับ ลองเปิดสวิตช์ [AI] ด้านบน หรือค้นหาในหมวด ❓ คำถามที่พบบ่อยดูนะครับ");
+            else typeWriter(addMsg("", "bot"), "ไม่พบข้อมูลที่ตรงกับคำถามครับ ลองเปิดสวิตช์ [AI] ด้านบน หรือใช้เมนู ❓ ครับ");
 
-        } catch { hideTyping(); addMsg("การเชื่อมต่อเครือข่ายล้มเหลว กรุณาลองใหม่", "bot"); }
+        } catch { hideTyping(); addMsg("ระบบขัดข้อง กรุณาลองใหม่", "bot"); }
     }
 
     function findBestMatch(q, data) {
@@ -793,7 +759,7 @@
         if(item.ManualURL) {
             setTimeout(() => {
                 const isImg = /\.(jpg|jpeg|png|webp|gif)$/.test(item.ManualURL.toLowerCase());
-                b.innerHTML += isImg ? `<br><img src="${item.ManualURL}">` : `<br><br><a href="${item.ManualURL}" target="_blank" style="color:var(--ai-glow); font-weight:500; text-decoration:none; display:inline-flex; align-items:center; gap:5px;">📘 ดูคู่มือ / ข้อมูลเพิ่มเติม <span>→</span></a>`;
+                b.innerHTML += isImg ? `<br><img src="${item.ManualURL}">` : `<br><br><a href="${item.ManualURL}" target="_blank" style="color:var(--ai-glow); font-weight:500; text-decoration:none;">📘 ดูคู่มือ / ข้อมูลเพิ่มเติม →</a>`;
                 document.getElementById("chat").scrollTop = document.getElementById("chat").scrollHeight;
             }, item.Answer.length * 15);
         }
@@ -812,13 +778,13 @@
             const result = await res.json();
             hideTyping();
             typeWriter(addMsg("", "bot"), "✨ [AI]: " + result.choices[0].message.content);
-        } catch { hideTyping(); addMsg("AI ขัดข้องในขณะนี้ กรุณาตรวจสอบ API Key", "bot"); }
+        } catch { hideTyping(); addMsg("AI ขัดข้อง กรุณาเช็ค API Key", "bot"); }
     }
 
     function addMsg(text, side) {
         const row = document.createElement("div");
         row.className = `row ${side}`;
-        row.innerHTML = `<div class="bubble">${text.replace(/\n/g, '<br>')}${side==='bot'?'<button class="btn-copy-bubble" onclick="copyBubble(this)" title="Copy">📋</button>':''}</div>`;
+        row.innerHTML = `<div class="bubble">${text.replace(/\n/g, '<br>')}${side==='bot'?'<button class="btn-copy-bubble" onclick="copyBubble(this)">📋</button>':''}</div>`;
         const chat = document.getElementById("chat");
         chat.appendChild(row);
         chat.scrollTop = chat.scrollHeight;
@@ -829,7 +795,7 @@
         let i = 0; const speed = 15;
         function type() {
             if (i < text.length) {
-                el.innerHTML = text.substr(0, i+1).replace(/\n/g, '<br>') + '<button class="btn-copy-bubble" onclick="copyBubble(this)" title="Copy">📋</button>';
+                el.innerHTML = text.substr(0, i+1).replace(/\n/g, '<br>') + '<button class="btn-copy-bubble" onclick="copyBubble(this)">📋</button>';
                 i++;
                 document.getElementById("chat").scrollTop = document.getElementById("chat").scrollHeight;
                 setTimeout(type, speed);
@@ -841,17 +807,13 @@
     function copyBubble(btn) {
         const text = btn.parentElement.innerText.replace("📋", "").trim();
         navigator.clipboard.writeText(text);
-        btn.innerText = "✅"; 
-        btn.style.color = "var(--success)";
-        setTimeout(() => { btn.innerText = "📋"; btn.style.color = ""; }, 1500);
-        showToast("คัดลอกข้อความแล้ว", "success");
+        btn.innerText = "✅"; setTimeout(() => { btn.innerText = "📋"; }, 1500);
+        showToast("คัดลอกแล้ว", "success");
     }
 
-    // --- Modal & Tools Control ---
     function openModal(id) {
         const m = document.getElementById(id);
-        m.style.display = "flex";
-        void m.offsetWidth; // Force reflow
+        m.style.display = "flex"; void m.offsetWidth;
         m.classList.add("active");
     }
 
@@ -886,40 +848,21 @@
             txt = `เรียนทีม Service SIS\n\nรบกวนเช็คประกันสินค้า\nModel: ${document.getElementById("wModel").value || "-"}\nS/N: ${document.getElementById("wSN").value || "-"}\n\nขอบคุณครับ`;
         } 
         else if (currentToolTab === 2) {
-            let addressText = "";
-            if (document.getElementById("cIncludeAddress").checked) {
-                addressText = `\n\n ติดต่อลูกค้า:\n${document.getElementById("cAddress").value || "-"}`;
-            }
+            let addressText = document.getElementById("cIncludeAddress").checked ? `\n\n ติดต่อลูกค้า:\n${document.getElementById("cAddress").value || "-"}` : "";
             txt = `เรียนทีม Service SIS\n\nแจ้งเคลมสินค้า ${document.getElementById("cType").value}\nModel: ${document.getElementById("cModel").value || "-"}\nS/N: ${document.getElementById("cSN").value || "-"}\nTicket ID: ${document.getElementById("cTicker").value || "-"}\n\nอาการเสีย: ${document.getElementById("cSymptom").value || "-"}${addressText}\n\nขอบคุณครับ`;
         }
         else if (currentToolTab === 5) {
             const tk = document.getElementById("hqTicket").value.trim();
-            const tkText = tk ? ` (Ticket ID: ${tk})` : "";
-            txt = `ทางเราได้ดำเนินการเปิดเคสและส่งเรื่องประสานงานไปยังทีมวิศวกร Synology ${tkText} ให้เรียบร้อยแล้วนะครับ หากมีความคืบหน้าหรือได้รับคำแนะนำเพิ่มเติมจากทีมงาน จะรีบมาอัปเดตให้ทราบทันทีครับ\n\nขอบคุณครับ`;
+            txt = `ทางเราได้ประสานงานทีมวิศวกร Synology ${tk ? '(Ticket ID: '+tk+')' : ''} เรียบร้อยแล้ว หากคืบหน้าจะรีบแจ้งให้ทราบครับ`;
         }
         
         const rb = document.getElementById("resultBox");
-        rb.value = txt; 
-        rb.style.display = "block";
-        rb.dispatchEvent(new Event('input')); // trigger auto resize
+        rb.value = txt; rb.style.display = "block";
         document.getElementById("copyBtn").style.display = "block";
-        
-        const modalBody = document.querySelector('#toolModal .modal-body');
-        modalBody.scrollTo({ top: modalBody.scrollHeight, behavior: 'smooth' });
     }
 
     function copyResult() {
         navigator.clipboard.writeText(document.getElementById("resultBox").value);
-        const btn = document.getElementById("copyBtn");
-        const originalText = btn.innerText;
-        btn.innerText = "✅ คัดลอกสำเร็จแล้ว!";
-        btn.style.background = "var(--bot-bubble)";
-        btn.style.color = "var(--success)";
-        setTimeout(() => { 
-            btn.innerText = originalText; 
-            btn.style.background = "var(--success)";
-            btn.style.color = "white";
-        }, 2000);
         showToast("คัดลอกข้อความแล้ว", "success");
     }
 
@@ -929,294 +872,109 @@
         container.innerHTML = "";
         if (!raw) return;
 
-        let data = { "ผู้ติดต่อ": "", "เบอร์โทร": "", "อีเมล": "", "บริษัท": "", "Model": "", "S/N": "" };
-        const lines = raw.split('\n').map(l => l.trim()).filter(l => l !== '');
-
-        const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/;
-        const phoneRegex = /(?:0|\+66)[\d\-\s]{8,14}/g;
-        const modelRegex = /\b(?:DS|RS|FS|SA|DX|RX|UC|HD|VS|NVR|SNG-)[A-Z0-9\-\+]+\b/i;
-
-        const emailMatch = raw.match(emailRegex);
+        let data = { "ผู้ติดต่อ": "", "เบอร์โทร": "", "อีเมล": "", "Model": "", "S/N": "" };
+        const emailMatch = raw.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
         if (emailMatch) data["อีเมล"] = emailMatch[0];
+        
+        const phoneMatch = raw.match(/(?:0|\+66)[\d\-\s]{8,14}/);
+        if (phoneMatch) data["เบอร์โทร"] = phoneMatch[0].trim();
 
-        const phoneMatches = raw.match(phoneRegex);
-        if (phoneMatches) {
-            let validPhone = phoneMatches.find(p => {
-                let digits = p.replace(/[\-\s]/g, '');
-                return digits.length >= 9 && digits.length <= 10;
-            });
-            if (validPhone) data["เบอร์โทร"] = validPhone.trim();
-        }
-
-        const modelMatch = raw.match(modelRegex);
+        const modelMatch = raw.match(/\b(?:DS|RS|FS|SA|DX|RX)[A-Z0-9\-\+]+\b/i);
         if (modelMatch) data["Model"] = modelMatch[0].toUpperCase();
 
-        const snMatches = raw.match(/\b[A-Z0-9]{10,15}\b/gi);
-        if (snMatches) {
-            let validSN = snMatches.find(s => /[A-Za-z]/.test(s) && /\d/.test(s));
-            if (validSN) data["S/N"] = validSN.toUpperCase();
-        }
+        const snMatch = raw.match(/\b[A-Z0-9]{10,15}\b/i);
+        if (snMatch) data["S/N"] = snMatch[0].toUpperCase();
 
-        for (let i = 0; i < lines.length; i++) {
-            let line = lines[i];
-            let cleanLine = line.replace(/^(\d+\.|-)\s*/, '').trim();
-
-            let nameMatch = cleanLine.match(/^(?:ชื่อผู้ติดต่อ|ชื่อ|ติดต่อ)\s*(?::\s*)?(.*)/i);
-            if (nameMatch && !data["ผู้ติดต่อ"]) {
-                data["ผู้ติดต่อ"] = nameMatch[1].trim();
-                if (!data["ผู้ติดต่อ"] && lines[i+1]) data["ผู้ติดต่อ"] = lines[i+1].replace(/^(\d+\.|-)\s*/, '').trim();
-            }
-
-            let compMatch = cleanLine.match(/^(?:บริษัท|ชื่อบริษัท|Company)\s*(?::\s*)?(.*)/i);
-            if (compMatch && !data["บริษัท"]) {
-                data["บริษัท"] = compMatch[1].trim();
-                if (!data["บริษัท"] && lines[i+1]) data["บริษัท"] = lines[i+1].replace(/^(\d+\.|-)\s*/, '').trim();
-            }
-
-            if (!data["Model"]) {
-                let mMatch = cleanLine.match(/^(?:รุ่นของ Synology NAS|รุ่น|Model(?:\s*No\.)?)\s*(?::\s*)?(.*)/i);
-                if (mMatch) data["Model"] = mMatch[1].trim() || (lines[i+1] ? lines[i+1].replace(/^(\d+\.|-)\s*/, '').trim() : "");
-            }
-
-            if (!data["S/N"]) {
-                let sMatch = cleanLine.match(/^(?:หมายเลขเครื่อง|Serial(?:\s*No\.)?|S\/N|SN)\s*(?::\s*)?(.*)/i);
-                if (sMatch) data["S/N"] = sMatch[1].trim() || (lines[i+1] ? lines[i+1].replace(/^(\d+\.|-)\s*/, '').trim() : "");
-            }
-        }
-
-        if (!data["ผู้ติดต่อ"] && lines.length >= 3) {
-            let potentialName = lines[0].replace(/^(\d+\.|-)\s*/, '').trim();
-            if (potentialName && !emailRegex.test(potentialName) && !/(?:0|\+66)[\d\-\s]{8}/.test(potentialName)) {
-                data["ผู้ติดต่อ"] = potentialName;
-            }
-            if (!data["บริษัท"]) {
-                let potentialComp = lines.slice(1).find(l => 
-                    !emailRegex.test(l) && 
-                    !/(?:0|\+66)[\d\-\s]{8}/.test(l) && 
-                    !modelRegex.test(l) && 
-                    !(/\b[A-Z0-9]{10,15}\b/i.test(l) && /[A-Za-z]/.test(l) && /\d/.test(l))
-                );
-                if (potentialComp) data["บริษัท"] = potentialComp.replace(/^(\d+\.|-)\s*/, '').trim();
-            }
-        }
-
-        let hasData = false;
         Object.keys(data).forEach(key => {
             if(data[key]) {
-                hasData = true;
                 const div = document.createElement("div"); div.className = "extract-row";
                 div.innerHTML = `<span class="extract-label">${key}</span><input class="extract-val" value="${data[key]}" readonly><button class="btn-paste-mini" style="position:static;" onclick="copyText('${data[key]}')">📋</button>`;
                 container.appendChild(div);
             }
         });
-
-        if(!hasData) container.innerHTML = "<p style='text-align:center; color:var(--text-muted); padding: 10px;'>ไม่พบรูปแบบข้อมูลที่ตรงกัน</p>";
-    }
-
-    function clearExtract() {
-        document.getElementById("rawText").value = "";
-        document.getElementById("extractResult").innerHTML = "";
-        document.getElementById("rawText").style.height = "auto";
     }
 
     async function checkARSManual() {
         const sn = document.getElementById("arsSearchSN").value.trim().toUpperCase();
         if(!sn) return showToast("กรุณากรอก S/N", "error");
-        
-        const btn = event.target;
-        btn.innerText = "⏳"; btn.disabled = true;
-
-        try {
-            if (!isDataLoaded) await loadInitialData();
-            const found = cachedSheet2.find(i => i.SN && i.SN.toUpperCase() === sn);
-            
-            const rb = document.getElementById("arsResult");
-            rb.style.display = "block";
-            if(found) {
-                rb.innerHTML = `
-                    <div style="color:var(--success); font-weight:600; font-size:1.1rem; margin-bottom:12px; display:flex; align-items:center; gap:8px;"><span>✅</span> พบข้อมูลประกันพิเศษ</div>
-                    <div style="font-size:0.95rem; line-height:1.8;">
-                        <span style="color:var(--text-muted); display:inline-block; width:80px;">Model:</span> <b>${found.Model || '-'}</b><br>
-                        <span style="color:var(--text-muted); display:inline-block; width:80px;">S/N:</span> <b>${found.SN || '-'}</b><br>
-                        <span style="color:var(--text-muted); display:inline-block; width:80px;">ประเภท:</span> <b>${found.ServiceType || '-'}</b><br>
-                        <span style="color:var(--text-muted); display:inline-block; width:80px;">วันที่เริ่ม:</span> <b>${found.StartDate || '-'}</b><br>
-                        <span style="color:var(--text-muted); display:inline-block; width:80px;">หมดอายุ:</span> <b style="color:var(--ai-glow);">${found.EndDate || '-'}</b>
-                    </div>`;
-            } else {
-                rb.innerHTML = `<div style="color:var(--danger); font-weight:500; display:flex; align-items:center; gap:8px;"><span>❌</span> ไม่พบข้อมูล S/N นี้ในระบบ ARS</div>`;
-            }
-        } catch(e) {
-            showToast("ไม่สามารถตรวจสอบได้ในขณะนี้", "error");
-        } finally {
-            btn.innerText = "ค้นหา"; btn.disabled = false;
-        }
+        const found = cachedSheet2.find(i => i.SN && i.SN.toString().toUpperCase() === sn);
+        const rb = document.getElementById("arsResult");
+        rb.style.display = "block";
+        rb.innerHTML = found ? `<div style="color:var(--success);">✅ พบ ARS: ${found.ServiceType} (หมดอายุ: ${found.EndDate})</div>` : `<div style="color:var(--danger);">❌ ไม่พบข้อมูลในระบบ ARS</div>`;
     }
 
-    // --- FAQ Logic ---
-    function openFAQ() {
-        openModal('faqModal');
-        const list = document.getElementById("faqList");
-        if(list.innerHTML === "") renderFAQ();
-    }
-
+    function openFAQ() { openModal('faqModal'); renderFAQ(); }
     function renderFAQ() {
-        const list = document.getElementById("faqList");
-        list.innerHTML = "";
-        const filtered = cachedSheet1.filter(i => (i.isFAQ === "TRUE" || i.isFAQ === true) && i.Type === currentFAQFilter);
-        if(filtered.length === 0) {
-            list.innerHTML = "<p style='text-align:center; color:var(--text-muted); padding:20px;'>ไม่มีข้อมูลในหมวดหมู่นี้</p>";
-            return;
-        }
-        filtered.forEach(item => {
+        const list = document.getElementById("faqList"); list.innerHTML = "";
+        cachedSheet1.filter(i => i.isFAQ && i.Type === currentFAQFilter).forEach(item => {
             const d = document.createElement("div"); d.className = "faq-item";
-            d.innerHTML = `<span style="font-size:1.2rem;">💬</span> <span style="flex:1;">${item.Keyword.split(",")[0]}</span>`;
+            d.innerHTML = `<span>💬</span> <span>${item.Keyword.split(",")[0]}</span>`;
             d.onclick = () => { document.getElementById("input").value = item.Keyword.split(",")[0]; closeModal('faqModal'); send(); };
             list.appendChild(d);
         });
     }
-
     function filterFAQ(type, btn) {
         currentFAQFilter = type;
         document.querySelectorAll("#faqTabContainer .tab-btn").forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        renderFAQ();
+        btn.classList.add("active"); renderFAQ();
     }
 
-    function filterFAQByText() {
-        const v = document.getElementById("faqSearchInput").value.toLowerCase();
-        document.querySelectorAll(".faq-item").forEach(el => el.style.display = el.innerText.toLowerCase().includes(v) ? "flex" : "none");
-    }
-
-    // --- Admin Settings ---
-    function openLogin() { openModal('loginModal'); setTimeout(() => document.getElementById("password").focus(), 300); }
-    
+    function openLogin() { openModal('loginModal'); }
     function checkPassword() {
         if(document.getElementById("password").value === PASS) {
-            closeModal('loginModal'); 
-            setTimeout(() => {
-                openModal('dataModal');
-                document.getElementById("settingGroqKey").value = GROQ_KEY;
-                document.getElementById("password").value = "";
-                toggleAdminForm();
-            }, 300);
-        } else {
-            const p = document.getElementById("password");
-            p.style.borderColor = "var(--danger)";
-            p.style.animation = "shake 0.4s";
-            setTimeout(() => { p.style.borderColor = ""; p.style.animation = ""; }, 400);
-        }
+            closeModal('loginModal'); openModal('dataModal');
+            document.getElementById("settingGroqKey").value = GROQ_KEY;
+        } else showToast("รหัสผ่านไม่ถูกต้อง", "error");
     }
 
     function saveSettings() {
         GROQ_KEY = document.getElementById("settingGroqKey").value;
         localStorage.setItem("stored_groq_key", GROQ_KEY);
-        showToast("บันทึก API Key สำเร็จ ✅", "success");
+        showToast("บันทึกสำเร็จ ✅", "success");
     }
 
     function toggleAdminForm() {
         const target = document.getElementById("dataSheetTarget").value;
-        if (target === "Sheet1") {
-            document.getElementById("adminFormSheet1").style.display = "grid";
-            document.getElementById("adminFormSheet2").style.display = "none";
-        } else {
-            document.getElementById("adminFormSheet1").style.display = "none";
-            document.getElementById("adminFormSheet2").style.display = "grid";
-        }
+        document.getElementById("adminFormSheet1").style.display = target === "Sheet1" ? "grid" : "none";
+        document.getElementById("adminFormSheet2").style.display = target === "Sheet2" ? "grid" : "none";
     }
 
     async function addData() {
-        const btn = document.getElementById("addBtn");
         const target = document.getElementById("dataSheetTarget").value;
-        let payload = [];
-
-        if (target === "Sheet1") {
-            const kw = document.getElementById("dataKeyword").value.trim();
-            const ans = document.getElementById("dataAnswer").value.trim();
-            if(!kw || !ans) return showToast("กรุณากรอก Keyword และ คำตอบ ให้ครบถ้วน", "error");
-            payload = [{ 
-                Type: document.getElementById("dataType").value, 
-                Keyword: kw, 
-                Answer: ans, 
-                ManualURL: document.getElementById("dataManual").value.trim(), 
-                isFAQ: document.getElementById("dataIsFaq").checked ? "TRUE" : "FALSE" 
-            }];
-        } else { // Sheet 2 (ARS)
-            const sn = document.getElementById("arsSN").value.trim().toUpperCase();
-            const end = document.getElementById("arsEndDate").value.trim();
-            if(!sn || !end) return showToast("กรุณากรอก Serial Number และ วันหมดอายุ เป็นอย่างน้อย", "error");
-            payload = [{ 
-                Model: document.getElementById("arsModel").value.trim(),
-                SN: sn, 
-                ServiceType: document.getElementById("arsServiceType").value,
-                StartDate: document.getElementById("arsStartDate").value.trim(),
-                EndDate: end 
-            }];
-        }
-
-        btn.innerText = "กำลังบันทึกข้อมูล..."; btn.disabled = true;
-        const url = target === "Sheet1" ? API_SHEET1 : API_SHEET2;
+        const payload = target === "Sheet1" ? {
+            Type: document.getElementById("dataType").value,
+            Keyword: document.getElementById("dataKeyword").value,
+            Answer: document.getElementById("dataAnswer").value,
+            isFAQ: document.getElementById("dataIsFaq").checked
+        } : {
+            SN: document.getElementById("arsSN").value,
+            EndDate: document.getElementById("arsEndDate").value
+        };
 
         try {
-            await fetch(url, { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify(payload) });
-            showToast("บันทึกข้อมูลสำเร็จ! ✅", "success"); 
-            closeModal('dataModal');
-            
-            // Clear fields
-            if(target === "Sheet1") {
-                document.getElementById("dataKeyword").value = "";
-                document.getElementById("dataAnswer").value = "";
-                document.getElementById("dataManual").value = "";
-            } else {
-                document.getElementById("arsModel").value = "";
-                document.getElementById("arsSN").value = "";
-                document.getElementById("arsStartDate").value = "";
-                document.getElementById("arsEndDate").value = "";
-            }
-            refreshData(); // โหลดข้อมูลใหม่ทันทีหลังเพิ่ม
-        } catch { showToast("เกิดข้อผิดพลาดในการบันทึก ❌", "error"); }
-        finally { btn.innerText = "➕ บันทึกข้อมูลใหม่"; btn.disabled = false; }
-    }
-
-    // --- Utils & Event Listeners ---
-    function setupAutoResize() {
-        const textareas = document.querySelectorAll('.tool-textarea');
-        textareas.forEach(el => {
-            el.addEventListener('input', function() {
-                this.style.height = 'auto';
-                this.style.height = (this.scrollHeight) + 'px';
+            await fetch(target === "Sheet1" ? API_SHEET1 : API_SHEET2, { 
+                method: "POST", 
+                body: JSON.stringify([payload]) 
             });
-        });
+            showToast("บันทึกข้อมูลแล้ว ✅", "success");
+            closeModal('dataModal'); refreshData();
+        } catch { showToast("บันทึกล้มเหลว", "error"); }
     }
-
-    function setupEnterKeys() {
-        const exe = (e, action) => { if(e.key === 'Enter') { e.preventDefault(); action(); } };
-        document.getElementById('wModel').addEventListener('keydown', e => exe(e, generateText));
-        document.getElementById('wSN').addEventListener('keydown', e => exe(e, generateText));
-        document.getElementById('cModel').addEventListener('keydown', e => exe(e, generateText));
-        document.getElementById('cSN').addEventListener('keydown', e => exe(e, generateText));
-        document.getElementById('arsSearchSN').addEventListener('keydown', e => exe(e, checkARSManual));
-        document.getElementById('hqTicket').addEventListener('keydown', e => exe(e, generateText));
-    }
-
-    const style = document.createElement('style');
-    style.innerHTML = `@keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }`;
-    document.head.appendChild(style);
-
-    document.addEventListener("keydown", e => {
-        if(e.key === "Escape") document.querySelectorAll(".modal").forEach(m => closeModal(m.id));
-        if(e.key === "Enter" && document.activeElement.id === "input") send();
-        if(e.key === "Enter" && document.activeElement.id === "password") checkPassword();
-    });
 
     window.onload = () => {
         if (typeof lucide !== 'undefined') lucide.createIcons();
-        loadInitialData(); // Load data seamlessly in background
+        loadInitialData();
         setupAutoResize();
-        setupEnterKeys();
-        setTimeout(() => {
-            addMsg("สวัสดีครับ 👋 มีคำถามเกี่ยวกับ Synology แจ้งอาการเสีย หรือกรอก Serial Number เพื่อเช็คประกันพิเศษ (ARS) ได้เลยครับ", "bot");
-        }, 500);
+        setTimeout(() => { addMsg("สวัสดีครับ 👋 มีอะไรให้ช่วยเกี่ยวกับ Synology ไหมครับ?", "bot"); }, 500);
     };
+
+    function setupAutoResize() {
+        document.querySelectorAll('.tool-textarea').forEach(el => {
+            el.addEventListener('input', function() {
+                this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px';
+            });
+        });
+    }
 </script>
 </body>
 </html>
