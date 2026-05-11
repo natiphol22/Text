@@ -96,7 +96,7 @@
                   <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                   <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
                 </span>
-                <p class="text-slate-500 font-semibold text-xs uppercase tracking-[0.2em]">CubicPlus Portal <span id="currentYearDisplay">2026</span></p>
+                <p class="text-slate-500 font-semibold text-xs uppercase tracking-[0.2em]">CubicPlus Portal <span id="currentYearDisplay"></span></p>
             </div>
         </div>
         
@@ -114,7 +114,7 @@
                 <div class="absolute -top-32 -right-32 w-64 h-64 bg-primary-100 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
 
                 <div class="flex justify-between items-center mb-8 relative z-10">
-                    <h2 id="monthYearTitle" class="text-2xl md:text-3xl font-bold text-slate-800 tracking-tight">พฤษภาคม 2026</h2>
+                    <h2 id="monthYearTitle" class="text-2xl md:text-3xl font-bold text-slate-800 tracking-tight"></h2>
                     <div class="flex items-center gap-2 bg-slate-50 p-1.5 rounded-2xl border border-slate-100 shadow-sm">
                         <button onclick="changeMonth(-1)" class="p-2 hover:bg-white hover:text-primary-600 rounded-xl transition-all text-slate-500"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
                         <button onclick="goToToday()" class="px-4 py-2 font-bold text-sm text-slate-600 hover:text-primary-600 transition-colors">วันนี้</button>
@@ -162,44 +162,40 @@
 
     <script>
         // --- 1. System Setup & Context ---
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwYZ29jtJ5pxp6BpfwOiRCGNVtXwsMvgqli3PoSB3BFckruv7ZMy4Ka5cfE20j1WV61/exec"; // ใช้ของระบบลา/Admin 
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz4XoAF5nH_x9X_g4K0I7ZOwgmc3StS12JNFBVIAwgjOpcGmlMPS9APpQ70Juwuhbs/exec"; // เปลี่ยนเป็นลิงก์ที่ Deploy ใหม่
         
         // เช็ค Session พนักงานและ Role
-        const username = sessionStorage.getItem("userLoginName") || "Natiphol"; // Mock
-        const userRole = sessionStorage.getItem("userRole") || "Admin"; // เปลี่ยนเป็น "User" เพื่อทดสอบมุมมองพนักงานทั่วไปได้
+        const username = sessionStorage.getItem("userLoginName") || "Natiphol"; 
+        const userRole = sessionStorage.getItem("userRole") || "Admin"; 
         
-        // Context Time: พฤษภาคม 2026
-        let actualToday = new Date(2026, 4, 11); 
+        let actualToday = new Date(); // ใช้วันที่ปัจจุบัน
         let currentMonth = actualToday.getMonth();
         let currentYear = actualToday.getFullYear();
         const monthNames = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
 
-        // --- 2. Mock Data (เตรียมรอเชื่อม API) ---
-        let holidaysDB = [
-            { id: 1, date: "2026-05-01", name: "วันแรงงานแห่งชาติ", type: "national", detail: "วันหยุดสำหรับผู้ใช้แรงงาน" },
-            { id: 2, date: "2026-05-04", name: "วันฉัตรมงคล", type: "national", detail: "รำลึกถึงพระราชพิธีบรมราชาภิเษก" },
-            { id: 3, date: "2026-05-11", name: "วันพืชมงคล", type: "company", detail: "ประกาศให้เป็นวันหยุดพิเศษของบริษัท CubicPlus ประจำปีนี้" },
-            { id: 4, date: "2026-05-31", name: "วันวิสาขบูชา", type: "national", detail: "วันสำคัญทางพระพุทธศาสนา" },
-            { id: 5, date: "2026-07-30", name: "วันอาสาฬหบูชา", type: "national", detail: "" }
-        ];
+        // Data Arrays ที่รอรับค่าจาก Backend
+        let holidaysDB = [];
+        let eventsDB = [];
+        let myLeavesDB = [];
 
-        let eventsDB = [
-            { id: 101, date: "2026-05-15", name: "ตรวจสาขา สมุทรปราการ", type: "event", detail: "ตรวจระบบ Network ที่คลังสินค้าใหม่", mapUrl: "https://maps.google.com" },
-            { id: 102, date: "2026-05-20", name: "ประชุมแผนก IT", type: "event", detail: "ประชุมสรุปแผนเดือนพฤษภาคม", mapUrl: "" }
-        ];
-
-        let myLeavesDB = [
-            { id: 201, startDate: "2026-05-08", endDate: "2026-05-09", type: "ลาป่วย", status: "อนุมัติ" },
-            { id: 202, startDate: "2026-05-25", endDate: "2026-05-26", type: "ลาพักร้อน", status: "รออนุมัติ" }
-        ];
+        // --- 2. ฟังก์ชันแปลฟอร์แมตวันที่จาก Google Sheets ---
+        function safeDateFormat(dateObjOrString) {
+            if (!dateObjOrString) return "";
+            try {
+                const dateObj = new Date(dateObjOrString);
+                return `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
+            } catch (e) {
+                return dateObjOrString.toString().split('T')[0];
+            }
+        }
 
         // --- 3. Initialization ---
         window.onload = async function() {
             lucide.createIcons();
             setupHeaderButtons();
             
-            // ในระบบจริง จะใช้ Fetch API ดึง holidays, events, myLeavesDB ตรงนี้
-            // await fetchAllDataFromAPI();
+            // ดึงข้อมูลจากฐานข้อมูลจริงทันทีที่โหลดหน้าจอ
+            await fetchAllDataFromAPI();
 
             setTimeout(() => {
                 document.getElementById('loader').style.opacity = '0';
@@ -208,6 +204,40 @@
                 renderUpcomingList();
             }, 600);
         };
+
+        // --- Fetch API ---
+        async function fetchAllDataFromAPI() {
+            try {
+                const response = await fetch(WEB_APP_URL, {
+                    method: "POST",
+                    body: JSON.stringify({ 
+                        action: "fetchCalendarData", 
+                        username: username 
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === "success") {
+                    // จัดการ Format วันที่ให้เป็น 'YYYY-MM-DD' เพื่อเอาไปจับคู่ตอนแสดงผล
+                    holidaysDB = (result.holidays || []).map(h => ({...h, date: safeDateFormat(h.date)}));
+                    eventsDB = (result.events || []).map(e => ({...e, date: safeDateFormat(e.date)}));
+                    myLeavesDB = (result.myLeaves || []).map(l => ({
+                        ...l,
+                        startDate: safeDateFormat(l.startDate),
+                        endDate: safeDateFormat(l.endDate)
+                    }));
+                }
+            } catch (error) {
+                console.error("Fetch Error:", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'ข้อผิดพลาด',
+                    text: 'ไม่สามารถโหลดข้อมูลจากเซิร์ฟเวอร์ได้ ลองรีเฟรชหน้าใหม่อีกครั้ง',
+                    customClass: { popup: 'rounded-3xl' }
+                });
+            }
+        }
 
         function setupHeaderButtons() {
             const btnContainer = document.getElementById('headerButtons');
@@ -321,13 +351,13 @@
             const hasContent = hList.length > 0 || eList.length > 0 || lList.length > 0;
 
             if (userRole === "Admin") {
-                // Admin Flow: Can add new items or view existing
+                // Admin Flow
                 let contentHtml = '';
                 if (hasContent) {
                     contentHtml = `<div class="bg-slate-50 p-3 rounded-xl border border-slate-100 text-sm text-left mb-4 space-y-2">`;
                     hList.forEach(h => contentHtml += `<div class="font-bold text-rose-500">📌 ${h.name}</div>`);
                     eList.forEach(e => contentHtml += `<div class="font-bold text-purple-600">💼 ${e.name}</div>`);
-                    lList.forEach(l => contentHtml += `<div class="font-bold text-amber-500">🏖️ คุณมี${l.type} (${l.status})</div>`);
+                    lList.forEach(l => contentHtml += `<div class="font-bold text-amber-500">🏖️ ${l.type} (${l.status})</div>`);
                     contentHtml += `</div>`;
                 } else {
                     contentHtml = `<p class="text-sm text-slate-400 mb-4">ไม่มีข้อมูลกิจกรรมในวันนี้</p>`;
@@ -348,12 +378,11 @@
                 });
 
             } else {
-                // User Flow: Just view details
+                // User Flow
                 if (!hasContent) return; 
                 let itemToView = hList[0] || eList[0] || lList[0];
                 
                 if(itemToView.startDate) {
-                    // It's a leave
                     Swal.fire({
                         icon: 'info', title: 'ข้อมูลวันลาของคุณ',
                         html: `ประเภท: <b>${itemToView.type}</b><br>สถานะ: <b>${itemToView.status}</b><br>ตั้งแต่วันที่ ${itemToView.startDate} ถึง ${itemToView.endDate}`,
@@ -388,7 +417,7 @@
             });
         }
 
-        // --- 6. Admin Forms (Simulated API calls) ---
+        // --- 6. Admin Forms (เชื่อมกับ API ฝั่ง Server) ---
         function adminShowAddEventForm(dateStr) {
             Swal.fire({
                 title: 'เพิ่มงาน/กิจกรรมใหม่',
@@ -408,10 +437,22 @@
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Simulation of sending data to backend
-                    eventsDB.push({ id: Date.now(), ...result.value });
-                    Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ', showConfirmButton: false, timer: 1500 });
-                    renderCalendar(); renderUpcomingList();
+                    Swal.fire({ title: 'กำลังบันทึกข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+                    fetch(WEB_APP_URL, {
+                        method: "POST",
+                        body: JSON.stringify({ action: "addCalendarEvent", ...result.value })
+                    })
+                    .then(res => res.json())
+                    .then(res => {
+                        if(res.status === "success") {
+                            eventsDB.push({ id: Date.now(), ...result.value });
+                            Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ', showConfirmButton: false, timer: 1500 });
+                            renderCalendar(); renderUpcomingList();
+                        } else {
+                            Swal.fire('ข้อผิดพลาด', 'บันทึกไม่สำเร็จ', 'error');
+                        }
+                    }).catch(() => Swal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์', 'error'));
                 }
             });
         }
@@ -441,9 +482,22 @@
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    holidaysDB.push({ id: Date.now(), ...result.value });
-                    Swal.fire({ icon: 'success', title: 'เพิ่มวันหยุดเรียบร้อย', showConfirmButton: false, timer: 1500 });
-                    renderCalendar(); renderUpcomingList();
+                    Swal.fire({ title: 'กำลังบันทึกข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+                    fetch(WEB_APP_URL, {
+                        method: "POST",
+                        body: JSON.stringify({ action: "addCalendarEvent", ...result.value })
+                    })
+                    .then(res => res.json())
+                    .then(res => {
+                        if(res.status === "success") {
+                            holidaysDB.push({ id: Date.now(), ...result.value });
+                            Swal.fire({ icon: 'success', title: 'เพิ่มวันหยุดเรียบร้อย', showConfirmButton: false, timer: 1500 });
+                            renderCalendar(); renderUpcomingList();
+                        } else {
+                            Swal.fire('ข้อผิดพลาด', 'บันทึกไม่สำเร็จ', 'error');
+                        }
+                    }).catch(() => Swal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์', 'error'));
                 }
             });
         }
