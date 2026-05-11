@@ -40,12 +40,12 @@
             flex-shrink: 0;
         }
         
-        /* แก้ไข: ใช้ CSS บริหารกรอบแทนการขยับ JS ป้องกันภาพเบี้ยว */
+        /* แก้ไข: การจัดเรียงเส้นประและตัวอักษรเพื่อรองรับ html2canvas */
         .field-box {
             display: inline-flex;
             border-bottom: 1.5px dotted #666;
-            align-items: flex-end;
-            min-height: 24px; 
+            align-items: flex-end; /* ให้ข้อความชิดขอบล่างของกล่อง */
+            min-height: 26px; /* ปรับเพิ่มเล็กน้อยเผื่อที่ให้สระบน/ล่าง */
             white-space: nowrap;
             overflow: visible; 
             padding: 0 4px;
@@ -55,9 +55,9 @@
             color: #000000 !important; 
             font-weight: 600;
             white-space: nowrap;
-            line-height: 1.4; /* ขยายบรรทัดเพื่อคลุมสระบนและวรรณยุกต์ */
-            padding-top: 4px; /* เผื่อที่ว่างด้านบนให้สระไม่โดนตัด */
-            margin-bottom: -2px; /* ดึงข้อความลงมาให้นั่งบนเส้นประพอดี */
+            line-height: 1.2; 
+            padding-top: 6px; /* เผื่อพื้นที่ด้านบนไม่ให้สระ/วรรณยุกต์ โดนตัดตอนเซฟ JPG */
+            padding-bottom: 2px; /* ยกข้อความให้ลอยเหนือเส้นประ */
             display: inline-block;
         }
 
@@ -534,7 +534,7 @@
             return BahtText + "บาทถ้วน";
         }
 
-        // --- ระบบ Export PDF & JPG (ถอนแอนิเมชันออกทั้งหมด) ---
+        // --- ระบบ Export PDF & JPG ---
         async function exportDoc(type) {
             const paper = document.getElementById('a4-document');
             const personName = document.getElementById('in-name').value || 'ค่าใช้จ่าย';
@@ -563,7 +563,6 @@
                     await html2pdf().set(opt).from(paper).save();
                     
                 } else if (type === 'jpg') {
-                    // สร้างภาพแบบไม่ขยับ CSS เพื่อความแม่นยำสูงสุด
                     btnPdf.disabled = true;
                     btnJpg.disabled = true;
                     txtJpg.innerText = "⏳ กำลังสร้าง JPG...";
