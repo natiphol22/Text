@@ -2,8 +2,9 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard | CubicPlus Portal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ปฏิทินงานและวันหยุด | CubicPlus Portal</title>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -11,216 +12,639 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: { sans: ['Kanit', 'sans-serif'] },
-                    colors: {
-                        primary: { 50: '#eef2ff', 100: '#e0e7ff', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca' }
-                    }
+                    colors: { primary: { 50: '#eef2ff', 100: '#e0e7ff', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca', 800: '#3730a3' } }
                 }
             }
         }
     </script>
     <style>
         body { 
-            font-family: 'Kanit', sans-serif; 
             background-color: #f8fafc;
-            background-image: 
-                radial-gradient(at 10% 0%, hsla(228, 100%, 74%, 0.15) 0px, transparent 50%),
-                radial-gradient(at 80% 0%, hsla(189, 100%, 56%, 0.15) 0px, transparent 50%),
-                radial-gradient(at 0% 50%, hsla(355, 100%, 93%, 0.1) 0px, transparent 50%),
-                radial-gradient(at 80% 100%, hsla(240, 100%, 70%, 0.1) 0px, transparent 50%),
-                radial-gradient(at 0% 100%, hsla(22, 100%, 77%, 0.1) 0px, transparent 50%);
-            min-height: 100vh;
-            color: #334155;
-            overflow-x: hidden;
+            background-image: radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.08) 0px, transparent 50%), radial-gradient(at 100% 0%, rgba(20, 184, 166, 0.08) 0px, transparent 50%);
+            color: #334155; 
+            min-height: 100vh; 
+        }
+        
+        .glass-card { 
+            background: rgba(255, 255, 255, 0.95); 
+            backdrop-filter: blur(24px); 
+            border: 1px solid rgba(255, 255, 255, 1); 
+            box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.04); 
+            border-radius: 1.5rem;
+        }
+        @media (min-width: 768px) {
+            .glass-card { border-radius: 2rem; }
         }
 
-        .glass-card {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,1);
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        .swal2-popup { font-family: 'Kanit', sans-serif !important; border-radius: 1.5rem !important; }
+
+        /* Calendar Grid Responsive */
+        .calendar-grid { 
+            display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; 
+            min-width: 300px;
+        }
+        @media (min-width: 768px) {
+            .calendar-grid { gap: 8px; }
         }
 
-        .menu-card:hover {
-            transform: translateY(-8px);
-            background: rgba(255, 255, 255, 0.95);
-            box-shadow: 0 30px 60px -15px rgba(99, 102, 241, 0.15);
-            border-color: rgba(99, 102, 241, 0.3);
+        .day-cell {
+            min-height: 80px; 
+            display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+            padding: 4px 2px; border-radius: 0.5rem; border: 1px solid transparent; background: #ffffff;
+            transition: all 0.2s; cursor: pointer; position: relative; overflow: hidden;
         }
-
-        .admin-card {
-            background: linear-gradient(135deg, rgba(255,245,245,0.7) 0%, rgba(255,255,255,0.8) 100%);
-            border: 1px dashed rgba(244,63,94,0.4) !important;
+        @media (min-width: 768px) {
+            .day-cell { min-height: 100px; padding: 8px 4px; border-radius: 1rem; }
+            .day-cell:hover:not(.empty) { border-color: #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.05); transform: translateY(-2px); }
         }
+        .day-cell.empty { background: transparent; cursor: default; }
 
-        /* Balance Animation */
-        .fade-in-up { 
-            opacity: 0; 
-            transform: translateY(30px); 
-            animation: fadeInUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards; 
+        .date-num { font-size: 0.9rem; font-weight: 700; color: #475569; line-height: 1; margin-bottom: 2px; }
+        @media (min-width: 768px) { .date-num { font-size: 1.1rem; } }
+        
+        .day-cell.today { background: #eef2ff; border-color: #c7d2fe; }
+        .day-cell.today .date-num { color: #4f46e5; }
+        
+        /* Event Tags */
+        .tag-container { display: flex; flex-direction: column; gap: 2px; width: 100%; padding: 0 2px; margin-top: 2px; }
+        .tag-label { 
+            font-size: 9px; font-weight: 600; padding: 2px 4px; border-radius: 4px; width: 100%; 
+            text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2;
         }
-
-        @keyframes fadeInUp { 
-            to { opacity: 1; transform: translateY(0); } 
+        @media (min-width: 768px) {
+            .tag-label { font-size: 11px; text-align: center; }
         }
+        
+        /* Theme Colors */
+        .tag-holiday { background: #ffe4e6; color: #e11d48; }
+        .tag-company { background: #ccfbf1; color: #0d9488; }
+        .tag-event { background: #f3e8ff; color: #9333ea; }
+        .tag-leave { background: #fef3c7; color: #d97706; }
 
-        /* Staggered Delay */
-        .delay-100 { animation-delay: 0.1s; }
-        .delay-200 { animation-delay: 0.2s; }
-        .delay-300 { animation-delay: 0.3s; }
-        .delay-400 { animation-delay: 0.4s; }
-        .delay-500 { animation-delay: 0.5s; }
-        .delay-600 { animation-delay: 0.6s; }
-        .delay-700 { animation-delay: 0.7s; }
-        .delay-800 { animation-delay: 0.8s; }
-
-        .swal2-popup {
-            font-family: 'Kanit', sans-serif !important;
-            border-radius: 1.5rem !important;
-            width: 90% !important; /* รองรับจอเล็ก */
-            max-width: 24rem !important;
-            background: rgba(255, 255, 255, 0.95) !important;
-            backdrop-filter: blur(16px) !important;
-        }
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body class="p-4 md:p-8 lg:p-12 selection:bg-primary-200 selection:text-primary-900">
+<body class="p-3 md:p-8 lg:p-12">
 
-    <div class="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10 fade-in-up">
-        <div class="relative w-full md:w-auto">
-            <h1 class="text-2xl md:text-4xl font-bold text-slate-800 tracking-tight">สวัสดีคุณ <span id="welcomeName" class="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-sky-500">...</span> 👋</h1>
-            <p class="text-slate-500 font-medium text-xs md:text-sm mt-1">ยินดีต้อนรับสู่ระบบ เลือกเมนูที่ต้องการใช้งาน</p>
+    <!-- Loader -->
+    <div id="loader" class="fixed inset-0 z-[999] bg-slate-50/90 backdrop-blur-sm flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="relative flex h-20 w-20 mb-6">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-60"></span>
+          <span class="relative inline-flex rounded-full h-20 w-20 bg-primary-600 flex items-center justify-center shadow-lg">
+              <i data-lucide="calendar-days" class="w-10 h-10 text-white animate-pulse"></i>
+          </span>
+        </div>
+        <h2 class="text-xl font-bold text-slate-700">กำลังซิงค์ข้อมูลปฏิทิน</h2>
+        <p class="text-slate-500 font-medium mt-1">Cubic<span class="text-primary-600">Plus</span> System</p>
+    </div>
+
+    <!-- Header -->
+    <div class="max-w-[1400px] mx-auto mb-6 md:mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-6 fade-in">
+        <div class="relative">
+            <h1 class="text-2xl md:text-4xl font-bold tracking-tight text-slate-800">ปฏิทิน<span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-sky-500">งานและวันหยุด</span></h1>
+            <div class="flex items-center gap-2 mt-1 md:mt-2">
+                <span class="relative flex h-2.5 w-2.5">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                </span>
+                <p class="text-slate-500 font-semibold text-[10px] md:text-xs uppercase tracking-[0.2em]">CubicPlus Portal <span id="currentYearDisplay"></span></p>
+            </div>
         </div>
         
-        <div class="glass-card w-full md:w-auto pl-6 pr-3 py-3 rounded-[2rem] flex items-center justify-between md:justify-start gap-5 border border-white">
-            <div class="text-right">
-                <p class="text-[9px] uppercase tracking-widest text-slate-400 font-bold">Logged in as</p>
-                <p id="displayName" class="text-slate-700 font-bold text-xs md:text-sm">กำลังโหลด...</p>
-            </div>
-            <button onclick="logout()" class="w-10 h-10 md:w-12 md:h-12 bg-white border border-slate-100 text-rose-500 rounded-full flex items-center justify-center hover:bg-rose-50 hover:border-rose-200 transition-all shadow-sm group">
-                <i data-lucide="power" class="w-4 h-4 md:w-5 md:h-5 group-hover:scale-110 transition-transform"></i>
-            </button>
+        <div class="flex flex-wrap gap-2 w-full md:w-auto" id="headerButtons">
+            <!-- Buttons injected by JS -->
         </div>
     </div>
 
-    <div class="max-w-[1440px] mx-auto">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
-            
-            <a href="checkin.html" class="glass-card menu-card p-6 md:p-8 rounded-[2.5rem] group fade-in-up delay-100 relative overflow-hidden">
-                <div class="w-12 h-12 md:w-16 md:h-16 bg-emerald-50 text-emerald-500 rounded-2xl flex items-center justify-center mb-4 md:mb-8 border border-emerald-100">
-                    <i data-lucide="map-pin" class="w-6 h-6 md:w-7 md:h-7"></i>
-                </div>
-                <h3 class="text-lg md:text-xl font-bold text-slate-800 mb-2">Check-in</h3>
-                <p class="text-slate-500 text-xs md:text-sm leading-relaxed">ลงเวลาเข้า-ออกงาน และบันทึกสถานที่ทำงาน</p>
-            </a>
+    <!-- Main Content -->
+    <div class="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-8 fade-in" style="animation-delay: 0.1s;">
+        
+        <!-- Left: Calendar -->
+        <div class="lg:col-span-8 flex flex-col gap-4">
+            <div class="glass-card p-4 md:p-8 flex-1 flex flex-col relative overflow-hidden">
+                <div class="absolute -top-32 -right-32 w-64 h-64 bg-primary-100 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
 
-            <a href="Ai.html" class="glass-card menu-card p-6 md:p-8 rounded-[2.5rem] group fade-in-up delay-200 relative overflow-hidden">
-                <div class="w-12 h-12 md:w-16 md:h-16 bg-fuchsia-50 text-fuchsia-500 rounded-2xl flex items-center justify-center mb-4 md:mb-8 border border-fuchsia-100">
-                    <i data-lucide="sparkles" class="w-6 h-6 md:w-7 md:h-7"></i>
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 relative z-10">
+                    <h2 id="monthYearTitle" class="text-xl md:text-3xl font-bold text-slate-800 tracking-tight"></h2>
+                    <div class="flex items-center gap-1 md:gap-2 bg-slate-50 p-1.5 rounded-2xl border border-slate-100 shadow-sm w-full sm:w-auto justify-between sm:justify-start">
+                        <button onclick="changeMonth(-1)" class="p-2 hover:bg-white hover:text-primary-600 rounded-xl transition-all text-slate-500"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
+                        <button onclick="goToToday()" class="px-4 py-2 font-bold text-sm text-slate-600 hover:text-primary-600 transition-colors">วันนี้</button>
+                        <button onclick="changeMonth(1)" class="p-2 hover:bg-white hover:text-primary-600 rounded-xl transition-all text-slate-500"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
+                    </div>
                 </div>
-                <h3 class="text-lg md:text-xl font-bold text-slate-800 mb-2">AI Assistant</h3>
-                <p class="text-slate-500 text-xs md:text-sm leading-relaxed">ผู้ช่วย AI อัจฉริยะ ตอบคำถามและซัพพอร์ตงาน</p>
-            </a>
 
-            <a href="leave.html" class="glass-card menu-card p-6 md:p-8 rounded-[2.5rem] group fade-in-up delay-300 relative overflow-hidden">
-                <div class="w-12 h-12 md:w-16 md:h-16 bg-teal-50 text-teal-500 rounded-2xl flex items-center justify-center mb-4 md:mb-8 border border-teal-100">
-                    <i data-lucide="calendar-clock" class="w-6 h-6 md:w-7 md:h-7"></i>
+                <div class="grid grid-cols-7 gap-1 md:gap-2 mb-2 text-center relative z-10">
+                    <div class="text-[9px] md:text-xs font-bold text-rose-500 uppercase">อา.</div>
+                    <div class="text-[9px] md:text-xs font-bold text-slate-400 uppercase">จ.</div>
+                    <div class="text-[9px] md:text-xs font-bold text-slate-400 uppercase">อ.</div>
+                    <div class="text-[9px] md:text-xs font-bold text-slate-400 uppercase">พ.</div>
+                    <div class="text-[9px] md:text-xs font-bold text-slate-400 uppercase">พฤ.</div>
+                    <div class="text-[9px] md:text-xs font-bold text-slate-400 uppercase">ศ.</div>
+                    <div class="text-[9px] md:text-xs font-bold text-primary-500 uppercase">ส.</div>
                 </div>
-                <h3 class="text-lg md:text-xl font-bold text-slate-800 mb-2">ระบบลางาน</h3>
-                <p class="text-slate-500 text-xs md:text-sm leading-relaxed">ยื่นคำร้องลากิจ ลาป่วย และติดตามสถานะ</p>
-            </a>
 
-            <a href="calendar.html" class="glass-card menu-card p-6 md:p-8 rounded-[2.5rem] group fade-in-up delay-400 relative overflow-hidden">
-                <div class="w-12 h-12 md:w-16 md:h-16 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center mb-4 md:mb-8 border border-blue-100">
-                    <i data-lucide="calendar-days" class="w-6 h-6 md:w-7 md:h-7"></i>
-                </div>
-                <!-- แก้ไขชื่อและคำอธิบายตรงนี้ -->
-                <h3 class="text-lg md:text-xl font-bold text-slate-800 mb-2">ปฏิทินงานและวันหยุด</h3>
-                <p class="text-slate-500 text-xs md:text-sm leading-relaxed">เช็ควันหยุดบริษัท และตารางงานต่างๆ</p>
-            </a>
+                <div id="calendarGrid" class="calendar-grid flex-1 relative z-10"></div>
 
-            <a href="Form.html" class="glass-card menu-card p-6 md:p-8 rounded-[2.5rem] group fade-in-up delay-500 relative overflow-hidden">
-                <div class="w-12 h-12 md:w-16 md:h-16 bg-indigo-50 text-indigo-500 rounded-2xl flex items-center justify-center mb-4 md:mb-8 border border-indigo-100">
-                    <i data-lucide="wallet" class="w-6 h-6 md:w-7 md:h-7"></i>
+                <div class="mt-6 flex flex-wrap items-center justify-center md:justify-start gap-3 pt-4 border-t border-slate-100 relative z-10">
+                    <div class="flex items-center gap-1.5"><div class="w-2.5 h-2.5 rounded bg-[#ffe4e6] border border-[#f43f5e]"></div><span class="text-[10px] md:text-xs font-bold text-slate-500">วันหยุดราชการ</span></div>
+                    <div class="flex items-center gap-1.5"><div class="w-2.5 h-2.5 rounded bg-[#ccfbf1] border border-[#14b8a6]"></div><span class="text-[10px] md:text-xs font-bold text-slate-500">หยุดบริษัท</span></div>
+                    <div class="flex items-center gap-1.5"><div class="w-2.5 h-2.5 rounded bg-[#f3e8ff] border border-[#a855f7]"></div><span class="text-[10px] md:text-xs font-bold text-slate-500">งาน</span></div>
+                    <div class="flex items-center gap-1.5"><div class="w-2.5 h-2.5 rounded bg-[#fef3c7] border border-[#f59e0b]"></div><span class="text-[10px] md:text-xs font-bold text-slate-500">วันลา</span></div>
                 </div>
-                <h3 class="text-lg md:text-xl font-bold text-slate-800 mb-2">เบี้ยเลี้ยง</h3>
-                <p class="text-slate-500 text-xs md:text-sm leading-relaxed">กรอกฟอร์มขอเบิกเบี้ยเลี้ยงเดินทาง</p>
-            </a>
+            </div>
+        </div>
 
-            <a href="oil.html" class="glass-card menu-card p-6 md:p-8 rounded-[2.5rem] group fade-in-up delay-600 relative overflow-hidden">
-                <div class="w-12 h-12 md:w-16 md:h-16 bg-cyan-50 text-cyan-500 rounded-2xl flex items-center justify-center mb-4 md:mb-8 border border-cyan-100">
-                    <i data-lucide="car" class="w-6 h-6 md:w-7 md:h-7"></i>
-                </div>
-                <h3 class="text-lg md:text-xl font-bold text-slate-800 mb-2">ค่าน้ำมัน</h3>
-                <p class="text-slate-500 text-xs md:text-sm leading-relaxed">คำนวณระยะทางและค่าน้ำมันอัตโนมัติ</p>
-            </a>
+        <!-- Right: Upcoming Events/Holidays -->
+        <div class="lg:col-span-4 flex flex-col gap-4">
+            <div class="glass-card p-4 md:p-6 flex-1 flex flex-col max-h-[600px] md:max-h-[800px]">
+                <h3 class="text-lg md:text-xl font-bold text-slate-800 flex items-center gap-2 mb-4 md:mb-6">
+                    <div class="w-7 h-7 md:w-8 md:h-8 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center border border-amber-100 shrink-0">
+                        <i data-lucide="bell-ring" class="w-3.5 h-3.5 md:w-4 md:h-4"></i>
+                    </div>
+                    รายการที่กำลังจะมาถึง
+                </h3>
 
-            <a href="PDFtoJPG.html" class="glass-card menu-card p-6 md:p-8 rounded-[2.5rem] group fade-in-up delay-700 relative overflow-hidden">
-                <div class="w-12 h-12 md:w-16 md:h-16 bg-amber-50 text-amber-500 rounded-2xl flex items-center justify-center mb-4 md:mb-8 border border-amber-100">
-                    <i data-lucide="file-type-2" class="w-6 h-6 md:w-7 md:h-7"></i>
+                <div id="upcomingList" class="flex-1 overflow-y-auto custom-scrollbar pr-1 md:pr-2 space-y-2 md:space-y-3">
+                    <!-- JS Injected -->
                 </div>
-                <h3 class="text-lg md:text-xl font-bold text-slate-800 mb-2">PDF to JPG</h3>
-                <p class="text-slate-500 text-xs md:text-sm leading-relaxed">แปลงไฟล์ PDF เป็นรูปภาพออนไลน์ รวดเร็ว</p>
-            </a>
-
-            <a href="admin.html" id="adminMenu" class="glass-card menu-card admin-card p-6 md:p-8 rounded-[2.5rem] group hidden fade-in-up delay-800 relative overflow-hidden">
-                <div class="w-12 h-12 md:w-16 md:h-16 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center mb-4 md:mb-8 border border-rose-100">
-                    <i data-lucide="settings-2" class="w-6 h-6 md:w-7 md:h-7"></i>
-                </div>
-                <h3 class="text-lg md:text-xl font-bold text-slate-800 mb-2">Admin</h3>
-                <p class="text-slate-500 text-xs md:text-sm leading-relaxed">จัดการข้อมูลสมาชิกและรายงานภาพรวม</p>
-            </a>
+            </div>
         </div>
     </div>
 
     <script>
-        window.onload = function() {
+        // --- 1. System Setup & Context ---
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz4XoAF5nH_x9X_g4K0I7ZOwgmc3StS12JNFBVIAwgjOpcGmlMPS9APpQ70Juwuhbs/exec"; 
+        
+        const username = sessionStorage.getItem("userLoginName") || "Natiphol"; 
+        const userRole = sessionStorage.getItem("userRole") || "Admin"; 
+        
+        // เช็คสถานะ Admin ให้ยืดหยุ่น ป้องกันเคสตัวพิมพ์เล็ก/ใหญ่ (admin vs Admin)
+        const isAdmin = String(userRole).trim().toLowerCase() === "admin";
+        
+        let actualToday = new Date(); 
+        let currentMonth = actualToday.getMonth();
+        let currentYear = actualToday.getFullYear();
+        const monthNames = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+
+        let holidaysDB = [];
+        let eventsDB = [];
+        let myLeavesDB = [];
+        let usersListDB = []; 
+
+        function safeDateFormat(dateObjOrString) {
+            if (!dateObjOrString) return "";
+            try {
+                const dateObj = new Date(dateObjOrString);
+                return `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
+            } catch (e) {
+                return dateObjOrString.toString().split('T')[0];
+            }
+        }
+
+        window.onload = async function() {
             lucide.createIcons();
-            const isLoggedIn = sessionStorage.getItem("isLoggedIn");
-            const role = sessionStorage.getItem("userRole") || sessionStorage.getItem("role");
-            const name = sessionStorage.getItem("userName");
-            const username = sessionStorage.getItem("userLoginName"); 
-
-            if (isLoggedIn !== "true") { window.location.href = "index.html"; return; }
-
-            const displayUser = name || "User Account";
+            setupHeaderButtons();
             
-            if(username) {
-                document.getElementById("displayName").innerText = `${displayUser} (${username})`;
-            } else {
-                document.getElementById("displayName").innerText = displayUser;
-            }
-            
-            document.getElementById("welcomeName").innerText = displayUser;
+            await Promise.all([fetchAllDataFromAPI(), fetchUsersList()]);
 
-            if (role && role.toLowerCase().trim() === "admin") {
-                const adminBtn = document.getElementById("adminMenu");
-                adminBtn.classList.remove("hidden");
-                adminBtn.classList.add("block");
-            }
+            setTimeout(() => {
+                document.getElementById('loader').style.opacity = '0';
+                setTimeout(() => document.getElementById('loader').style.display = 'none', 500);
+                renderCalendar();
+                renderUpcomingList();
+            }, 600);
         };
 
-        function logout() {
+        // --- Fetch API ---
+        async function fetchAllDataFromAPI() {
+            try {
+                const response = await fetch(WEB_APP_URL, {
+                    method: "POST",
+                    body: JSON.stringify({ 
+                        action: "fetchCalendarData", 
+                        username: username,
+                        role: userRole 
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === "success") {
+                    holidaysDB = (result.holidays || []).map(h => ({...h, date: safeDateFormat(h.date)}));
+                    eventsDB = (result.events || []).map(e => ({...e, date: safeDateFormat(e.date)}));
+                    myLeavesDB = (result.myLeaves || []).map(l => ({
+                        ...l,
+                        startDate: safeDateFormat(l.startDate),
+                        endDate: safeDateFormat(l.endDate)
+                    }));
+                }
+            } catch (error) {
+                console.error("Fetch Error:", error);
+                Swal.fire('ข้อผิดพลาด', 'ไม่สามารถโหลดข้อมูลจากเซิร์ฟเวอร์ได้ ลองรีเฟรชหน้าใหม่อีกครั้ง', 'error');
+            }
+        }
+
+        async function fetchUsersList() {
+            if (!isAdmin) return;
+            try {
+                const response = await fetch(WEB_APP_URL, {
+                    method: "POST",
+                    body: JSON.stringify({ action: "fetchUsersList" })
+                });
+                const result = await response.json();
+                if (result.status === "success") {
+                    usersListDB = result.users || [];
+                }
+            } catch (error) {
+                console.error("Fetch Users Error:", error);
+            }
+        }
+
+        function setupHeaderButtons() {
+            const btnContainer = document.getElementById('headerButtons');
+            let html = `<button onclick="location.href='dashboard.html'" class="flex-1 md:flex-none justify-center flex items-center gap-2 px-4 py-2.5 md:px-5 md:py-3 bg-white border border-slate-200 rounded-xl text-slate-600 font-bold text-sm hover:text-primary-600 hover:shadow-md transition-all active:scale-95"><i data-lucide="home" class="w-4 h-4"></i> แดชบอร์ด</button>`;
+            
+            if (isAdmin) {
+                html += `<button onclick="location.href='admin.html'" class="flex-1 md:flex-none justify-center flex items-center gap-2 px-4 py-2.5 md:px-5 md:py-3 bg-slate-800 rounded-xl text-white font-bold text-sm hover:bg-slate-900 hover:shadow-md transition-all active:scale-95 shadow-sm"><i data-lucide="shield-check" class="w-4 h-4"></i> ระบบ Admin</button>`;
+            }
+            btnContainer.innerHTML = html;
+        }
+
+        // --- 4. Render Engine ---
+        function renderCalendar() {
+            const grid = document.getElementById('calendarGrid');
+            grid.innerHTML = '';
+            
+            document.getElementById('monthYearTitle').innerText = `${monthNames[currentMonth]} ${currentYear}`;
+            document.getElementById('currentYearDisplay').innerText = currentYear;
+
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+            for (let i = 0; i < firstDay; i++) {
+                grid.innerHTML += `<div class="day-cell empty"></div>`;
+            }
+
+            for (let i = 1; i <= daysInMonth; i++) {
+                const dateString = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+                const cell = document.createElement('div');
+                cell.className = 'day-cell group';
+                
+                if (i === actualToday.getDate() && currentMonth === actualToday.getMonth() && currentYear === actualToday.getFullYear()) {
+                    cell.classList.add('today');
+                }
+
+                const dayHolidays = holidaysDB.filter(h => h.date === dateString);
+                const dayEvents = eventsDB.filter(e => e.date === dateString && (isAdmin || e.username === username || !e.username || e.username === 'All'));
+                const dayLeaves = myLeavesDB.filter(l => isDateInRange(dateString, l.startDate, l.endDate));
+
+                let tagsHtml = '';
+
+                dayHolidays.forEach(h => {
+                    const tClass = h.type === 'company' ? 'tag-company' : 'tag-holiday';
+                    tagsHtml += `<div class="tag-label ${tClass}">${h.name}</div>`;
+                });
+
+                dayEvents.forEach(e => {
+                    tagsHtml += `<div class="tag-label tag-event">${e.name}</div>`;
+                });
+
+                dayLeaves.forEach(l => {
+                    const statusIcon = l.status === 'รออนุมัติ' ? '⏳ ' : '✅ ';
+                    // ตัดชื่อให้สั้นลง (เอาแค่คำแรก) กรณี Admin
+                    const shortName = l.name ? String(l.name).split(' ')[0] : (l.username || 'พนักงาน');
+                    const labelText = isAdmin ? `${shortName} ลา` : l.type;
+                    
+                    tagsHtml += `<div class="tag-label tag-leave" title="${l.name}: ${l.type} (${l.status})">${statusIcon}${labelText}</div>`;
+                });
+
+                cell.innerHTML = `<span class="date-num">${i}</span><div class="tag-container">${tagsHtml}</div>`;
+                
+                cell.onclick = () => handleDayClick(dateString, dayHolidays, dayEvents, dayLeaves);
+                grid.appendChild(cell);
+            }
+            lucide.createIcons();
+        }
+
+        function renderUpcomingList() {
+            const list = document.getElementById('upcomingList');
+            list.innerHTML = '';
+
+            const todayStr = `${actualToday.getFullYear()}-${String(actualToday.getMonth() + 1).padStart(2, '0')}-${String(actualToday.getDate()).padStart(2, '0')}`;
+            
+            const filteredEvents = eventsDB.filter(e => isAdmin || e.username === username || !e.username || e.username === 'All');
+            
+            const upcomingLeaves = myLeavesDB.filter(l => l.startDate >= todayStr).map(l => ({
+                id: l.id,
+                date: l.startDate,
+                name: isAdmin ? `${l.name || l.username} (${l.type})` : `วัน${l.type}ของคุณ`,
+                type: 'leave',
+                detail: `สถานะ: ${l.status}\nตั้งแต่วันที่ ${formatThaiDateFull(l.startDate)} ถึง ${formatThaiDateFull(l.endDate)}`,
+                mapUrl: ''
+            }));
+
+            let combined = [...holidaysDB, ...filteredEvents, ...upcomingLeaves].filter(item => item.date >= todayStr);
+            combined.sort((a, b) => new Date(a.date) - new Date(b.date)); 
+
+            if (combined.length === 0) {
+                list.innerHTML = `<div class="text-center p-6 text-slate-400 bg-slate-50 rounded-2xl text-sm">ไม่มีรายการเร็วๆ นี้</div>`;
+                return;
+            }
+
+            combined.slice(0, 10).forEach((item) => {
+                let icon = 'calendar-check-2', bgClass = 'bg-white', iconClass = 'bg-slate-100 text-slate-500', titleClass = 'text-slate-700', badge = '';
+                
+                if (item.type === 'company') {
+                    icon = 'building-2'; bgClass = 'bg-teal-50 border-teal-100'; iconClass = 'bg-teal-100 text-teal-600'; titleClass = 'text-teal-700';
+                    badge = `<span class="px-2 py-0.5 rounded text-[9px] font-bold text-teal-600 border border-teal-200 ml-2 bg-white">วันหยุดบริษัท</span>`;
+                } else if (item.type === 'national') {
+                    icon = 'calendar-heart'; bgClass = 'bg-rose-50 border-rose-100'; iconClass = 'bg-rose-100 text-rose-500'; titleClass = 'text-rose-700';
+                } else if (item.type === 'event') {
+                    icon = 'briefcase'; bgClass = 'bg-purple-50 border-purple-100'; iconClass = 'bg-purple-100 text-purple-600'; titleClass = 'text-purple-700';
+                    badge = `<span class="px-2 py-0.5 rounded text-[9px] font-bold text-purple-600 border border-purple-200 ml-2 bg-white">งาน</span>`;
+                } else if (item.type === 'leave') {
+                    icon = 'palmtree'; bgClass = 'bg-amber-50 border-amber-100'; iconClass = 'bg-amber-100 text-amber-500'; titleClass = 'text-amber-700';
+                    badge = `<span class="px-2 py-0.5 rounded text-[9px] font-bold text-amber-600 border border-amber-200 ml-2 bg-white">วันลา</span>`;
+                }
+
+                list.innerHTML += `
+                    <div onclick="showDetailModal('${item.name}', '${item.date}', '${item.detail || '-'}', '${item.mapUrl || ''}', '${item.type}')" class="p-3 md:p-4 rounded-2xl border transition-all cursor-pointer shadow-sm hover:shadow-md ${bgClass}">
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 md:w-10 md:h-10 rounded-xl flex items-center justify-center shrink-0 ${iconClass}"><i data-lucide="${icon}" class="w-4 h-4 md:w-5 md:h-5"></i></div>
+                            <div class="flex-1 min-w-0">
+                                <p class="font-bold text-xs md:text-sm truncate flex items-center ${titleClass}">${item.name} ${badge}</p>
+                                <p class="text-[10px] md:text-[11px] font-medium text-slate-500 mt-1 flex items-center gap-1.5"><i data-lucide="calendar" class="w-3 h-3 text-slate-400"></i> ${formatThaiDateFull(item.date)}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            lucide.createIcons();
+        }
+
+        // --- 5. Interaction & Modals ---
+        function handleDayClick(dateStr, hList, eList, lList) {
+            const hasContent = hList.length > 0 || eList.length > 0 || lList.length > 0;
+
+            if (isAdmin) {
+                let contentHtml = '';
+                if (hasContent) {
+                    contentHtml = `<div class="bg-slate-50 p-2 md:p-3 rounded-xl border border-slate-100 text-xs md:text-sm text-left mb-4 space-y-2 max-h-[300px] overflow-y-auto">`;
+                    
+                    hList.forEach(h => contentHtml += `
+                        <div class="flex justify-between items-center bg-white p-2 rounded-lg border border-slate-100 shadow-sm cursor-pointer hover:border-rose-200 transition-colors" onclick="showDetailModal('${h.name}', '${h.date}', '${h.detail || ''}', '', '${h.type}')">
+                            <span class="font-bold text-rose-500 truncate pr-2">📌 ${h.name}</span>
+                            <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 shrink-0"></i>
+                        </div>`);
+                        
+                    eList.forEach(e => contentHtml += `
+                        <div class="flex justify-between items-center bg-white p-2 rounded-lg border border-slate-100 shadow-sm cursor-pointer hover:border-purple-200 transition-colors" onclick="showDetailModal('${e.name}', '${e.date}', '${e.detail || ''}', '${e.mapUrl || ''}', '${e.type}')">
+                            <span class="font-bold text-purple-600 truncate pr-2">💼 ${e.name} ${e.username && e.username !== 'All' ? `<span class="text-[10px] text-slate-400">(${e.username})</span>` : ''}</span>
+                            <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 shrink-0"></i>
+                        </div>`);
+                        
+                    lList.forEach(l => contentHtml += `
+                        <div class="flex flex-col bg-white p-2 rounded-lg border border-slate-100 shadow-sm cursor-pointer" onclick="showDetailModal('${l.name} (${l.type})', '${dateStr}', 'สถานะ: ${l.status}\\nตั้งแต่: ${formatThaiDateFull(l.startDate)}\\nถึง: ${formatThaiDateFull(l.endDate)}', '', 'leave')">
+                            <span class="font-bold text-amber-500 truncate">🏖️ ${l.name} ลา</span>
+                            <span class="text-[10px] text-slate-500 ml-5">${l.type} - ${l.status}</span>
+                        </div>`);
+                        
+                    contentHtml += `</div>`;
+                } else {
+                    contentHtml = `<p class="text-sm text-slate-400 mb-4">ไม่มีข้อมูลงานหรือวันหยุดในวันนี้</p>`;
+                }
+
+                Swal.fire({
+                    title: `<span class="text-lg md:text-xl">${formatThaiDateFull(dateStr)}</span>`,
+                    html: `
+                        ${contentHtml}
+                        <div class="flex flex-col gap-2 mt-2">
+                            <button onclick="adminShowAddEventForm('${dateStr}')" class="w-full py-2.5 md:py-3 bg-purple-50 text-purple-600 border border-purple-200 hover:bg-purple-600 hover:text-white rounded-xl font-bold text-sm transition-colors shadow-sm">➕ เพิ่มงานใหม่</button>
+                            <button onclick="adminShowAddHolidayForm('${dateStr}')" class="w-full py-2.5 md:py-3 bg-rose-50 text-rose-500 border border-rose-200 hover:bg-rose-500 hover:text-white rounded-xl font-bold text-sm transition-colors shadow-sm">➕ เพิ่มวันหยุด</button>
+                        </div>
+                    `,
+                    showConfirmButton: false,
+                    showCloseButton: true,
+                    customClass: { popup: 'rounded-2xl md:rounded-3xl w-[90%] md:w-auto max-w-md' },
+                    didOpen: () => { lucide.createIcons(); }
+                });
+
+            } else {
+                if (!hasContent) return; 
+                let itemToView = hList[0] || eList[0] || lList[0];
+                
+                if(itemToView.startDate) {
+                    Swal.fire({
+                        icon: 'info', title: 'ข้อมูลวันลา',
+                        html: `ประเภท: <b>${itemToView.type}</b><br>สถานะ: <b>${itemToView.status}</b><br>ตั้งแต่วันที่ ${formatThaiDateFull(itemToView.startDate)} ถึง ${formatThaiDateFull(itemToView.endDate)}`,
+                        confirmButtonColor: '#6366f1', customClass: { popup: 'rounded-2xl md:rounded-3xl w-[90%] max-w-sm' }
+                    });
+                } else {
+                    showDetailModal(itemToView.name, itemToView.date, itemToView.detail, itemToView.mapUrl, itemToView.type);
+                }
+            }
+        }
+
+        function showDetailModal(name, date, detail, mapUrl, type) {
+            let mapBtn = '';
+            if (mapUrl) {
+                mapBtn = `<a href="${mapUrl}" target="_blank" class="mt-4 w-full flex items-center justify-center gap-2 py-2.5 md:py-3 bg-slate-800 hover:bg-slate-900 text-white rounded-xl font-bold text-sm transition-colors shadow-md"><i data-lucide="map-pin" class="w-4 h-4"></i> เปิด Google Maps</a>`;
+            }
+
+            let deleteBtn = '';
+            if (isAdmin && (type === "event" || type === "national" || type === "company")) {
+                let itemType = type === 'event' ? 'event' : 'holiday';
+                deleteBtn = `<button onclick="deleteItem('${name}', '${date}', '${itemType}')" class="mt-2 w-full flex items-center justify-center gap-2 py-2.5 md:py-3 bg-red-50 hover:bg-red-500 text-red-600 hover:text-white border border-red-200 rounded-xl font-bold text-sm transition-colors shadow-sm"><i data-lucide="trash-2" class="w-4 h-4"></i> ลบรายการนี้</button>`;
+            }
+
+            let safeDetail = detail ? detail.replace(/\n/g, '<br>') : '-';
+
             Swal.fire({
-                title: 'ออกจากระบบ?',
+                html: `
+                    <div class="text-left mt-2">
+                        <h3 class="text-lg md:text-xl font-bold text-slate-800 text-center mb-1">${name}</h3>
+                        <p class="text-xs md:text-sm font-bold text-primary-500 text-center mb-4 md:mb-6">${formatThaiDateFull(date)}</p>
+                        <div class="bg-slate-50 p-3 md:p-4 rounded-xl border border-slate-100 text-xs md:text-sm text-slate-600 leading-relaxed max-h-[40vh] overflow-y-auto">
+                            <b>รายละเอียด:</b><br>${safeDetail}
+                        </div>
+                        ${mapBtn}
+                        ${deleteBtn}
+                    </div>
+                `,
+                showConfirmButton: true, confirmButtonText: 'ปิด', confirmButtonColor: '#4f46e5',
+                customClass: { popup: 'rounded-[1.5rem] md:rounded-[2rem] w-[90%] md:w-auto max-w-md' },
+                didOpen: () => { lucide.createIcons(); }
+            });
+        }
+
+        function deleteItem(name, date, type) {
+            Swal.fire({
+                title: 'ยืนยันการลบ',
+                text: `คุณต้องการลบ "${name}" ใช่หรือไม่?`,
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#f43f5e',
-                confirmButtonText: 'ใช่, ออกจากระบบ',
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#cbd5e1',
+                confirmButtonText: 'ใช่, ลบเลย',
                 cancelButtonText: 'ยกเลิก',
-                reverseButtons: true
+                customClass: { popup: 'rounded-2xl md:rounded-3xl w-[90%] max-w-sm' }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    sessionStorage.clear();
-                    window.location.href = "index.html";
+                    Swal.fire({ title: 'กำลังลบข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading(), customClass: { popup: 'rounded-2xl w-[90%] max-w-sm' } });
+                    
+                    fetch(WEB_APP_URL, {
+                        method: 'POST',
+                        body: JSON.stringify({ action: 'deleteCalendarItem', type: type, date: date, name: name })
+                    })
+                    .then(res => res.json())
+                    .then(res => {
+                        if (res.status === 'success') {
+                            Swal.fire({ icon: 'success', title: 'ลบสำเร็จ', showConfirmButton: false, timer: 1500, customClass: { popup: 'rounded-2xl w-[90%] max-w-sm' } });
+                            fetchAllDataFromAPI().then(() => { renderCalendar(); renderUpcomingList(); });
+                        } else {
+                            Swal.fire({icon: 'error', title: 'ข้อผิดพลาด', text: res.message || 'ไม่สามารถลบได้', customClass: { popup: 'rounded-2xl w-[90%] max-w-sm' }});
+                        }
+                    }).catch(() => Swal.fire({icon: 'error', title: 'ข้อผิดพลาด', text: 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์', customClass: { popup: 'rounded-2xl w-[90%] max-w-sm' }}));
                 }
             });
+        }
+
+        // --- 6. Admin Forms ---
+        function adminShowAddEventForm(dateStr) {
+            let userOptions = `<option value="All">ทุกคน (All)</option>`;
+            usersListDB.forEach(u => {
+                userOptions += `<option value="${u.username}">${u.name} (${u.username})</option>`;
+            });
+
+            Swal.fire({
+                title: 'เพิ่มงานใหม่',
+                html: `
+                    <div class="text-left space-y-2 md:space-y-3 mt-2 md:mt-4">
+                        <div><label class="text-[10px] md:text-xs font-bold text-slate-500">วันที่</label><input type="text" value="${dateStr}" readonly class="w-full mt-1 p-2 md:p-2.5 bg-slate-100 border border-slate-200 rounded-lg text-xs md:text-sm outline-none"></div>
+                        <div>
+                            <label class="text-[10px] md:text-xs font-bold text-slate-500">เลือกพนักงาน (ผู้รับมอบหมาย)</label>
+                            <select id="evUser" class="w-full mt-1 p-2 md:p-2.5 bg-white border border-slate-200 focus:border-primary-500 rounded-lg text-xs md:text-sm outline-none">
+                                ${userOptions}
+                            </select>
+                        </div>
+                        <div><label class="text-[10px] md:text-xs font-bold text-slate-500">ชื่องาน <span class="text-red-500">*</span></label><input type="text" id="evName" class="w-full mt-1 p-2 md:p-2.5 bg-white border border-slate-200 focus:border-primary-500 rounded-lg text-xs md:text-sm outline-none"></div>
+                        <div><label class="text-[10px] md:text-xs font-bold text-slate-500">รายละเอียด</label><textarea id="evDetail" class="w-full mt-1 p-2 md:p-2.5 bg-white border border-slate-200 focus:border-primary-500 rounded-lg text-xs md:text-sm outline-none" rows="2"></textarea></div>
+                        <div><label class="text-[10px] md:text-xs font-bold text-slate-500">ลิงก์ Google Maps (ถ้ามี)</label><input type="text" id="evMap" placeholder="https://maps.app.goo.gl/..." class="w-full mt-1 p-2 md:p-2.5 bg-white border border-slate-200 focus:border-primary-500 rounded-lg text-xs md:text-sm outline-none"></div>
+                    </div>
+                `,
+                showCancelButton: true, confirmButtonText: 'บันทึก', cancelButtonText: 'ยกเลิก', confirmButtonColor: '#9333ea',
+                customClass: { popup: 'rounded-2xl md:rounded-3xl w-[90%] md:w-auto max-w-md' },
+                preConfirm: () => {
+                    const name = document.getElementById('evName').value;
+                    if(!name) { Swal.showValidationMessage('กรุณากรอกชื่องาน'); return false; }
+                    return { 
+                        date: dateStr, 
+                        name: name, 
+                        detail: document.getElementById('evDetail').value, 
+                        mapUrl: document.getElementById('evMap').value, 
+                        type: 'event',
+                        username: document.getElementById('evUser').value
+                    };
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({ title: 'กำลังบันทึกข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading(), customClass: { popup: 'rounded-2xl w-[90%] max-w-sm' } });
+
+                    fetch(WEB_APP_URL, {
+                        method: "POST",
+                        body: JSON.stringify({ action: "addCalendarEvent", ...result.value })
+                    })
+                    .then(res => res.json())
+                    .then(res => {
+                        if(res.status === "success") {
+                            eventsDB.push({ id: Date.now(), ...result.value });
+                            Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ', showConfirmButton: false, timer: 1500, customClass: { popup: 'rounded-2xl w-[90%] max-w-sm' } });
+                            renderCalendar(); renderUpcomingList();
+                        } else {
+                            Swal.fire({icon: 'error', title: 'ข้อผิดพลาด', text: 'บันทึกไม่สำเร็จ', customClass: { popup: 'rounded-2xl w-[90%] max-w-sm' }});
+                        }
+                    }).catch(() => Swal.fire({icon: 'error', title: 'ข้อผิดพลาด', text: 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์', customClass: { popup: 'rounded-2xl w-[90%] max-w-sm' }}));
+                }
+            });
+        }
+
+        function adminShowAddHolidayForm(dateStr) {
+            Swal.fire({
+                title: 'เพิ่มวันหยุด',
+                html: `
+                    <div class="text-left space-y-2 md:space-y-3 mt-2 md:mt-4">
+                        <div><label class="text-[10px] md:text-xs font-bold text-slate-500">วันที่</label><input type="text" value="${dateStr}" readonly class="w-full mt-1 p-2 md:p-2.5 bg-slate-100 border border-slate-200 rounded-lg text-xs md:text-sm outline-none"></div>
+                        <div><label class="text-[10px] md:text-xs font-bold text-slate-500">ชื่อวันหยุด <span class="text-red-500">*</span></label><input type="text" id="holName" class="w-full mt-1 p-2 md:p-2.5 bg-white border border-slate-200 focus:border-rose-500 rounded-lg text-xs md:text-sm outline-none"></div>
+                        <div>
+                            <label class="text-[10px] md:text-xs font-bold text-slate-500">ประเภท</label>
+                            <select id="holType" class="w-full mt-1 p-2 md:p-2.5 bg-white border border-slate-200 focus:border-rose-500 rounded-lg text-xs md:text-sm outline-none">
+                                <option value="national">วันหยุดราชการ / นักขัตฤกษ์</option>
+                                <option value="company">วันหยุดพิเศษบริษัท</option>
+                            </select>
+                        </div>
+                        <div><label class="text-[10px] md:text-xs font-bold text-slate-500">รายละเอียด</label><textarea id="holDetail" class="w-full mt-1 p-2 md:p-2.5 bg-white border border-slate-200 focus:border-rose-500 rounded-lg text-xs md:text-sm outline-none" rows="2"></textarea></div>
+                    </div>
+                `,
+                showCancelButton: true, confirmButtonText: 'บันทึก', cancelButtonText: 'ยกเลิก', confirmButtonColor: '#f43f5e',
+                customClass: { popup: 'rounded-2xl md:rounded-3xl w-[90%] md:w-auto max-w-md' },
+                preConfirm: () => {
+                    const name = document.getElementById('holName').value;
+                    if(!name) { Swal.showValidationMessage('กรุณากรอกชื่อวันหยุด'); return false; }
+                    return { date: dateStr, name: name, detail: document.getElementById('holDetail').value, type: document.getElementById('holType').value };
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({ title: 'กำลังบันทึกข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading(), customClass: { popup: 'rounded-2xl w-[90%] max-w-sm' } });
+
+                    fetch(WEB_APP_URL, {
+                        method: "POST",
+                        body: JSON.stringify({ action: "addCalendarEvent", ...result.value })
+                    })
+                    .then(res => res.json())
+                    .then(res => {
+                        if(res.status === "success") {
+                            holidaysDB.push({ id: Date.now(), ...result.value });
+                            Swal.fire({ icon: 'success', title: 'เพิ่มวันหยุดเรียบร้อย', showConfirmButton: false, timer: 1500, customClass: { popup: 'rounded-2xl w-[90%] max-w-sm' } });
+                            renderCalendar(); renderUpcomingList();
+                        } else {
+                            Swal.fire({icon: 'error', title: 'ข้อผิดพลาด', text: 'บันทึกไม่สำเร็จ', customClass: { popup: 'rounded-2xl w-[90%] max-w-sm' }});
+                        }
+                    }).catch(() => Swal.fire({icon: 'error', title: 'ข้อผิดพลาด', text: 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์', customClass: { popup: 'rounded-2xl w-[90%] max-w-sm' }}));
+                }
+            });
+        }
+
+        // --- Utils ---
+        function changeMonth(step) {
+            currentMonth += step;
+            if (currentMonth < 0) { currentMonth = 11; currentYear--; } 
+            else if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+            renderCalendar();
+        }
+
+        function goToToday() {
+            currentMonth = actualToday.getMonth(); currentYear = actualToday.getFullYear();
+            renderCalendar();
+        }
+
+        function isDateInRange(dateStr, startStr, endStr) {
+            const d = new Date(dateStr), s = new Date(startStr), e = new Date(endStr);
+            return d >= s && d <= e;
+        }
+
+        function formatThaiDateFull(dateStr) {
+            const d = new Date(dateStr);
+            return `${d.getDate()} ${monthNames[d.getMonth()]} ${d.getFullYear() + 543}`;
         }
     </script>
 </body>
