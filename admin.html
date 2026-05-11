@@ -58,7 +58,13 @@
         .tab-content.active { display: block; animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
         @keyframes slideUpFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        input[type="time"], input[type="month"] { font-family: 'Kanit', sans-serif; background: transparent; border: none; outline: none; cursor: pointer; }
+        input[type="time"], input[type="month"], input[type="date"], input[type="week"], select { 
+            font-family: 'Kanit', sans-serif; 
+            background: transparent; 
+            border: none; 
+            outline: none; 
+            cursor: pointer; 
+        }
         
         .settings-nav-btn { position: relative; overflow: hidden; border: 1px solid transparent; }
         .settings-nav-btn::before { content: ''; position: absolute; left: 0; top: 15%; bottom: 15%; width: 4px; border-radius: 0 4px 4px 0; background: #6366f1; transform: scaleY(0); transition: transform 0.2s ease; transform-origin: center; }
@@ -81,9 +87,24 @@
         /* 🟢 Custom Select Menu Styling */
         .custom-select-menu { display: none; opacity: 0; transform: translateY(-10px); transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
         .custom-select-menu.open { display: block; opacity: 1; transform: translateY(0); }
+        
+        /* Loader Animation */
+        #globalLoader { transition: opacity 0.4s ease; }
     </style>
 </head>
 <body class="p-4 md:p-8 lg:p-12 font-sans selection:bg-primary-200 selection:text-primary-900">
+
+    <!-- 🟢 Global Loader -->
+    <div id="globalLoader" class="fixed inset-0 z-[999] bg-slate-50/90 backdrop-blur-sm flex flex-col items-center justify-center">
+        <div class="relative flex h-20 w-20 mb-6">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-60"></span>
+          <span class="relative inline-flex rounded-full h-20 w-20 bg-primary-600 flex items-center justify-center shadow-lg shadow-primary-500/30">
+              <i data-lucide="layout-dashboard" class="w-10 h-10 text-white animate-pulse"></i>
+          </span>
+        </div>
+        <h2 class="text-xl font-bold text-slate-700">กำลังเตรียมข้อมูล</h2>
+        <p class="text-slate-500 font-medium mt-1">Cubic<span class="text-primary-600">Plus</span> System</p>
+    </div>
 
     <div class="max-w-7xl mx-auto mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div class="relative">
@@ -134,14 +155,22 @@
                             </div>
                         </div>
 
+                        <!-- 🟢 ส่วนปฏิทิน -->
                         <div class="space-y-1.5 relative drop-container">
                             <div class="flex justify-between items-center mb-1">
-                                <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">ดูรายงานประจำเดือน</label>
-                                <button onclick="resetMonthFilter()" class="text-[10px] text-primary-500 hover:text-primary-700 font-semibold cursor-pointer">ดูทั้งหมด</button>
+                                <label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1 flex items-center gap-1.5">
+                                    ดูรายงานประจำ
+                                    <select id="dateFilterType" onchange="changeDateInputType()" class="text-primary-600 font-extrabold bg-primary-50 hover:bg-primary-100 px-2 py-0.5 rounded transition-colors text-[10px]">
+                                        <option value="month">เดือน</option>
+                                        <option value="week">สัปดาห์</option>
+                                        <option value="date">วัน</option>
+                                    </select>
+                                </label>
+                                <button onclick="resetDateFilter()" class="text-[10px] text-slate-400 hover:text-rose-500 font-semibold cursor-pointer transition-colors">ล้างค่า</button>
                             </div>
                             <div class="relative group">
                                 <i data-lucide="calendar" class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                                <input type="month" id="filterMonth" onchange="applyFilters()" class="w-full pl-11 pr-4 py-3.5 input-glass rounded-xl text-sm transition-all font-medium text-slate-700 cursor-pointer">
+                                <input type="month" id="filterDate" onchange="applyFilters()" class="w-full pl-11 pr-4 py-3.5 input-glass rounded-xl text-sm transition-all font-medium text-slate-700 cursor-pointer">
                             </div>
                         </div>
 
@@ -195,7 +224,7 @@
                                 <th class="py-5 px-6 text-[11px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">สถานะลงเวลา</th>
                                 <th class="py-5 px-6 text-[11px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">สถานที่</th>
                                 <th class="py-5 px-6 text-[11px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap text-center">เกณฑ์เวลา</th>
-                                <th class="py-5 px-6 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-center whitespace-nowrap">หมายเหตุ</th>
+                                <th class="py-5 px-6 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-center whitespace-nowrap">สรุปงาน</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white"></tbody>
@@ -409,12 +438,12 @@
 
     <div id="customAlert" class="fixed inset-0 z-[100] hidden bg-slate-900/40 backdrop-blur-sm items-center justify-center p-4">
         <div class="bg-white w-full max-w-sm rounded-[2rem] p-8 text-center shadow-lg border border-slate-100">
-            <div id="alertIconContainer" class="w-16 h-16 rounded-[1.25rem] flex items-center justify-center mx-auto mb-6">
-                <div id="alertIcon"></div>
+            <div id="alertIconContainer" class="w-16 h-16 rounded-[1.25rem] flex items-center justify-center mx-auto mb-6 bg-primary-50 text-primary-600">
+                <i data-lucide="info" class="w-8 h-8"></i>
             </div>
             <h3 id="alertTitle" class="text-xl font-bold text-slate-800 mb-2"></h3>
             <p id="alertMsg" class="text-slate-500 text-sm mb-8"></p>
-            <button onclick="closeAlert()" class="w-full py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold text-sm">ตกลง</button>
+            <button onclick="closeAlert()" class="w-full py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold text-sm transition-colors">ตกลง</button>
         </div>
     </div>
 
@@ -423,12 +452,20 @@
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwUudZfm3lv31gG4ZCZ1bCNLTeGE-TM_mDtB2SLTVX5-lUsljsRqDUKd77NsjpYYQ2DSQ/exec";
         
         let rawData = [];
+        let filteredReportData = [];
         let leaveRequests = [];
         let leaveBalances = [];
 
-        // 🟢 ระบบเปิด/ปิด Custom Dropdown ทั่วไป
+        function getWeekString(date) {
+            const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+            const dayNum = d.getUTCDay() || 7;
+            d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+            const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+            const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1)/7);
+            return d.getUTCFullYear() + '-W' + String(weekNo).padStart(2, '0');
+        }
+
         function toggleAdminSelect(menuId) {
-            // ปิดเมนูอื่นๆ ทั้งหมดก่อนเปิดอันใหม่
             document.querySelectorAll('.custom-select-menu').forEach(m => {
                 if(m.id !== menuId) m.classList.remove('open');
             });
@@ -439,8 +476,6 @@
             document.getElementById(inputId).value = value;
             document.getElementById(textId).innerText = text;
             document.getElementById(menuId).classList.remove('open');
-            
-            // ถ้าเป็น Dropdown ในส่วนรายงานลงเวลา ให้ดักจับ Event แล้วรัน filter
             if(inputId.includes('filter')) applyFilters();
         }
 
@@ -451,14 +486,12 @@
             renderLeaveRequests();
         }
 
-        // ปิดเมนูเมื่อคลิกข้างนอก
         document.addEventListener('click', function(event) {
             if (!event.target.closest('.drop-container')) {
                 document.querySelectorAll('.custom-select-menu').forEach(m => m.classList.remove('open'));
             }
         });
 
-        // 🟢 ระบบจัดการ Tab ย่อย
         function openTab(evt, tabId) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -505,7 +538,19 @@
             } catch(e) { return dateString; }
         }
 
-        // ================= ส่วนรายงานการลงเวลา =================
+        function changeDateInputType() {
+            const type = document.getElementById('dateFilterType').value;
+            const input = document.getElementById('filterDate');
+            input.type = type;
+            
+            const now = new Date();
+            if(type === 'month') input.value = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}`;
+            else if(type === 'date') input.value = now.toLocaleDateString('en-CA');
+            else if(type === 'week') input.value = getWeekString(now);
+
+            applyFilters();
+        }
+
         function populateSmartNameFilter() {
             let allNames = [...new Set(rawData.map(d => (d.Name || "").trim()).filter(Boolean))];
             let smartNames = allNames.filter(name => !allNames.some(otherName => otherName !== name && otherName.startsWith(name) && otherName.length > name.length)).sort();
@@ -517,7 +562,10 @@
             document.getElementById('nameMenuContent').innerHTML = html;
         }
 
-        function resetMonthFilter() { document.getElementById('filterMonth').value = ''; applyFilters(); }
+        function resetDateFilter() { 
+            document.getElementById('filterDate').value = ''; 
+            applyFilters(); 
+        }
 
         async function loadReportData() {
             try {
@@ -531,20 +579,31 @@
             const nameF = document.getElementById('filterName').value.toLowerCase();
             const locF = document.getElementById('filterLoc').value;
             const typeF = document.getElementById('filterType').value;
-            const monthF = document.getElementById('filterMonth').value;
+            const dateF = document.getElementById('filterDate').value;
+            const dateType = document.getElementById('dateFilterType').value;
 
-            const filtered = rawData.filter(d => {
-                const itemDate = new Date(d.Timestamp);
+            filteredReportData = rawData.filter(d => {
                 let dateMatch = true;
-                if (monthF) {
-                    const [year, month] = monthF.split('-');
-                    dateMatch = itemDate.getFullYear() === parseInt(year) && (itemDate.getMonth() + 1) === parseInt(month);
+                if (dateF && d.Timestamp) {
+                    const itemDate = new Date(d.Timestamp);
+                    if (!isNaN(itemDate.getTime())) {
+                        if (dateType === 'month') {
+                            const [year, month] = dateF.split('-');
+                            dateMatch = itemDate.getFullYear() === parseInt(year) && (itemDate.getMonth() + 1) === parseInt(month);
+                        } else if (dateType === 'date') {
+                            const localDateStr = itemDate.toLocaleDateString('en-CA');
+                            dateMatch = localDateStr === dateF;
+                        } else if (dateType === 'week') {
+                            dateMatch = getWeekString(itemDate) === dateF;
+                        }
+                    }
                 }
                 return dateMatch && (d.Name || "").toLowerCase().includes(nameF) && (!locF || d.Location === locF) && (!typeF || d.Type === typeF);
             });
-            renderTable(filtered);
+            renderTable(filteredReportData);
         }
 
+        // 🟢 เข้ารหัสข้อความกันระบบพังเวลาเจอตัวอักษรพิเศษ หรือการขึ้นบรรทัดใหม่
         function renderTable(data) {
             const tbody = document.querySelector("#reportTable tbody");
             const policyStart = document.getElementById('curStart').innerText || "09:00";
@@ -565,6 +624,15 @@
                     ? (isLate ? '<span class="text-rose-500 font-bold text-xs">สาย</span>' : '<span class="text-emerald-500 font-bold text-xs">ปกติ</span>')
                     : '-';
 
+                // 🟢 แก้ไขปุ่มให้เข้ารหัสข้อความอย่างปลอดภัย
+                const summaryText = d["WorkSummary/Memo"] || "";
+                let summaryBtn = '<span class="text-slate-300">-</span>';
+                if(summaryText && String(summaryText).trim() !== "" && summaryText !== "-") {
+                    // เข้ารหัสด้วย encodeURIComponent และแก้ ' 
+                    const safeText = encodeURIComponent(summaryText).replace(/'/g, "%27");
+                    summaryBtn = `<button onclick="showSummaryDialog('${safeText}')" class="px-3 py-1.5 bg-sky-50 text-sky-600 border border-sky-100 rounded-lg text-[11px] font-bold hover:bg-sky-500 hover:text-white transition-colors flex items-center justify-center gap-1 mx-auto shadow-sm active:scale-95"><i data-lucide="message-square-text" class="w-3 h-3"></i> อ่าน</button>`;
+                }
+
                 htmlContent += `
                     <tr class="table-row">
                         <td class="py-3 px-6"><div class="font-bold">${timeStr}</div><div class="text-[10px] text-slate-400">${dateStr}</div></td>
@@ -575,16 +643,67 @@
                         <td class="py-3 px-6"><span class="px-2 py-1 rounded text-xs font-bold ${typeStyle}">${d.Type === 'Check In' ? 'เข้างาน' : 'ออกงาน'}</span></td>
                         <td class="py-3 px-6 text-sm text-slate-500">${d.Location || "-"}</td>
                         <td class="py-3 px-6 text-center">${statusBadge}</td>
-                        <td class="py-3 px-6 text-center text-xs text-slate-400">${d["WorkSummary/Memo"] || "-"}</td>
+                        <td class="py-3 px-6 text-center">${summaryBtn}</td>
                     </tr>`;
             });
             tbody.innerHTML = htmlContent;
+            lucide.createIcons();
         }
 
-        // ================= ส่วนจัดการวันลา (Leave Management) =================
+        // 🟢 ฟังก์ชันสำหรับถอดรหัสแล้วแสดงข้อมูลสรุปงาน
+        function showSummaryDialog(encodedText) {
+            let text = decodeURIComponent(encodedText);
+            // แปลงพวก tag html กันระบบแสดงผลผิดเพี้ยน
+            text = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            
+            Swal.fire({
+                title: 'สรุปงาน / หมายเหตุ',
+                html: `<div class="text-sm text-slate-600 bg-slate-50 p-4 rounded-xl border border-slate-100 text-left whitespace-pre-wrap leading-relaxed">${text}</div>`,
+                icon: 'info',
+                confirmButtonText: 'ปิดหน้าต่าง',
+                confirmButtonColor: '#6366f1',
+                customClass: { popup: 'rounded-3xl' }
+            });
+        }
+
+        function exportToCSV() {
+            if (!filteredReportData || filteredReportData.length === 0) {
+                Swal.fire('ไม่พบข้อมูล', 'ไม่มีข้อมูลตามเงื่อนไขที่เลือกไว้ให้ดาวน์โหลด', 'warning');
+                return;
+            }
+
+            Swal.fire({
+                title: 'ยืนยันการส่งออกข้อมูล',
+                text: `คุณกำลังส่งออกข้อมูลจำนวน ${filteredReportData.length} รายการ`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#14b8a6',
+                cancelButtonColor: '#94a3b8',
+                confirmButtonText: 'ดาวน์โหลด CSV',
+                cancelButtonText: 'ยกเลิก'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    let csv = "\uFEFFวัน-เวลา,ชื่อพนักงาน,Username,สถานะ,สถานที่,สรุปงาน/หมายเหตุ\n";
+                    filteredReportData.forEach(d => {
+                        const dateStr = formatThaiDate(d.Timestamp);
+                        const timeStr = new Date(d.Timestamp).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+                        const name = d.Name || "-";
+                        const user = d.Username || "-";
+                        const type = d.Type === 'Check In' ? 'เข้างาน' : 'ออกงาน';
+                        const loc = d.Location || "-";
+                        const memo = (d["WorkSummary/Memo"] || "-").replace(/"/g, '""').replace(/\n/g, ' '); 
+                        csv += `"${dateStr} ${timeStr}","${name}","${user}","${type}","${loc}","${memo}"\n`;
+                    });
+
+                    const link = document.createElement("a");
+                    link.href = "data:text/csv;charset=utf-8," + encodeURIComponent(csv);
+                    link.download = `CubicPlus_TimeReport_${new Date().toISOString().split('T')[0]}.csv`;
+                    link.click();
+                }
+            });
+        }
+
         async function loadLeaveData() {
-            document.getElementById('reqBody').innerHTML = '<tr><td colspan="5" class="text-center py-6">กำลังโหลด...</td></tr>';
-            document.getElementById('balBody').innerHTML = '<tr><td colspan="5" class="text-center py-6">กำลังโหลด...</td></tr>';
             try {
                 const reqResp = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "adminFetchLeaveRequests" }) });
                 const reqData = await reqResp.json();
@@ -595,16 +714,12 @@
                 const balData = await balResp.json();
                 leaveBalances = balData.data || [];
                 renderLeaveBalances();
-                
-                document.getElementById('searchReq').value = "";
-                document.getElementById('searchBal').value = "";
             } catch (e) { console.error("Error", e); }
         }
 
         function renderLeaveRequests() {
             const tbody = document.getElementById('reqBody');
             const viewMode = document.getElementById('viewMode').value;
-            
             const displayData = viewMode === 'pending' ? leaveRequests.filter(r => r.Status === "รออนุมัติ") : leaveRequests;
             
             if (displayData.length === 0) {
@@ -681,10 +796,10 @@
         }
 
         function exportLeaveToCSV() {
-            if (leaveRequests.length === 0) { showAlert("ไม่พบข้อมูล", "ไม่มีข้อมูลสำหรับการดาวน์โหลด", "file-x", "amber"); return; }
+            if (leaveRequests.length === 0) { Swal.fire("ไม่พบข้อมูล", "ไม่มีข้อมูลสำหรับการดาวน์โหลด", "warning"); return; }
             const viewMode = document.getElementById('viewMode').value;
             const displayData = viewMode === 'pending' ? leaveRequests.filter(r => r.Status === "รออนุมัติ") : leaveRequests;
-            if (displayData.length === 0) { showAlert("ไม่พบข้อมูล", "ไม่มีข้อมูลในหมวดหมู่นี้", "file-x", "amber"); return; }
+            if (displayData.length === 0) { Swal.fire("ไม่พบข้อมูล", "ไม่มีข้อมูลในหมวดหมู่นี้", "warning"); return; }
 
             let csv = "\uFEFFวันที่ยื่นคำร้อง,ชื่อ,Username,ประเภทการลา,วันที่เริ่มลา,ถึงวันที่,เหตุผล,สถานะ\n";
             displayData.forEach(req => {
@@ -705,7 +820,6 @@
             link.click();
         }
 
-        // 🟢 ฟังก์ชันเพิ่มโควตาพนักงานใหม่ (Popup)
         function addNewLeaveBalance() {
             Swal.fire({
                 title: 'เพิ่มโควตาวันลาพนักงาน',
@@ -810,7 +924,7 @@
                 
                 if(res.status === "success") {
                     Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ', timer: 1500, showConfirmButton: false });
-                    loadLeaveData(); // โหลดใหม่เพื่อให้ข้อมูลอัปเดต
+                    loadLeaveData(); 
                 } else {
                     Swal.fire('ล้มเหลว', res.message || 'ไม่สามารถบันทึกข้อมูลได้', 'error');
                 }
@@ -819,7 +933,6 @@
             }
         }
 
-        // ================= ส่วนจัดการการตั้งค่า & ทั่วไป =================
         async function loadCurrentConfig() { 
             let start = "09:00", end = "18:00";
             try {
@@ -839,41 +952,47 @@
         async function saveSettings() {
             const start = document.getElementById('startTime').value;
             const end = document.getElementById('endTime').value;
-            if(!start || !end) return showAlert("ข้อมูลไม่ครบ", "กรุณาเลือกเวลาให้ครบ", "alert-circle", "amber");
+            if(!start || !end) return showAlert("ข้อมูลไม่ครบ", "กรุณาเลือกเวลาให้ครบ");
             
             try {
                 await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "saveConfig", startTime: start, endTime: end }) });
-                showAlert("บันทึกสำเร็จ", "อัปเดตเกณฑ์เวลาเรียบร้อยแล้ว", "check-circle-2", "emerald");
+                Swal.fire('สำเร็จ', 'อัปเดตเกณฑ์เวลาเรียบร้อยแล้ว', 'success');
                 loadCurrentConfig(); applyFilters();
-            } catch (e) { showAlert("ล้มเหลว", "เกิดข้อผิดพลาดในการบันทึก", "x-octagon", "rose"); }
+            } catch (e) { Swal.fire("ล้มเหลว", "เกิดข้อผิดพลาดในการบันทึก", "error"); }
         }
 
         async function handleAddUser() {
             const u = document.getElementById('newU').value, p = document.getElementById('newP').value, n = document.getElementById('newN').value, r = document.getElementById('newR').value;
-            if (!u || !p || !n) return showAlert("ข้อมูลไม่ครบ", "กรุณาระบุข้อมูลให้ครบ", "alert-circle", "amber");
+            if (!u || !p || !n) return showAlert("ข้อมูลไม่ครบ", "กรุณาระบุข้อมูลให้ครบ");
             try {
                 const resp = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "addUser", newUsername: u, newPassword: p, newName: n, newRole: r }) });
                 const res = await resp.json();
                 if (res.status === "added") {
-                    showAlert("ลงทะเบียนเรียบร้อย", `เพิ่มบัญชีคุณ ${n} สำเร็จ`, "user-check", "primary");
+                    Swal.fire('เรียบร้อย', `เพิ่มบัญชีคุณ ${n} สำเร็จ`, 'success');
                     document.getElementById('newU').value = ''; document.getElementById('newP').value = ''; document.getElementById('newN').value = '';
                 }
-            } catch (e) { showAlert("ผิดพลาด", "ไม่สามารถส่งข้อมูลไปเซิร์ฟเวอร์ได้", "server-crash", "rose"); }
+            } catch (e) { Swal.fire("ผิดพลาด", "ไม่สามารถส่งข้อมูลไปเซิร์ฟเวอร์ได้", "error"); }
         }
 
-        function showAlert(title, msg, icon = "info", theme = "primary") {
-            const modal = document.getElementById('customAlert');
-            document.getElementById('alertTitle').innerText = title;
-            document.getElementById('alertMsg').innerText = msg;
-            modal.style.display = 'flex';
+        function showAlert(title, msg) {
+            Swal.fire(title, msg, 'warning');
         }
         function closeAlert() { document.getElementById('customAlert').style.display = 'none'; }
         
-        window.onload = () => { 
-            const now = new Date();
-            document.getElementById('filterMonth').value = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}`;
+        window.onload = async () => { 
             lucide.createIcons(); 
-            Promise.all([loadCurrentConfig(), loadReportData()]);
+            const now = new Date();
+            document.getElementById('filterDate').value = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}`;
+            
+            try {
+                await Promise.all([loadCurrentConfig(), loadReportData()]);
+            } catch (err) {
+                console.error(err);
+            } finally {
+                const loader = document.getElementById('globalLoader');
+                loader.style.opacity = '0';
+                setTimeout(() => loader.style.display = 'none', 400);
+            }
         };
     </script>
 </body>
