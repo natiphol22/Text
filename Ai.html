@@ -9,7 +9,24 @@
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Dark Theme (Default - Sleek & Modern) */
+            /* Light Theme (Default) */
+            --bg: #f1f5f9; 
+            --panel: #ffffff; 
+            --panel-glass: rgba(255, 255, 255, 0.9);
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --user-bubble: #2563eb; 
+            --bot-bubble: #ffffff; 
+            --accent: #dc2626; 
+            --success: #10b981;
+            --input-bg: #f8fafc;
+            --ai-glow: #0284c7; 
+            --quick-link: #d97706; 
+            --danger: #dc2626;
+            --border: rgba(0, 0, 0, 0.08);
+        }
+        body.dark {
+            /* Dark Theme */
             --bg: #0f172a; 
             --panel: #1e293b; 
             --panel-glass: rgba(30, 41, 59, 0.85);
@@ -24,22 +41,6 @@
             --quick-link: #f59e0b; 
             --danger: #ef4444;
             --border: rgba(255, 255, 255, 0.1);
-        }
-        body.light {
-            /* Light Theme */
-            --bg: #f1f5f9; 
-            --panel: #ffffff; 
-            --panel-glass: rgba(255, 255, 255, 0.9);
-            --text: #0f172a;
-            --text-muted: #64748b;
-            --user-bubble: #2563eb; 
-            --bot-bubble: #ffffff; 
-            --accent: #dc2626; 
-            --input-bg: #f8fafc;
-            --ai-glow: #0284c7; 
-            --quick-link: #d97706; 
-            --danger: #dc2626;
-            --border: rgba(0, 0, 0, 0.08);
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -860,7 +861,7 @@
         setTimeout(() => m.style.display = "none", 300);
     }
 
-    function toggleTheme() { document.body.classList.toggle("light"); }
+    function toggleTheme() { document.body.classList.toggle("dark"); }
     function hideTyping() { document.getElementById("typing-ui").style.display = "none"; }
     function openTool() { openModal('toolModal'); }
 
