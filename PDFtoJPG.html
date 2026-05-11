@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Expense - PDF to JPG Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
@@ -54,6 +55,18 @@
     </style>
 </head>
 <body class="bg-black text-slate-200 h-screen overflow-hidden flex">
+
+    <!-- 🟢 Loader หน้าเตรียมข้อมูล (Cyan/Dark Theme) -->
+    <div id="loader" class="fixed inset-0 z-[9999] bg-slate-900/90 backdrop-blur-md flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="relative flex h-20 w-20 mb-6">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-60"></span>
+          <span class="relative inline-flex rounded-full h-20 w-20 bg-cyan-600 flex items-center justify-center shadow-[0_0_30px_rgba(6,182,212,0.4)]">
+              <i data-lucide="images" class="w-10 h-10 text-white animate-pulse"></i>
+          </span>
+        </div>
+        <h2 class="text-xl font-bold text-white tracking-wide">กำลังเตรียมข้อมูล</h2>
+        <p class="text-slate-400 font-medium mt-1">Cubic<span class="text-cyan-400">Plus</span> System</p>
+    </div>
 
     <div class="w-[450px] h-full flex flex-col glass-panel z-10 shadow-2xl relative">
         <div class="p-6 border-b border-white/10 relative overflow-hidden flex-shrink-0">
@@ -131,6 +144,21 @@
 
     <script>
         let selectedFiles = [];
+
+        // ฟังก์ชันหน่วงเวลาซ่อน Loader เมื่อหน้าจอพร้อม
+        window.onload = function() {
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+            
+            setTimeout(() => {
+                const loader = document.getElementById('loader');
+                if (loader) {
+                    loader.style.opacity = '0';
+                    setTimeout(() => loader.style.display = 'none', 500);
+                }
+            }, 600);
+        };
 
         // 1. จัดการเมื่อผู้ใช้อัปโหลดไฟล์
         document.getElementById('pdf-upload').addEventListener('change', function(e) {
