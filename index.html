@@ -227,6 +227,9 @@
                     sessionStorage.setItem("userName", result.name);
                     sessionStorage.setItem("userRole", result.role);
                     
+                    // บันทึก Username เพิ่มเติม
+                    sessionStorage.setItem("userLoginName", userInp);
+                    
                     // แจ้งเตือนสำเร็จแล้วค่อยย้ายหน้า
                     Swal.fire({
                         icon: 'success',
