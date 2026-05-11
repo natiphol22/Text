@@ -78,7 +78,7 @@
 </head>
 <body class="p-4 md:p-6 lg:p-10 selection:bg-primary-200 selection:text-primary-900">
 
-    <!-- 🟢 Loader อัปเดตใหม่แบบเดียวกับ Admin -->
+    <!-- 🟢 Loader -->
     <div id="loader" class="fixed inset-0 z-[999] bg-slate-50/90 backdrop-blur-sm flex flex-col items-center justify-center transition-opacity duration-500">
         <div class="relative flex h-20 w-20 mb-6">
           <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-60"></span>
@@ -108,7 +108,6 @@
 
     <div id="customAlert" class="modal">
         <div class="glass-card modal-content w-full max-w-sm rounded-[2.5rem] p-10 text-center shadow-2xl relative overflow-hidden">
-            <div class="absolute -top-10 -right-10 w-32 h-32 bg-primary-100 rounded-full blur-2xl opacity-60"></div>
             <div id="alertIcon" class="w-20 h-20 bg-primary-50 text-primary-500 rounded-[1.5rem] flex items-center justify-center mx-auto mb-6 rotate-3 border border-white shadow-sm"></div>
             <h3 id="alertTitle" class="text-xl font-bold text-slate-800 mb-2 tracking-tight">Notice</h3>
             <p id="alertMsg" class="text-slate-500 text-sm mb-8 leading-relaxed"></p>
@@ -118,8 +117,6 @@
 
     <div id="locationModal" class="modal">
         <div class="glass-card modal-content w-full max-w-[28rem] rounded-[2.5rem] p-8 md:p-10 shadow-2xl relative overflow-hidden">
-            <div class="absolute -top-20 -left-20 w-48 h-48 bg-emerald-100 rounded-full blur-3xl opacity-50"></div>
-            
             <div class="text-center mb-8 relative z-10">
                 <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm border border-slate-100 text-primary-500">
                     <i data-lucide="map-pin" class="w-6 h-6"></i>
@@ -256,12 +253,6 @@
 
         function updateClock() {
             const now = new Date();
-            const hours = now.getHours();
-            if (hours < 12) {
-                now.setMinutes(now.getMinutes() - 1); 
-            } else {
-                now.setMinutes(now.getMinutes() + 1);
-            }
             document.getElementById('clock').innerText = now.toLocaleTimeString('th-TH');
             document.getElementById('todayDate').innerText = now.toLocaleDateString('th-TH', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
         }
@@ -285,8 +276,26 @@
         function closeLocation() { document.getElementById('locationModal').classList.remove('active'); }
 
         async function confirmRecord(loc) {
-            closeLocation();
             const typeToSend = (loc === '-') ? 'Check Out' : 'Check In';
+            
+            // 🛑 ด่านป้องกันที่ 1: ตรวจสอบเบื้องต้นจากข้อมูลในมือ (Client-side check)
+            const todayStr = new Date().toLocaleDateString('th-TH');
+            const myRecordsToday = globalData.filter(d => 
+                (d.Username === user || d.Name === name) && 
+                new Date(d.Timestamp).toLocaleDateString('th-TH') === todayStr
+            );
+
+            if (typeToSend === 'Check In' && myRecordsToday.some(r => r.Type === 'Check In')) {
+                showCustomAlert("ทำรายการไม่สำเร็จ", "คุณได้เช็คอินของวันนี้ไปเรียบร้อยแล้ว", "alert-triangle", "rose");
+                closeLocation();
+                return;
+            }
+            if (typeToSend === 'Check Out' && myRecordsToday.some(r => r.Type === 'Check Out')) {
+                showCustomAlert("ทำรายการไม่สำเร็จ", "คุณได้เช็คเอาต์ของวันนี้ไปเรียบร้อยแล้ว", "alert-triangle", "rose");
+                return;
+            }
+
+            closeLocation();
             const btn = typeToSend === 'Check In' ? document.getElementById('inBtn') : document.getElementById('outBtn');
             const originalHTML = btn.innerHTML;
             
@@ -300,7 +309,7 @@
                 await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
                 showCustomAlert("บันทึกสำเร็จ", `ระบบได้บันทึกเวลา ${typeToSend} ของคุณเรียบร้อยแล้ว`, "check-circle-2", "emerald");
                 if(typeToSend === 'Check Out') document.getElementById('memo').value = "";
-                await loadData();
+                await loadData(); // โหลดใหม่เพื่ออัปเดตสถานะปุ่ม
             } catch(e) { 
                 showCustomAlert("เกิดข้อผิดพลาด", "ไม่สามารถบันทึกข้อมูลได้ กรุณาลองใหม่อีกครั้ง", "x-octagon", "rose");
                 await loadData(); 
@@ -316,7 +325,7 @@
                 const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({action: "fetchData"}) });
                 globalData = await res.json();
                 
-                // Hide loader smoothly
+                // Hide loader
                 document.getElementById('loader').style.opacity = '0';
                 setTimeout(() => document.getElementById('loader').style.display = 'none', 500);
                 
@@ -326,6 +335,7 @@
                 const hasIn = myToday.some(d => d.Type === "Check In");
                 const hasOut = myToday.some(d => d.Type === "Check Out");
                 
+                // 🛑 ด่านป้องกันที่ 2: ควบคุมการกดปุ่ม (Button Control)
                 document.getElementById('inBtn').disabled = hasIn;
                 document.getElementById('outBtn').disabled = !hasIn || hasOut;
                 
@@ -335,10 +345,17 @@
                 if(inLog) {
                     document.getElementById('inTimeText').innerText = new Date(inLog.Timestamp).toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'});
                     document.getElementById('inLocText').innerHTML = `<i data-lucide="map-pin" class="w-3 h-3"></i> ${inLog.Location}`;
+                } else {
+                    document.getElementById('inTimeText').innerText = "--:--";
+                    document.getElementById('inLocText').innerHTML = `<i data-lucide="map-pin" class="w-3 h-3"></i> Ready`;
                 }
+                
                 if(outLog) {
                     document.getElementById('outTimeText').innerText = new Date(outLog.Timestamp).toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'});
                     document.getElementById('outLocText').innerHTML = `<i data-lucide="check-circle-2" class="w-3 h-3 text-emerald-500"></i> COMPLETED`;
+                } else {
+                    document.getElementById('outTimeText').innerText = "--:--";
+                    document.getElementById('outLocText').innerHTML = `<i data-lucide="check-circle-2" class="w-3 h-3"></i> Done`;
                 }
                 
                 renderUI();
@@ -367,7 +384,6 @@
                 const isOnline = v.Type === "Check In";
                 if(isOnline) activeCount++;
                 
-                // Set icons based on location
                 let locIconHTML = `<i data-lucide="clock" class="w-3 h-3"></i>`;
                 if(v.Location === 'OFFICE') locIconHTML = `<i data-lucide="building-2" class="w-3 h-3 text-indigo-400"></i>`;
                 else if(v.Location === 'WFH') locIconHTML = `<i data-lucide="home" class="w-3 h-3 text-emerald-400"></i>`;
@@ -393,12 +409,10 @@
             colleagueBox.innerHTML = htmlContent;
             document.getElementById('activeCount').innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> ${activeCount} Online`;
             
-            // Set default range to 7 days on load
             updateRange(7);
         }
 
         function updateRange(days) {
-            // UI Toggle
             document.getElementById('btn7').className = days === 7 ? "px-4 py-1.5 rounded-lg font-bold text-xs transition-all bg-white shadow-sm text-primary-600" : "px-4 py-1.5 rounded-lg font-bold text-xs transition-all text-slate-400 hover:text-slate-600";
             document.getElementById('btn30').className = days === 30 ? "px-4 py-1.5 rounded-lg font-bold text-xs transition-all bg-white shadow-sm text-primary-600" : "px-4 py-1.5 rounded-lg font-bold text-xs transition-all text-slate-400 hover:text-slate-600";
 
@@ -409,7 +423,7 @@
             const reportMap = new Map();
             const cutoff = new Date();
             cutoff.setHours(0,0,0,0);
-            cutoff.setDate(cutoff.getDate() - days + 1); // +1 to include today
+            cutoff.setDate(cutoff.getDate() - days + 1);
             
             myLogs.forEach(log => {
                 const logDate = new Date(log.Timestamp);
