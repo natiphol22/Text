@@ -185,12 +185,12 @@
         // --- 1. System Setup & Context ---
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz4XoAF5nH_x9X_g4K0I7ZOwgmc3StS12JNFBVIAwgjOpcGmlMPS9APpQ70Juwuhbs/exec"; 
         
-        // ดึงชื่อคนที่ล็อกอินอยู่ (เพื่อเอาไว้เช็คว่าอันไหนงานตัวเอง อันไหนงานคนอื่น)
         const username = sessionStorage.getItem("userLoginName") || "Natiphol"; 
         const userRole = sessionStorage.getItem("userRole") || "Admin"; 
         
         const roleStr = String(userRole).trim().toLowerCase();
-        const isAdmin = roleStr === "admin" || roleStr === "ผู้ดูแลระบบ";
+        // เช็คให้ครอบคลุม ไม่ว่าจะตั้งชื่อ Role ว่าอะไรก็ตาม
+        const isAdmin = roleStr === "admin" || roleStr === "ผู้ดูแลระบบ" || roleStr === "manager";
         
         let actualToday = new Date(); 
         let currentMonth = actualToday.getMonth();
@@ -202,14 +202,23 @@
         let myLeavesDB = [];
         let usersListDB = []; 
 
-        function safeDateFormat(dateObjOrString) {
-            if (!dateObjOrString) return "";
+        function safeDateFormat(dateVal) {
+            if (!dateVal) return "";
             try {
-                const dateObj = new Date(dateObjOrString);
-                return `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
+                let d = new Date(dateVal);
+                if (isNaN(d.getTime())) return dateVal.toString().split('T')[0];
+                let year = d.getFullYear();
+                let month = String(d.getMonth() + 1).padStart(2, '0');
+                let day = String(d.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
             } catch (e) {
-                return dateObjOrString.toString().split('T')[0];
+                return dateVal.toString().split('T')[0];
             }
+        }
+
+        // แก้บัก Timezone: ใช้การเทียบ String ตรงๆ เลย จะได้ไม่เพี้ยนเวลาเปลี่ยนเดือน
+        function isDateInRange(dateStr, startStr, endStr) {
+            return dateStr >= startStr && dateStr <= endStr;
         }
 
         window.onload = async function() {
@@ -234,7 +243,9 @@
                     body: JSON.stringify({ 
                         action: "fetchCalendarData", 
                         username: username,
-                        role: userRole 
+                        // 🔴 จุดแก้บั๊กสำคัญ: ถ้าตรวจพบว่าเป็นแอดมิน ให้บังคับส่งคำว่า "admin" ไปให้ Backend ทันที!
+                        // เพื่อแก้ปัญหาที่ Backend ข้ามการส่งข้อมูลถ้า Role พิมพ์ไม่ตรงเป๊ะ
+                        role: isAdmin ? "admin" : userRole 
                     })
                 });
                 
@@ -322,13 +333,14 @@
 
                 dayLeaves.forEach(l => {
                     const statusIcon = l.status === 'รออนุมัติ' ? '⏳ ' : '✅ ';
-                    const shortName = l.name ? String(l.name).split(' ')[0] : (l.username || 'พนักงาน');
                     
-                    // 💡 หัวใจสำคัญ: เช็คว่าวันลานี้เป็นของ "คนอื่น" หรือไม่? ถ้าใช่ บังคับโชว์ชื่อไปเลย!
-                    const isMyLeave = String(l.username).trim().toLowerCase() === String(username).trim().toLowerCase();
-                    const labelText = isMyLeave ? l.type : `${shortName} ลา`;
+                    // ดึงชื่อมาโชว์ ดักจับกรณีชีตส่งข้อมูลมาแหว่ง
+                    let empName = (l.name && l.name !== "-" && l.name !== "พนักงาน") ? String(l.name).split(' ')[0] : (l.username !== "-" ? l.username : "พนักงาน");
                     
-                    tagsHtml += `<div class="tag-label tag-leave" title="พนักงาน: ${l.name}\nประเภท: ${l.type}\nสถานะ: ${l.status}">${statusIcon}${labelText}</div>`;
+                    // ถ้าเป็น Admin บังคับโชว์ชื่อเสมอ
+                    let labelText = isAdmin ? `${empName} ลา` : l.type;
+                    
+                    tagsHtml += `<div class="tag-label tag-leave" title="พนักงาน: ${l.name || l.username}\nประเภท: ${l.type}\nสถานะ: ${l.status}">${statusIcon}${labelText}</div>`;
                 });
 
                 cell.innerHTML = `<span class="date-num">${i}</span><div class="tag-container">${tagsHtml}</div>`;
@@ -343,19 +355,18 @@
             const list = document.getElementById('upcomingList');
             list.innerHTML = '';
 
-            const todayStr = `${actualToday.getFullYear()}-${String(actualToday.getMonth() + 1).padStart(2, '0')}-${String(actualToday.getDate()).padStart(2, '0')}`;
+            const todayStr = safeDateFormat(actualToday);
             
             const filteredEvents = eventsDB.filter(e => isAdmin || e.username === username || !e.username || e.username === 'All');
             
             const upcomingLeaves = myLeavesDB.filter(l => l.endDate >= todayStr).map(l => {
-                const isMyLeave = String(l.username).trim().toLowerCase() === String(username).trim().toLowerCase();
+                let empName = (l.name && l.name !== "-" && l.name !== "พนักงาน") ? String(l.name).split(' ')[0] : (l.username !== "-" ? l.username : "พนักงาน");
                 return {
                     id: l.id,
                     date: l.startDate >= todayStr ? l.startDate : todayStr,
-                    // โชว์ชื่อชัดเจนถ้าไม่ใช่ใบลาตัวเอง
-                    name: isMyLeave ? `วัน${l.type}ของคุณ` : `${l.name} (${l.type})`,
+                    name: isAdmin ? `${empName} (${l.type})` : `วัน${l.type}ของคุณ`,
                     type: 'leave',
-                    detail: `พนักงาน: ${l.name}\nสถานะ: ${l.status}\nตั้งแต่วันที่ ${formatThaiDateFull(l.startDate)} ถึง ${formatThaiDateFull(l.endDate)}`,
+                    detail: `พนักงาน: ${l.name || l.username}\nสถานะ: ${l.status}\nตั้งแต่: ${formatThaiDateFull(l.startDate)}\nถึง: ${formatThaiDateFull(l.endDate)}`,
                     mapUrl: ''
                 };
             });
@@ -420,18 +431,17 @@
                     </div>`);
                     
                 lList.forEach(l => {
-                    // ใช้ตรรกะเช็คผู้ใช้ด้วย
-                    const isMyLeave = String(l.username).trim().toLowerCase() === String(username).trim().toLowerCase();
-                    const leaveTitle = isMyLeave ? `วัน${l.type}ของคุณ` : `วันลาของ ${l.name}`;
+                    let empName = (l.name && l.name !== "-" && l.name !== "พนักงาน") ? String(l.name).split(' ')[0] : (l.username !== "-" ? l.username : "พนักงาน");
+                    const leaveTitle = isAdmin ? `วันลาของ ${empName}` : `วัน${l.type}ของคุณ`;
                     const statusBadge = l.status === 'รออนุมัติ' ? '⏳ รออนุมัติ' : '✅ อนุมัติแล้ว';
-                    const details = isMyLeave 
-                        ? `สถานะ: ${l.status}\\nตั้งแต่: ${formatThaiDateFull(l.startDate)}\\nถึง: ${formatThaiDateFull(l.endDate)}`
-                        : `พนักงาน: ${l.name}\\nประเภท: ${l.type}\\nสถานะ: ${l.status}\\nตั้งแต่: ${formatThaiDateFull(l.startDate)}\\nถึง: ${formatThaiDateFull(l.endDate)}`;
+                    const details = isAdmin 
+                        ? `พนักงาน: ${l.name || l.username}\\nประเภท: ${l.type}\\nสถานะ: ${l.status}\\nตั้งแต่: ${formatThaiDateFull(l.startDate)}\\nถึง: ${formatThaiDateFull(l.endDate)}`
+                        : `สถานะ: ${l.status}\\nตั้งแต่: ${formatThaiDateFull(l.startDate)}\\nถึง: ${formatThaiDateFull(l.endDate)}`;
                         
                     contentHtml += `
                     <div class="flex flex-col bg-white p-2 rounded-lg border border-amber-100 shadow-sm cursor-pointer hover:border-amber-300 transition-colors" onclick="showDetailModal('${leaveTitle}', '${dateStr}', '${details}', '', 'leave')">
                         <div class="flex justify-between items-center w-full">
-                            <span class="font-bold text-amber-600 truncate pr-2 flex items-center gap-1">🏖️ ${isMyLeave ? l.type : l.name + ' ลา'}</span>
+                            <span class="font-bold text-amber-600 truncate pr-2 flex items-center gap-1">🏖️ ${isAdmin ? empName + ' ลา' : l.type}</span>
                             <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 shrink-0"></i>
                         </div>
                         <span class="text-[10px] text-slate-500 mt-1 ml-5">${l.type} - ${statusBadge}</span>
@@ -652,11 +662,6 @@
         function goToToday() {
             currentMonth = actualToday.getMonth(); currentYear = actualToday.getFullYear();
             renderCalendar();
-        }
-
-        function isDateInRange(dateStr, startStr, endStr) {
-            const d = new Date(dateStr), s = new Date(startStr), e = new Date(endStr);
-            return d >= s && d <= e;
         }
 
         function formatThaiDateFull(dateStr) {
