@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Synology Support - AI Smart Search</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -73,7 +74,7 @@
             position: fixed;
             top: 24px;
             right: 24px;
-            z-index: 9999;
+            z-index: 9990;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -100,7 +101,6 @@
         .btn-floating-back:active {
             transform: scale(0.95);
         }
-        /* Mobile adjustment to avoid overlapping with header icons */
         @media (max-width: 1000px) {
             .btn-floating-back {
                 top: auto;
@@ -253,7 +253,6 @@
         }
         .tool-input:focus, .tool-select:focus, .tool-textarea:focus { border-color: var(--ai-glow); background: var(--panel); }
         .tool-input.has-paste, .tool-textarea.has-paste { padding-right: 48px; }
-        /* ให้ textarea มีขั้นต่ำแต่ยืดได้ */
         .tool-textarea { min-height: 80px; resize: none; overflow: hidden; } 
         
         .form-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
@@ -335,6 +334,18 @@
     </style>
 </head>
 <body>
+
+<!-- 🟢 Loader หน้าเตรียมข้อมูล -->
+<div id="loader" class="fixed inset-0 z-[9999] flex flex-col items-center justify-center transition-opacity duration-500" style="background: var(--bg); backdrop-filter: blur(8px);">
+    <div class="relative flex h-20 w-20 mb-6">
+      <span class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-60" style="background-color: var(--ai-glow);"></span>
+      <span class="relative inline-flex rounded-full h-20 w-20 flex items-center justify-center shadow-lg" style="background-color: var(--user-bubble); box-shadow: 0 10px 25px rgba(14, 165, 233, 0.3);">
+          <i data-lucide="bot" class="w-10 h-10 text-white animate-pulse"></i>
+      </span>
+    </div>
+    <h2 class="text-xl font-bold" style="color: var(--text);">กำลังเตรียมข้อมูล</h2>
+    <p style="color: var(--text-muted); font-weight: 500; margin-top: 4px;">Synology <span style="color: var(--ai-glow);">Support AI</span></p>
+</div>
 
 <button onclick="location.href='dashboard.html'" class="btn-floating-back" title="กลับหน้าหลัก">
     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg> 
@@ -658,21 +669,35 @@
     }
 
     // --- Data Caching ---
-    async function loadInitialData() {
-        showToast("กำลังซิงค์ข้อมูล...", "info");
+    async function loadInitialData(isRefresh = false) {
+        const loader = document.getElementById('loader');
+        if (isRefresh) {
+            showToast("กำลังซิงค์ข้อมูล...", "info");
+        } else {
+            if (loader) {
+                loader.style.display = 'flex';
+                loader.style.opacity = '1';
+            }
+        }
+        
         try {
             const [res1, res2] = await Promise.all([fetch(API_SHEET1), fetch(API_SHEET2)]);
             cachedSheet1 = await res1.json();
             cachedSheet2 = await res2.json();
             isDataLoaded = true;
-            showToast("อัปเดตข้อมูลสำเร็จ ✅", "success");
+            if (isRefresh) showToast("อัปเดตข้อมูลสำเร็จ ✅", "success");
         } catch (e) {
             showToast("เชื่อมต่อฐานข้อมูลล้มเหลว ❌", "error");
+        } finally {
+            if (!isRefresh && loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.style.display = 'none', 500);
+            }
         }
     }
 
     function refreshData() {
-        loadInitialData();
+        loadInitialData(true);
     }
 
     // --- Clipboard Paste ---
@@ -1183,6 +1208,7 @@
     });
 
     window.onload = () => {
+        if (typeof lucide !== 'undefined') lucide.createIcons();
         loadInitialData(); // Load data seamlessly in background
         setupAutoResize();
         setupEnterKeys();
