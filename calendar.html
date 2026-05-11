@@ -185,16 +185,10 @@
         // --- 1. System Setup & Context ---
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz4XoAF5nH_x9X_g4K0I7ZOwgmc3StS12JNFBVIAwgjOpcGmlMPS9APpQ70Juwuhbs/exec"; 
         
-        // Safety wrapper for sessionStorage
-        let username = "Natiphol";
-        let userRole = "Admin";
-        try {
-            username = sessionStorage.getItem("userLoginName") || "Natiphol"; 
-            userRole = sessionStorage.getItem("userRole") || "Admin"; 
-        } catch(e) {
-            console.warn("SessionStorage access blocked:", e);
-        }
+        const username = sessionStorage.getItem("userLoginName") || "Natiphol"; 
+        const userRole = sessionStorage.getItem("userRole") || "Admin"; 
         
+        // เช็คสถานะ Admin ให้ยืดหยุ่น ป้องกันเคสตัวพิมพ์เล็ก/ใหญ่ (admin vs Admin)
         const isAdmin = String(userRole).trim().toLowerCase() === "admin";
         
         let actualToday = new Date(); 
@@ -217,43 +211,25 @@
             }
         }
 
-        // Changed window.onload to DOMContentLoaded for better reliability
-        document.addEventListener('DOMContentLoaded', async () => {
-            if (typeof lucide !== 'undefined') {
-                lucide.createIcons();
-            }
+        window.onload = async function() {
+            lucide.createIcons();
             setupHeaderButtons();
             
-            try {
-                // เพิ่ม Timeout เพื่อไม่ให้ค้างนานเกินไปหาก API ขัดข้อง
-                const fetchPromise = Promise.all([fetchAllDataFromAPI(), fetchUsersList()]);
-                const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 15000));
-                await Promise.race([fetchPromise, timeoutPromise]);
-            } catch(e) {
-                console.error("Initialization warning:", e);
-            } finally {
-                // การันตีว่า Loader ต้องหายไปเสมอ
-                const loaderEl = document.getElementById('loader');
-                if(loaderEl) {
-                    loaderEl.style.opacity = '0';
-                    setTimeout(() => { loaderEl.style.display = 'none'; }, 500);
-                }
-                
-                try {
-                    renderCalendar();
-                    renderUpcomingList();
-                } catch(renderErr) {
-                    console.error("Render error:", renderErr);
-                }
-            }
-        });
+            await Promise.all([fetchAllDataFromAPI(), fetchUsersList()]);
+
+            setTimeout(() => {
+                document.getElementById('loader').style.opacity = '0';
+                setTimeout(() => document.getElementById('loader').style.display = 'none', 500);
+                renderCalendar();
+                renderUpcomingList();
+            }, 600);
+        };
 
         // --- Fetch API ---
         async function fetchAllDataFromAPI() {
             try {
                 const response = await fetch(WEB_APP_URL, {
                     method: "POST",
-                    headers: { "Content-Type": "text/plain;charset=utf-8" }, // Fix CORS
                     body: JSON.stringify({ 
                         action: "fetchCalendarData", 
                         username: username,
@@ -263,7 +239,7 @@
                 
                 const result = await response.json();
                 
-                if (result && result.status === "success") {
+                if (result.status === "success") {
                     holidaysDB = (result.holidays || []).map(h => ({...h, date: safeDateFormat(h.date)}));
                     eventsDB = (result.events || []).map(e => ({...e, date: safeDateFormat(e.date)}));
                     myLeavesDB = (result.myLeaves || []).map(l => ({
@@ -283,11 +259,10 @@
             try {
                 const response = await fetch(WEB_APP_URL, {
                     method: "POST",
-                    headers: { "Content-Type": "text/plain;charset=utf-8" }, // Fix CORS
                     body: JSON.stringify({ action: "fetchUsersList" })
                 });
                 const result = await response.json();
-                if (result && result.status === "success") {
+                if (result.status === "success") {
                     usersListDB = result.users || [];
                 }
             } catch (error) {
@@ -302,13 +277,12 @@
             if (isAdmin) {
                 html += `<button onclick="location.href='admin.html'" class="flex-1 md:flex-none justify-center flex items-center gap-2 px-4 py-2.5 md:px-5 md:py-3 bg-slate-800 rounded-xl text-white font-bold text-sm hover:bg-slate-900 hover:shadow-md transition-all active:scale-95 shadow-sm"><i data-lucide="shield-check" class="w-4 h-4"></i> ระบบ Admin</button>`;
             }
-            if(btnContainer) btnContainer.innerHTML = html;
+            btnContainer.innerHTML = html;
         }
 
         // --- 4. Render Engine ---
         function renderCalendar() {
             const grid = document.getElementById('calendarGrid');
-            if(!grid) return;
             grid.innerHTML = '';
             
             document.getElementById('monthYearTitle').innerText = `${monthNames[currentMonth]} ${currentYear}`;
@@ -347,6 +321,7 @@
 
                 dayLeaves.forEach(l => {
                     const statusIcon = l.status === 'รออนุมัติ' ? '⏳ ' : '✅ ';
+                    // ตัดชื่อให้สั้นลง (เอาแค่คำแรก) กรณี Admin
                     const shortName = l.name ? String(l.name).split(' ')[0] : (l.username || 'พนักงาน');
                     const labelText = isAdmin ? `${shortName} ลา` : l.type;
                     
@@ -358,12 +333,11 @@
                 cell.onclick = () => handleDayClick(dateString, dayHolidays, dayEvents, dayLeaves);
                 grid.appendChild(cell);
             }
-            if (typeof lucide !== 'undefined') lucide.createIcons();
+            lucide.createIcons();
         }
 
         function renderUpcomingList() {
             const list = document.getElementById('upcomingList');
-            if(!list) return;
             list.innerHTML = '';
 
             const todayStr = `${actualToday.getFullYear()}-${String(actualToday.getMonth() + 1).padStart(2, '0')}-${String(actualToday.getDate()).padStart(2, '0')}`;
@@ -415,7 +389,7 @@
                     </div>
                 `;
             });
-            if (typeof lucide !== 'undefined') lucide.createIcons();
+            lucide.createIcons();
         }
 
         // --- 5. Interaction & Modals ---
@@ -462,7 +436,7 @@
                     showConfirmButton: false,
                     showCloseButton: true,
                     customClass: { popup: 'rounded-2xl md:rounded-3xl w-[90%] md:w-auto max-w-md' },
-                    didOpen: () => { if (typeof lucide !== 'undefined') lucide.createIcons(); }
+                    didOpen: () => { lucide.createIcons(); }
                 });
 
             } else {
@@ -509,7 +483,7 @@
                 `,
                 showConfirmButton: true, confirmButtonText: 'ปิด', confirmButtonColor: '#4f46e5',
                 customClass: { popup: 'rounded-[1.5rem] md:rounded-[2rem] w-[90%] md:w-auto max-w-md' },
-                didOpen: () => { if (typeof lucide !== 'undefined') lucide.createIcons(); }
+                didOpen: () => { lucide.createIcons(); }
             });
         }
 
@@ -530,16 +504,15 @@
                     
                     fetch(WEB_APP_URL, {
                         method: 'POST',
-                        headers: { "Content-Type": "text/plain;charset=utf-8" }, // Fix CORS
                         body: JSON.stringify({ action: 'deleteCalendarItem', type: type, date: date, name: name })
                     })
                     .then(res => res.json())
                     .then(res => {
-                        if (res && res.status === 'success') {
+                        if (res.status === 'success') {
                             Swal.fire({ icon: 'success', title: 'ลบสำเร็จ', showConfirmButton: false, timer: 1500, customClass: { popup: 'rounded-2xl w-[90%] max-w-sm' } });
                             fetchAllDataFromAPI().then(() => { renderCalendar(); renderUpcomingList(); });
                         } else {
-                            Swal.fire({icon: 'error', title: 'ข้อผิดพลาด', text: (res && res.message) || 'ไม่สามารถลบได้', customClass: { popup: 'rounded-2xl w-[90%] max-w-sm' }});
+                            Swal.fire({icon: 'error', title: 'ข้อผิดพลาด', text: res.message || 'ไม่สามารถลบได้', customClass: { popup: 'rounded-2xl w-[90%] max-w-sm' }});
                         }
                     }).catch(() => Swal.fire({icon: 'error', title: 'ข้อผิดพลาด', text: 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์', customClass: { popup: 'rounded-2xl w-[90%] max-w-sm' }}));
                 }
@@ -589,12 +562,11 @@
 
                     fetch(WEB_APP_URL, {
                         method: "POST",
-                        headers: { "Content-Type": "text/plain;charset=utf-8" }, // Fix CORS
                         body: JSON.stringify({ action: "addCalendarEvent", ...result.value })
                     })
                     .then(res => res.json())
                     .then(res => {
-                        if(res && res.status === "success") {
+                        if(res.status === "success") {
                             eventsDB.push({ id: Date.now(), ...result.value });
                             Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ', showConfirmButton: false, timer: 1500, customClass: { popup: 'rounded-2xl w-[90%] max-w-sm' } });
                             renderCalendar(); renderUpcomingList();
@@ -636,12 +608,11 @@
 
                     fetch(WEB_APP_URL, {
                         method: "POST",
-                        headers: { "Content-Type": "text/plain;charset=utf-8" }, // Fix CORS
                         body: JSON.stringify({ action: "addCalendarEvent", ...result.value })
                     })
                     .then(res => res.json())
                     .then(res => {
-                        if(res && res.status === "success") {
+                        if(res.status === "success") {
                             holidaysDB.push({ id: Date.now(), ...result.value });
                             Swal.fire({ icon: 'success', title: 'เพิ่มวันหยุดเรียบร้อย', showConfirmButton: false, timer: 1500, customClass: { popup: 'rounded-2xl w-[90%] max-w-sm' } });
                             renderCalendar(); renderUpcomingList();
