@@ -55,12 +55,8 @@
             background: #fff;
             border-color: #818cf8;
             box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+            outline: none;
         }
-
-        /* Loader */
-        .loader-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); z-index: 999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s ease; }
-        .spinner { width: 50px; height: 50px; border: 4px solid #e0e7ff; border-top: 4px solid #4f46e5; border-radius: 50%; animation: spin 1s cubic-bezier(0.55, 0.15, 0.45, 0.85) infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* Modals */
         .modal { display: none; position: fixed; inset: 0; z-index: 100; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(8px); align-items: center; justify-content: center; padding: 20px; transition: opacity 0.3s ease; }
@@ -82,12 +78,16 @@
 </head>
 <body class="p-4 md:p-6 lg:p-10 selection:bg-primary-200 selection:text-primary-900">
 
-    <div id="loader" class="loader-overlay">
-        <div class="spinner mb-6 shadow-lg shadow-primary-500/20"></div>
-        <div class="flex items-center gap-2">
-            <h1 class="text-xl font-bold tracking-tight text-slate-800">Cubic<span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-sky-500">Plus</span></h1>
+    <!-- 🟢 Loader อัปเดตใหม่แบบเดียวกับ Admin -->
+    <div id="loader" class="fixed inset-0 z-[999] bg-slate-50/90 backdrop-blur-sm flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="relative flex h-20 w-20 mb-6">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-60"></span>
+          <span class="relative inline-flex rounded-full h-20 w-20 bg-primary-600 flex items-center justify-center shadow-lg shadow-primary-500/30">
+              <i data-lucide="clock" class="w-10 h-10 text-white animate-pulse"></i>
+          </span>
         </div>
-        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em] mt-2 animate-pulse">Initializing System...</p>
+        <h2 class="text-xl font-bold text-slate-700">กำลังเตรียมข้อมูล</h2>
+        <p class="text-slate-500 font-medium mt-1">Cubic<span class="text-primary-600">Plus</span> System</p>
     </div>
 
     <div class="max-w-6xl mx-auto mb-8 flex justify-between items-center px-2 md:px-4">
@@ -254,7 +254,6 @@
         document.getElementById('userDisp').innerText = name;
         document.getElementById('userInitial').innerText = name.charAt(0).toUpperCase();
 
-        // 🟢 Balanced Dynamic Logic: 
         function updateClock() {
             const now = new Date();
             const hours = now.getHours();
