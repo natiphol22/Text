@@ -128,15 +128,16 @@
         <div class="absolute bottom-[-20%] left-[20%] w-[30rem] h-[30rem] bg-purple-200 rounded-full mix-blend-multiply filter blur-[100px] opacity-60 animate-blob" style="animation-delay: 4s;"></div>
     </div>
 
-    <!-- Loader -->
-    <div id="loader" class="fixed inset-0 z-[999] bg-white/60 backdrop-blur-md flex flex-col items-center justify-center transition-opacity duration-500">
-        <div class="relative flex h-24 w-24 mb-6">
-          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-300 opacity-60"></span>
-          <span class="relative inline-flex rounded-full h-24 w-24 bg-gradient-to-tr from-primary-600 to-indigo-400 flex items-center justify-center shadow-xl shadow-primary-500/30">
-              <i data-lucide="calendar-days" class="w-12 h-12 text-white animate-pulse"></i>
+    <!-- 🟢 Loader ซิงค์ข้อมูล (Dark/Cyan Theme แบบเดียวกับหน้า PDF) -->
+    <div id="loader" class="fixed inset-0 z-[9999] bg-slate-900/90 backdrop-blur-md flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="relative flex h-20 w-20 mb-6">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-60"></span>
+          <span class="relative inline-flex rounded-full h-20 w-20 bg-cyan-600 flex items-center justify-center shadow-[0_0_30px_rgba(6,182,212,0.4)]">
+              <i data-lucide="calendar-days" class="w-10 h-10 text-white animate-pulse"></i>
           </span>
         </div>
-        <h2 class="text-2xl font-bold text-slate-800 tracking-tight">กำลังซิงค์ข้อมูลปฏิทิน</h2>
+        <h2 class="text-xl font-bold text-white tracking-wide">กำลังซิงค์ข้อมูลปฏิทิน</h2>
+        <p class="text-slate-400 font-medium mt-1">Cubic<span class="text-cyan-400">Plus</span> System</p>
     </div>
 
     <!-- Header -->
@@ -238,8 +239,11 @@
             setupHeaderButtons();
             await Promise.all([fetchAllDataFromAPI(), fetchUsersList()]);
             setTimeout(() => {
-                document.getElementById('loader').style.opacity = '0';
-                setTimeout(() => document.getElementById('loader').style.display = 'none', 500);
+                const loader = document.getElementById('loader');
+                if (loader) {
+                    loader.style.opacity = '0';
+                    setTimeout(() => loader.style.display = 'none', 500);
+                }
                 renderCalendar();
                 renderUpcomingList();
             }, 600);
