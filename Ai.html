@@ -100,7 +100,7 @@
         </div>
 
         <div id="chatView" class="flex-1 flex flex-col overflow-hidden bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-slate-50/50">
-            <div id="chatMessages" class="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-6 space-y-5 scroll-smooth">
+            <div id="chatMessages" class="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-6 space-y-5">
                 <div class="flex gap-3 chat-bubble-anim" id="initial-welcome">
                     <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary-600 flex items-center justify-center text-white shadow-md shrink-0"><i data-lucide="bot" class="w-5 h-5"></i></div>
                     <div class="bg-white p-4 md:p-5 rounded-2xl rounded-tl-none shadow-sm text-sm text-slate-700 border border-slate-200 max-w-[90%]">
@@ -171,7 +171,6 @@
     </div>
 
     <script>
-        // API เดิมไม่แตะต้อง
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxI6bmlpJslBjsT-zaedzjl1O3DxxJRtCDwry9-8whtsfwi6bAFiid6i-h7nU6_vxDS/exec";
         let masterData = [];
         let currentCategory = 'All';
@@ -286,25 +285,21 @@
 
         // ==================== ระบบ AI Chat แบบใหม่ ====================
 
-        // [Feature] Textarea Enter to send, Shift+Enter to break line + Auto Resize
         function handleInputKeydown(e) {
             const el = e.target;
             
-            // Auto resize (Support Ctrl+Z natively text area)
             setTimeout(() => {
                 el.style.height = 'auto';
                 el.style.height = Math.min(el.scrollHeight, 150) + 'px';
             }, 0);
 
-            // Trigger Enter
             if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault(); // Prevent new line
+                e.preventDefault(); 
                 handleChatSubmit();
-                el.style.height = '52px'; // Reset height
+                el.style.height = '52px'; 
             }
         }
 
-        // [Feature] FAQ Popup
         function showFAQPopup() {
             Swal.fire({
                 title: '💡 คำถามที่พบบ่อย (FAQ)',
@@ -323,10 +318,9 @@
             });
         }
 
-        // [Feature] Clear Chat
         function clearChat() {
             const container = document.getElementById('chatMessages');
-            if(container.children.length <= 1) return; // ถ้ามีแค่ข้อความเริ่มต้นไม่ต้องล้าง
+            if(container.children.length <= 1) return; 
 
             Swal.fire({
                 title: 'ยืนยันล้างหน้าจอแชท?',
@@ -339,7 +333,6 @@
                 cancelButtonText: '<span class="text-slate-600">ยกเลิก</span>'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // ทำ Animation ลบทีละอัน
                     const children = Array.from(container.children);
                     children.forEach((child, index) => {
                         if(child.id !== 'initial-welcome') {
@@ -357,7 +350,7 @@
 
         function triggerFAQ(question) {
             document.getElementById('chatInput').value = question;
-            document.getElementById('chatInput').style.height = 'auto'; // trigger resize
+            document.getElementById('chatInput').style.height = 'auto'; 
             handleChatSubmit();
         }
 
@@ -453,10 +446,9 @@
             const reader = new FileReader();
             reader.onload = function(e) { processImage(e.target.result); };
             reader.readAsDataURL(file);
-            event.target.value = ''; // Reset
+            event.target.value = ''; 
         }
 
-        // รองรับการ Paste รูปภาพในกล่องข้อความ
         document.getElementById('chatInput').addEventListener('paste', function(e) {
             const items = (e.clipboardData || e.originalEvent.clipboardData).items;
             for (let index in items) {
@@ -472,18 +464,15 @@
         });
 
         function processImage(dataUrl) {
-            // แสดงรูปฝั่ง User
             const imgHtml = `<div class="mb-1"><img src="${dataUrl}" class="max-w-[200px] md:max-w-[250px] rounded-lg shadow-md border border-slate-600/50"></div>
                              <p class="text-[10px] text-slate-300 flex items-center gap-1"><i data-lucide="upload-cloud" class="w-3 h-3"></i> อัปโหลดรูปภาพแล้ว</p>`;
             appendChatMessage('user', imgHtml);
 
-            // แสดง AI กำลังประมวลผลรูปแบบสแกน
             const typingId = appendChatPlaceholder(true);
 
             setTimeout(() => {
                 document.getElementById(typingId).remove();
                 
-                // จำลองการสแกนอัจฉริยะ (ดึงค่าจากภาพที่พี่ส่งมาเลย)
                 const responseHtml = `
                     <div class="font-bold text-slate-800 mb-3 border-b border-slate-100 pb-2 flex items-center gap-2">
                         <i data-lucide="scan-face" class="w-5 h-5 text-primary-500 animate-pulse"></i> สแกนข้อมูลอุปกรณ์สำเร็จ
@@ -513,7 +502,7 @@
                     </div>
                 `;
                 appendTypewriterMessage(responseHtml, "Vision AI Extraction");
-            }, 2500); // หน่วงนิดนึงให้ดูว่ากำลังสแกน
+            }, 2500); 
         }
 
         // --- ระบบพิมพ์ข้อความฝั่ง UI ---
@@ -576,11 +565,11 @@
             }
         }
 
-        // เอฟเฟกต์พิมพ์ดีดที่รองรับ HTML Tags
+        // จุดที่แก้ไข: เอฟเฟกต์พิมพ์ดีดแบบใหม่ (DOM-Based) สมูท 100% ไม่พัง Tag HTML
         async function appendTypewriterMessage(htmlString, category) {
             const container = document.getElementById('chatMessages');
             const div = document.createElement('div');
-            div.className = 'flex gap-3 chat-bubble-anim'; // ใช้อนิเมชั่นดึ๋ง
+            div.className = 'flex gap-3 chat-bubble-anim'; 
             
             let catBadge = category ? `<span class="text-[9px] bg-primary-50 text-primary-600 border border-primary-100 px-2 py-0.5 rounded-md font-bold uppercase mb-2 inline-flex items-center gap-1 shadow-sm"><i data-lucide="zap" class="w-3 h-3"></i> ${category}</span><br>` : '';
             
@@ -597,32 +586,59 @@
             
             const targetEl = document.getElementById(innerDivId);
             
-            let i = 0;
-            let currentHTML = "";
-            let inTag = false;
+            // สร้าง Element ล่องหนเพื่อแกะโครงสร้าง HTML ออกมาก่อน
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = htmlString;
             
-            function typeChar() {
-                if (i < htmlString.length) {
-                    let char = htmlString.charAt(i);
-                    currentHTML += char;
-                    
-                    if (char === '<') inTag = true;
-                    if (char === '>') inTag = false;
-                    
-                    targetEl.innerHTML = currentHTML + (!inTag && i < htmlString.length - 1 ? '<span class="typewriter-cursor"></span>' : '');
-                    
-                    if(!inTag && char === '>') lucide.createIcons({root: targetEl}); 
-                    
-                    scrollToBottom();
-                    i++;
-                    setTimeout(typeChar, inTag ? 0 : 5); // ปรับเร็วขึ้นนิดนึงให้ดูทันใจ
-                } else {
-                    targetEl.innerHTML = htmlString;
-                    lucide.createIcons({root: targetEl});
-                    scrollToBottom();
+            // ลอจิกเจาะพิมพ์เฉพาะ Text Node ส่วน UI ให้ออกมาเลย
+            async function typeNode(sourceNode, targetNode) {
+                if (sourceNode.nodeType === Node.TEXT_NODE) {
+                    const text = sourceNode.textContent;
+                    let currentText = "";
+                    const textNode = document.createTextNode("");
+                    targetNode.appendChild(textNode);
+
+                    for (let i = 0; i < text.length; i++) {
+                        currentText += text[i];
+                        textNode.textContent = currentText;
+                        if(i % 4 === 0) scrollToBottom(); // อัปเดต Scroll เป็นจังหวะ
+                        await new Promise(r => requestAnimationFrame(() => setTimeout(r, 6))); // ความเร็วการพิมพ์
+                    }
+                } else if (sourceNode.nodeType === Node.ELEMENT_NODE) {
+                    const clone = document.createElement(sourceNode.tagName);
+                    // คัดลอก Attributes ทั้งหมด (เช่น class, id, onclick)
+                    Array.from(sourceNode.attributes).forEach(attr => clone.setAttribute(attr.name, attr.value));
+                    targetNode.appendChild(clone);
+
+                    // เงื่อนไข: ถ้าเป็นปุ่ม ไอคอน หรือกล่องเครื่องมือ ให้เด้งโชว์รวดเดียว ไม่ต้องพิมพ์ทีละตัว
+                    const shouldInstantRender = clone.tagName === 'BUTTON' || 
+                                                clone.tagName === 'A' || 
+                                                clone.tagName === 'I' || 
+                                                clone.classList.contains('flex');
+
+                    if (shouldInstantRender) {
+                        clone.innerHTML = sourceNode.innerHTML;
+                        if (clone.querySelector('[data-lucide]') || clone.hasAttribute('data-lucide')) {
+                            lucide.createIcons({ root: clone.parentNode });
+                        }
+                        scrollToBottom();
+                        await new Promise(r => setTimeout(r, 10)); // หน่วงจังหวะนิดเดียวให้ UI Pop-up สมูท
+                    } else {
+                        // ถ้าเป็นโครงสร้างปกติ ให้เจาะเข้าไปพิมพ์ข้อความข้างในต่อ
+                        for (const child of sourceNode.childNodes) {
+                            await typeNode(child, clone);
+                        }
+                    }
                 }
             }
-            typeChar();
+
+            // สั่งเริ่มทำงาน
+            for (const child of tempDiv.childNodes) {
+                await typeNode(child, targetEl);
+            }
+            
+            lucide.createIcons({ root: targetEl });
+            scrollToBottom();
         }
 
         function scrollToBottom() {
@@ -647,7 +663,7 @@
             });
         }
 
-        // --- ระบบเพิ่มข้อมูล (สอน AI) เดิม 100% ---
+        // --- ระบบเพิ่มข้อมูล (สอน AI) ---
         function autoGenerateKeywords() {
             const question = document.getElementById('ai-q').value;
             const stopWords = ['วิธี', 'การ', 'ขอ', 'คือ', 'ทำไม', 'อย่างไร', 'ไหม', 'ครับ', 'ค่ะ', 'ระบบ', 'ขั้นตอน', 'ช่วย', 'หน่อย', 'ที่', 'แก้', 'ปัญหา', 'ยังไง'];
