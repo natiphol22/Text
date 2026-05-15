@@ -40,7 +40,7 @@
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         .custom-scrollbar:hover::-webkit-scrollbar-thumb { background: #94a3b8; }
         
-        .swal2-popup { font-family: 'Kanit', sans-serif !important; border-radius: 1.5rem !important; }
+        .swal2-popup { font-family: 'Kanit', sans-serif !important; border-radius: 1.25rem !important; }
         
         .cat-btn.active { background-color: #4f46e5; color: white; border-color: #4f46e5; }
         .mode-btn.active { background-color: white; color: #4f46e5; box-shadow: 0 1px 3px rgba(0,0,0,0.1); font-weight: bold; }
@@ -63,16 +63,36 @@
         .inline-code {
             background-color: #f1f5f9; color: #db2777; padding: 2px 6px; border-radius: 6px; font-family: monospace; font-size: 0.85em; border: 1px solid #e2e8f0;
         }
+
+        /* Loading Overlay */
+        #app-loader {
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        #app-loader.hidden-loader {
+            opacity: 0;
+            visibility: hidden;
+        }
     </style>
 </head>
-<body class="p-2 md:p-6 lg:p-8 selection:bg-primary-200 selection:text-primary-900">
+<body class="p-0 md:p-6 lg:p-8 selection:bg-primary-200 selection:text-primary-900">
 
-    <div class="max-w-5xl mx-auto w-full h-full flex flex-col glass-panel rounded-[1.5rem] md:rounded-[2rem] overflow-hidden relative shadow-2xl border border-slate-100">
+    <!-- Loading Screen -->
+    <div id="app-loader" class="fixed inset-0 z-[100] bg-slate-900 flex flex-col items-center justify-center text-white">
+        <i data-lucide="server" class="w-12 h-12 mb-4 text-primary-500 animate-pulse"></i>
+        <h2 class="text-xl md:text-2xl font-bold tracking-wider mb-2">Synology AI System</h2>
+        <div class="flex items-center gap-2 text-slate-400 text-sm">
+            <i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i>
+            <span>กำลังซิงค์ฐานข้อมูลล่วงหน้า...</span>
+        </div>
+    </div>
+
+    <div class="max-w-5xl mx-auto w-full h-full flex flex-col glass-panel md:rounded-[2rem] overflow-hidden relative shadow-2xl border-0 md:border md:border-slate-100">
         
+        <!-- Header -->
         <div class="h-16 md:h-20 border-b border-slate-100 flex items-center justify-between px-4 md:px-6 bg-white/90 shrink-0 backdrop-blur-md z-10">
             <div class="flex items-center gap-3">
                 <div>
-                    <h1 class="text-base md:text-xl font-bold text-slate-800 flex items-center gap-2">
+                    <h1 class="text-lg md:text-xl font-bold text-slate-800 flex items-center gap-2">
                         <i data-lucide="bot" class="w-5 h-5 text-primary-500"></i> Synology AI
                     </h1>
                     <p class="text-[10px] md:text-xs text-slate-500 font-medium hidden sm:block">ระบบถามตอบและฐานข้อมูลอัจฉริยะ</p>
@@ -86,23 +106,25 @@
                 </div>
                 
                 <button onclick="openTeachAI()" class="px-3 py-2 md:px-4 md:py-2 bg-slate-800 text-white rounded-xl text-xs font-bold hover:bg-slate-700 transition-colors flex items-center gap-2 shadow-sm">
-                    <i data-lucide="brain-circuit" class="w-4 h-4"></i> <span class="hidden sm:block">สอน AI</span>
+                    <i data-lucide="brain-circuit" class="w-4 h-4"></i> <span class="hidden sm:block">เพิ่มข้อมูล</span>
                 </button>
                 
                 <a href="dashboard.html" class="p-2 bg-slate-50 rounded-xl border border-slate-200 text-slate-500 hover:text-primary-600 hover:bg-white transition-all ml-1" title="ย้อนกลับหน้าหลัก"><i data-lucide="arrow-left-circle" class="w-5 h-5"></i></a>
             </div>
         </div>
 
+        <!-- Mobile Tabs -->
         <div class="sm:hidden flex bg-slate-50 p-2 border-b border-slate-100 shrink-0">
             <button onclick="setMode('chat')" id="btn-mode-chat-mobile" class="mode-btn active flex-1 py-2 rounded-lg text-xs transition-all flex items-center justify-center gap-1.5"><i data-lucide="message-square-text" class="w-4 h-4"></i> แชท AI</button>
             <button onclick="setMode('kb')" id="btn-mode-kb-mobile" class="mode-btn flex-1 py-2 text-slate-500 rounded-lg text-xs transition-all flex items-center justify-center gap-1.5"><i data-lucide="layout-grid" class="w-4 h-4"></i> คลังข้อมูล</button>
         </div>
 
+        <!-- Chat View -->
         <div id="chatView" class="flex-1 flex flex-col overflow-hidden bg-slate-50/30 relative">
             <div id="chatMessages" class="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-6 space-y-6 pb-4">
                 <div class="flex items-start gap-3 chat-bubble-anim" id="initial-welcome">
                     <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gradient-to-tr from-primary-600 to-primary-500 flex items-center justify-center text-white shadow-sm shrink-0 mt-1"><i data-lucide="bot" class="w-5 h-5"></i></div>
-                    <div class="flex flex-col gap-1 max-w-[85%]">
+                    <div class="flex flex-col gap-1 max-w-[90%] md:max-w-[85%]">
                         <div class="bg-white p-4 md:p-5 rounded-2xl rounded-tl-none shadow-sm text-sm text-slate-700 border border-slate-100">
                             <p id="dynamic-greeting" class="font-bold text-slate-800 mb-1 text-base">สวัสดีครับ! 🤖</p>
                             <p class="text-slate-600 leading-relaxed mb-4">ผมคือ Synology AI พิมพ์แจ้งปัญหา อาการ หรือข้อผิดพลาดที่พบมาได้เลยครับ ผมจะช่วยค้นหาวิธีแก้ปัญหาจากฐานข้อมูลให้ทันที</p>
@@ -136,6 +158,7 @@
             </div>
         </div>
 
+        <!-- Knowledge Base View -->
         <div id="kbView" class="hidden flex-1 flex flex-col overflow-hidden">
             <div class="px-4 md:px-6 py-4 bg-white border-b border-slate-100 shrink-0">
                 <div class="relative flex items-center">
@@ -166,11 +189,39 @@
         let masterData = [];
         let currentCategory = 'All';
 
-        window.onload = () => {
+        // Pre-fetch ตอนโหลดหน้าเว็บครั้งแรก
+        window.onload = async () => {
             lucide.createIcons();
             setMode('chat');
-            loadData();
             updateDynamicGreeting();
+            
+            // รอโหลดข้อมูลให้เสร็จ
+            await loadData();
+            
+            // เอาหน้า Loading ออกอย่างสมูท
+            const loader = document.getElementById('app-loader');
+            if(loader) {
+                loader.classList.add('hidden-loader');
+                setTimeout(() => loader.remove(), 500);
+            }
+        };
+
+        // ฟังก์ชันช่วยหาคำผิด (Levenshtein Distance)
+        const levenshteinDistance = (s, t) => {
+            if (!s.length) return t.length;
+            if (!t.length) return s.length;
+            const arr = [];
+            for (let i = 0; i <= t.length; i++) {
+                arr[i] = [i];
+                for (let j = 1; j <= s.length; j++) {
+                    arr[i][j] = i === 0 ? j : Math.min(
+                        arr[i - 1][j] + 1,
+                        arr[i][j - 1] + 1,
+                        arr[i - 1][j - 1] + (s[j - 1] === t[i - 1] ? 0 : 1)
+                    );
+                }
+            }
+            return arr[t.length][s.length];
         };
 
         function updateDynamicGreeting() {
@@ -198,7 +249,8 @@
             } else {
                 kbView.classList.add('hidden'); kbView.classList.remove('flex');
                 chatView.classList.remove('hidden'); chatView.classList.add('flex');
-                setTimeout(() => document.getElementById('chatInput').focus(), 100);
+                // เฉพาะ Desktop ค่อย focus
+                if(window.innerWidth > 768) setTimeout(() => document.getElementById('chatInput').focus(), 100);
             }
         }
 
@@ -245,11 +297,10 @@
                 let linkHtml = '';
                 if(item.link && item.link !== '-') {
                     let url = item.link.startsWith('http') ? item.link : 'https://' + item.link;
-                    // คู่มือย้ายไปอยู่ล่างสุด ด้วย mt-auto
                     linkHtml = `<div class="mt-auto pt-3"><a href="${url}" target="_blank" class="text-[11px] font-medium text-primary-600 hover:text-primary-800 flex items-center justify-center gap-1.5 bg-primary-50 px-3 py-2 rounded-lg w-full transition-colors border border-primary-100 hover:bg-primary-100"><i data-lucide="external-link" class="w-3.5 h-3.5"></i> เปิดดูคู่มือแบบเต็ม</a></div>`;
                 }
                 return `
-                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all flex flex-col h-full">
+                <div class="bg-white p-4 md:p-5 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all flex flex-col h-full">
                     <div class="flex justify-between items-start mb-3">
                         <span class="text-[10px] bg-slate-100 text-slate-500 px-2 py-1 rounded font-bold uppercase tracking-wider">${item.category}</span>
                         <button onclick="copyToClipboard(this, \`${item.answer.replace(/`/g, '\\`')}\`)" class="text-slate-400 hover:text-primary-600 p-1 bg-slate-50 rounded hover:bg-primary-50 transition-colors" title="คัดลอกคำตอบ"><i data-lucide="copy" class="w-4 h-4"></i></button>
@@ -275,10 +326,12 @@
         function handleInputKeydown(e) {
             const el = e.target;
             setTimeout(() => { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 120) + 'px'; }, 0);
-            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleChatSubmit(); el.style.height = '48px'; }
+            // ให้กด Enter เพื่อส่งได้เฉพาะบน Desktop ถ้ามือถืออาจจะต้องป้องกันการกด Enter ผิด
+            if (e.key === 'Enter' && !e.shiftKey && window.innerWidth > 768) { 
+                e.preventDefault(); handleChatSubmit(); el.style.height = '48px'; 
+            }
         }
 
-        // ฟังก์ชันลบข้อมูล
         async function deleteKnowledge(question) {
             Swal.fire({
                 title: 'ยืนยันการลบ?',
@@ -288,7 +341,8 @@
                 confirmButtonColor: '#ef4444',
                 cancelButtonColor: '#f1f5f9',
                 confirmButtonText: 'ลบข้อมูล',
-                cancelButtonText: '<span class="text-slate-600">ยกเลิก</span>'
+                cancelButtonText: '<span class="text-slate-600">ยกเลิก</span>',
+                customClass: { popup: 'w-[90%] max-w-[400px]' }
             }).then(async (result) => {
                 if (result.isConfirmed) {
                     Swal.fire({ title: 'กำลังลบ...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
@@ -300,7 +354,7 @@
                         const resJson = await res.json();
                         if(resJson.status === "success") {
                             Swal.fire({ icon: 'success', title: 'ลบสำเร็จ', showConfirmButton: false, timer: 1500 });
-                            loadData(); // โหลดข้อมูลใหม่
+                            loadData(); 
                         } else {
                             Swal.fire('ลบไม่สำเร็จ', 'ไม่พบข้อมูลในระบบ หรือตั้งค่าผิดพลาด', 'error');
                         }
@@ -311,7 +365,6 @@
             });
         }
 
-        // สลับแท็บใน FAQ
         window.switchFaqTab = function(catId) {
             document.querySelectorAll('.faq-tab-btn').forEach(btn => {
                 btn.classList.remove('bg-primary-600', 'text-white');
@@ -324,7 +377,6 @@
             document.getElementById('tab-content-' + catId).classList.remove('hidden');
         };
 
-        // แสดง FAQ แบบ Tabs + บาลานซ์หน้าจอใหม่
         function showFAQPopup() {
             const faqItems = masterData.filter(item => item.keywords.includes('[FAQ]'));
 
@@ -340,7 +392,6 @@
 
                 const categories = Object.keys(grouped);
                 
-                // สร้างปุ่ม Tabs
                 htmlContent += `<div class="flex gap-2 overflow-x-auto custom-scrollbar mb-4 pb-2 border-b border-slate-100">`;
                 categories.forEach((cat, index) => {
                     const catId = cat.replace(/[^a-zA-Z0-9]/g, '');
@@ -348,7 +399,6 @@
                 });
                 htmlContent += `</div>`;
 
-                // สร้างเนื้อหาในแต่ละ Tab
                 htmlContent += '<div class="text-left max-h-[50vh] overflow-y-auto custom-scrollbar pr-2">';
                 categories.forEach((cat, index) => {
                     const catId = cat.replace(/[^a-zA-Z0-9]/g, '');
@@ -356,12 +406,12 @@
                     
                     grouped[cat].forEach(item => {
                         htmlContent += `
-                            <div class="flex items-center gap-2 w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl hover:border-primary-300 transition-all group">
-                                <button onclick="Swal.close(); triggerFAQ('${item.question.replace(/'/g, "\\'")}')" class="flex-1 flex items-center gap-2.5 text-sm text-slate-700 text-left">
-                                    <div class="p-1.5 bg-white rounded-lg border border-slate-100 group-hover:border-primary-100 group-hover:bg-primary-50"><i data-lucide="help-circle" class="w-3.5 h-3.5 text-primary-500"></i></div> 
+                            <div class="flex items-center gap-2 w-full p-2 md:p-2.5 bg-slate-50 border border-slate-200 rounded-xl hover:border-primary-300 transition-all group">
+                                <button onclick="Swal.close(); triggerFAQ('${item.question.replace(/'/g, "\\'")}')" class="flex-1 flex items-center gap-2.5 text-xs md:text-sm text-slate-700 text-left">
+                                    <div class="p-1.5 bg-white rounded-lg border border-slate-100 shrink-0 group-hover:border-primary-100 group-hover:bg-primary-50"><i data-lucide="help-circle" class="w-3.5 h-3.5 text-primary-500"></i></div> 
                                     <span class="truncate font-medium">${item.question}</span>
                                 </button>
-                                <button onclick="deleteKnowledge('${item.question.replace(/'/g, "\\'")}')" class="p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-all" title="ลบ FAQ นี้">
+                                <button onclick="deleteKnowledge('${item.question.replace(/'/g, "\\'")}')" class="p-2 text-slate-400 shrink-0 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-all" title="ลบ FAQ นี้">
                                     <i data-lucide="trash-2" class="w-4 h-4"></i>
                                 </button>
                             </div>`;
@@ -373,11 +423,11 @@
             }
 
             Swal.fire({
-                title: '<div class="text-lg font-bold text-slate-800 flex items-center justify-center gap-2 border-b border-slate-100 pb-3"><i data-lucide="layers" class="w-5 h-5 text-primary-500"></i> คำถามที่พบบ่อย (FAQ)</div>',
+                title: '<div class="text-base md:text-lg font-bold text-slate-800 flex items-center justify-center gap-2 border-b border-slate-100 pb-3"><i data-lucide="layers" class="w-5 h-5 text-primary-500"></i> คำถามที่พบบ่อย (FAQ)</div>',
                 html: htmlContent,
                 showConfirmButton: false,
                 showCloseButton: true,
-                width: '700px', // ปรับบาลานซ์ไม่ให้ใหญ่หรือเทอะทะเกินไป
+                customClass: { popup: 'w-[95%] max-w-[600px] p-4 md:p-6' },
                 didOpen: () => lucide.createIcons()
             });
         }
@@ -389,7 +439,7 @@
                 title: 'ล้างหน้าจอแชท?', text: "ข้อความทั้งหมดจะถูกซ่อน", icon: 'warning',
                 showCancelButton: true, confirmButtonColor: '#ef4444', cancelButtonColor: '#f1f5f9',
                 confirmButtonText: 'ล้างหน้าจอ', cancelButtonText: '<span class="text-slate-600">ยกเลิก</span>',
-                width: '400px'
+                customClass: { popup: 'w-[90%] max-w-[400px]' }
             }).then((r) => {
                 if (r.isConfirmed) {
                     Array.from(container.children).forEach(c => { if(c.id !== 'initial-welcome') c.classList.add('fade-out-up'); });
@@ -410,6 +460,7 @@
             if(!text) return;
 
             inputEl.value = '';
+            inputEl.style.height = '48px';
             appendChatMessage('user', `<div class="whitespace-pre-wrap">${text}</div>`);
             
             const thinkTime = Math.min(800 + (text.length * 10), 2000); 
@@ -429,12 +480,10 @@
                     return;
                 }
 
-                // AI Search Algorithm - ตัดคำไร้สาระ (Stop words) ออกเพื่อเพิ่มความแม่นยำ
                 const stopWords = ['วิธี', 'การ', 'ขอ', 'คือ', 'ทำไม', 'อย่างไร', 'ไหม', 'ครับ', 'ค่ะ', 'ระบบ', 'ขั้นตอน', 'ช่วย', 'หน่อย', 'ที่', 'แก้', 'ปัญหา', 'ยังไง', 'จะ', 'ให้'];
                 let words = lowerText.split(/[\s,]+/);
                 let keywords = words.filter(w => w.length > 1 && !stopWords.includes(w));
                 
-                // ถ้าลบหมดแล้วไม่เหลือคำ (เช่น พิมพ์มาแค่ "ช่วยหน่อย") ให้กลับไปใช้คำเดิม
                 if(keywords.length === 0) keywords = words.filter(w => w.length > 1);
 
                 let matches = [];
@@ -445,7 +494,7 @@
                     let kText = item.keywords.toLowerCase(); 
                     let aText = item.answer.toLowerCase();
 
-                    // คะแนนตรงเป๊ะ
+                    // ตรงเผง
                     if(qText === lowerText) score += 100;
                     if(qText.includes(lowerText)) score += 40;
                     if(kText.includes(lowerText)) score += 30;
@@ -453,11 +502,20 @@
                     let matchedWords = 0;
                     keywords.forEach(word => {
                         if(kText.includes(word)) { score += 10; matchedWords++; }
-                        if(qText.includes(word)) { score += 8; matchedWords++; }
-                        if(aText.includes(word)) { score += 3; }
+                        else if(qText.includes(word)) { score += 8; matchedWords++; }
+                        else if(aText.includes(word)) { score += 3; }
+                        else {
+                            // ระบบฉลาดขึ้น: ตรวจจับคำพิมพ์ผิด (Fuzzy Logic ยอมให้ผิดได้ 1-2 ตัวอักษร)
+                            let kArray = kText.split(/[\s,]+/);
+                            kArray.forEach(kw => {
+                                if (kw.length > 2 && levenshteinDistance(word, kw) <= 1) {
+                                    score += 7; matchedWords++;
+                                }
+                            });
+                        }
                     });
 
-                    // Bonus: ถ้าประโยคคำถามมีคำเรียงติดกันใกล้เคียงกัน
+                    // Bonus
                     if(keywords.length > 0 && matchedWords >= Math.ceil(keywords.length / 2)) score += 15;
 
                     if(score > 0) matches.push({ item: item, score: score });
@@ -471,21 +529,25 @@
                 setTimeout(() => {
                     document.getElementById(typingId).remove();
 
-                    // ปรับ Threshold คะแนนให้ AI ตอบเฉพาะสิ่งที่ค่อนข้างมั่นใจ (score >= 15)
                     if(matches.length > 0 && matches[0].score >= 15) {
                         const bm = matches[0].item;
-                        let html = `<div class="font-bold text-slate-800 mb-2 border-b border-slate-100 pb-2 flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-500"></i> ${bm.question}</div>`;
-                        html += `<div class="whitespace-pre-wrap leading-relaxed text-slate-700 mb-4">${formatCode(bm.answer)}</div>`;
                         
-                        // เอาปุ่มคู่มือไปไว้ล่างสุด แยกบรรทัดชัดเจน
-                        html += `<div class="flex flex-col gap-2 pt-3 border-t border-slate-100 mt-auto">`;
-                        html += `<div class="flex items-center gap-2"><button onclick="copyToClipboard(this, \`${bm.answer.replace(/`/g, '\\`')}\`)" class="text-[11px] text-slate-600 hover:text-primary-600 hover:bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200 transition-colors flex items-center justify-center gap-1.5 shadow-sm w-full"><i data-lucide="copy" class="w-3 h-3"></i> คัดลอกคำตอบ</button></div>`;
+                        // ปรับ UI การตอบของ AI ให้สมส่วนมากขึ้น ไม่ใหญ่ไป
+                        let html = `
+                            <div class="flex justify-between items-start mb-2 border-b border-slate-100 pb-2">
+                                <div class="font-semibold text-slate-800 text-sm flex items-center gap-2 pt-1"><i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-500 shrink-0"></i> <span>${bm.question}</span></div>
+                                <button onclick="copyToClipboard(this, \`${bm.answer.replace(/`/g, '\\`')}\`)" class="text-slate-400 hover:text-primary-600 hover:bg-slate-50 p-1.5 rounded-md transition-colors shrink-0 border border-transparent hover:border-slate-200" title="คัดลอกคำตอบ"><i data-lucide="copy" class="w-3.5 h-3.5"></i></button>
+                            </div>`;
+                            
+                        html += `<div class="whitespace-pre-wrap leading-relaxed text-slate-700 mb-4 text-sm">${formatCode(bm.answer)}</div>`;
                         
+                        // คู่มืออยู่ล่างสุดเสมอ
                         if(bm.link && bm.link !== '-') {
+                            html += `<div class="pt-3 border-t border-slate-100 mt-auto">`;
                             let url = bm.link.startsWith('http') ? bm.link : 'https://' + bm.link;
-                            html += `<a href="${url}" target="_blank" class="text-[11px] font-bold text-primary-600 hover:bg-primary-50 px-3 py-2 rounded-lg border border-primary-200 transition-colors flex items-center justify-center gap-1.5 shadow-sm bg-primary-50/50"><i data-lucide="external-link" class="w-3 h-3"></i> เปิดอ่านคู่มือฉบับเต็ม</a>`;
+                            html += `<a href="${url}" target="_blank" class="text-[11px] font-medium text-primary-600 hover:bg-primary-50 px-3 py-2 rounded-lg border border-primary-100 transition-colors flex items-center justify-center gap-1.5 shadow-sm bg-primary-50/30"><i data-lucide="external-link" class="w-3.5 h-3.5"></i> เปิดอ่านคู่มือฉบับเต็ม</a>`;
+                            html += `</div>`;
                         }
-                        html += `</div>`;
                         appendTypewriterMessage(html, bm.category);
 
                     } else if(matches.length > 0) {
@@ -494,16 +556,16 @@
                             html += `<button onclick="triggerFAQ('${m.item.question.replace(/'/g, "\\'")}')" class="w-full text-left bg-white border border-slate-200 p-3 rounded-xl cursor-pointer hover:border-primary-400 hover:ring-2 hover:ring-primary-50 shadow-sm transition-all group flex items-center justify-between">
                                 <div>
                                     <div class="text-[10px] text-slate-400 font-bold mb-1 uppercase">${m.item.category}</div>
-                                    <div class="text-sm font-medium text-slate-700 group-hover:text-primary-700">${m.item.question}</div>
+                                    <div class="text-sm font-medium text-slate-700 group-hover:text-primary-700 line-clamp-1">${m.item.question}</div>
                                 </div>
-                                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 group-hover:text-primary-500 group-hover:translate-x-1 transition-all"></i>
+                                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 shrink-0 group-hover:text-primary-500 group-hover:translate-x-1 transition-all"></i>
                             </button>`;
                         });
                         html += `</div>`;
                         appendTypewriterMessage(html, "Suggestion");
 
                     } else {
-                        appendTypewriterMessage(`<p class="leading-relaxed text-slate-700">ขออภัยครับ ยังไม่มีข้อมูลเรื่อง <b>"${text}"</b> ในระบบเลยครับ ลองกดปุ่ม <b class="text-slate-800 bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded-md text-[11px]"><i data-lucide="brain-circuit" class="w-3 h-3 inline"></i> สอน AI</b> มุมขวาบน เพื่อเพิ่มความรู้ใหม่ให้ผมได้เลยครับ</p>`, "ไม่พบข้อมูล");
+                        appendTypewriterMessage(`<p class="leading-relaxed text-slate-700 text-sm">ขออภัยครับ ยังไม่มีข้อมูลเรื่อง <b>"${text}"</b> ในระบบเลยครับ ลองกดปุ่ม <b class="text-slate-800 bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded-md text-[11px] inline-flex items-center gap-1"><i data-lucide="brain-circuit" class="w-3 h-3"></i> เพิ่มข้อมูล</b> ที่แถบด้านบน เพื่อเพิ่มความรู้ใหม่ให้ผมได้เลยครับ</p>`, "ไม่พบข้อมูล");
                     }
                 }, 400); 
 
@@ -517,7 +579,7 @@
             if(sender === 'user') {
                 div.className = 'flex items-start justify-end gap-3 chat-bubble-anim';
                 div.innerHTML = `
-                    <div class="flex flex-col items-end gap-1 max-w-[85%]">
+                    <div class="flex flex-col items-end gap-1 max-w-[90%] md:max-w-[85%]">
                         <div class="bg-primary-600 p-3 md:p-4 rounded-2xl rounded-tr-none shadow-sm text-sm text-white break-words">
                             ${htmlContent}
                         </div>
@@ -558,7 +620,7 @@
             if(el) {
                 el.innerHTML = `
                     <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gradient-to-tr from-primary-600 to-primary-500 flex items-center justify-center text-white shadow-sm shrink-0 mt-1"><i data-lucide="bot" class="w-5 h-5"></i></div>
-                    <div class="flex flex-col gap-1 max-w-[85%]">
+                    <div class="flex flex-col gap-1 max-w-[90%] md:max-w-[85%]">
                         <div class="bg-white p-4 md:p-5 rounded-2xl rounded-tl-none shadow-sm text-sm text-slate-700 border border-slate-100 break-words flex flex-col">
                             ${htmlContent}
                         </div>
@@ -575,12 +637,12 @@
             const div = document.createElement('div');
             div.className = 'flex items-start gap-3 chat-bubble-anim'; 
             
-            let catBadge = category ? `<span class="text-[9px] bg-slate-50 text-slate-500 border border-slate-200 px-2 py-0.5 rounded font-bold uppercase mb-2 inline-flex items-center gap-1 shadow-sm"><i data-lucide="hash" class="w-3 h-3"></i> ${category}</span><br>` : '';
+            let catBadge = category ? `<span class="text-[9px] bg-slate-50 text-slate-500 border border-slate-200 px-2 py-0.5 rounded font-bold uppercase mb-2 inline-flex items-center gap-1 shadow-sm w-fit"><i data-lucide="hash" class="w-3 h-3"></i> ${category}</span><br>` : '';
             
             const innerDivId = 'ai-msg-' + Date.now();
             div.innerHTML = `
                 <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gradient-to-tr from-primary-600 to-primary-500 flex items-center justify-center text-white shadow-sm shrink-0 mt-1"><i data-lucide="bot" class="w-5 h-5"></i></div>
-                <div class="flex flex-col gap-1 max-w-[85%] w-full">
+                <div class="flex flex-col gap-1 max-w-[90%] md:max-w-[85%] w-full">
                     <div class="bg-white p-4 md:p-5 rounded-2xl rounded-tl-none shadow-sm text-sm border border-slate-100 w-full flex flex-col h-full">
                         ${catBadge}
                         <div id="${innerDivId}" class="text-slate-700 flex flex-col h-full"></div>
@@ -601,7 +663,7 @@
                     for (let i = 0; i < text.length; i++) {
                         currentText += text[i]; textNode.textContent = currentText;
                         if(i % 5 === 0) scrollToBottom(); 
-                        await new Promise(r => requestAnimationFrame(() => setTimeout(r, 4))); 
+                        await new Promise(r => requestAnimationFrame(() => setTimeout(r, 2))); 
                     }
                 } else if (sourceNode.nodeType === Node.ELEMENT_NODE) {
                     const clone = document.createElement(sourceNode.tagName);
@@ -612,7 +674,7 @@
                         clone.innerHTML = sourceNode.innerHTML;
                         if (clone.querySelector('[data-lucide]') || clone.hasAttribute('data-lucide')) lucide.createIcons({ root: clone.parentNode });
                         scrollToBottom();
-                        await new Promise(r => setTimeout(r, 5)); 
+                        await new Promise(r => setTimeout(r, 3)); 
                     } else {
                         for (const child of sourceNode.childNodes) await typeNode(child, clone);
                     }
@@ -647,12 +709,12 @@
 
         function openTeachAI() {
             Swal.fire({
-                title: '<div class="flex items-center gap-2 justify-center"><i data-lucide="brain-circuit" class="w-6 h-6 text-primary-600"></i> เพิ่มข้อมูลให้ AI</div>',
+                title: '<div class="flex items-center gap-2 justify-center text-lg"><i data-lucide="brain-circuit" class="w-5 h-5 text-primary-600"></i> เพิ่มข้อมูลให้ AI</div>',
                 html: `
-                    <div class="text-left flex flex-col gap-4 mt-4 w-full box-border">
+                    <div class="text-left flex flex-col gap-3 mt-2 w-full box-border">
                         <div class="flex flex-col gap-1 w-full">
-                            <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">หมวดหมู่</label>
-                            <select id="ai-cat" class="w-full p-3 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:bg-white focus:border-primary-400 focus:ring-2 focus:ring-primary-50 transition-all outline-none">
+                            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">หมวดหมู่</label>
+                            <select id="ai-cat" class="w-full p-2.5 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:bg-white focus:border-primary-400 focus:ring-2 focus:ring-primary-50 transition-all outline-none">
                                 <option value="Disk/Storage">Disk / Storage</option>
                                 <option value="Network">Network / IP</option>
                                 <option value="Login/Account">Login / Account</option>
@@ -661,37 +723,42 @@
                                 <option value="อื่นๆ">อื่นๆ</option>
                             </select>
                         </div>
+                        
                         <div class="flex flex-col gap-1 w-full">
-                            <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">ลิงก์คู่มือ (ออปชัน)</label>
-                            <input id="ai-link" class="w-full p-3 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:bg-white focus:border-primary-400 focus:ring-2 focus:ring-primary-50 transition-all outline-none" placeholder="https://kb.synology.com/...">
+                            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">ปัญหา / อาการที่พบ</label>
+                            <input id="ai-q" onkeyup="autoGenerateKeywords()" class="w-full p-2.5 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:bg-white focus:border-primary-400 focus:ring-2 focus:ring-primary-50 transition-all outline-none" placeholder="เช่น ลืมรหัสผ่าน Admin">
                         </div>
+
                         <div class="flex flex-col gap-1 w-full">
-                            <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">ปัญหา / อาการที่พบ</label>
-                            <input id="ai-q" onkeyup="autoGenerateKeywords()" class="w-full p-3 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:bg-white focus:border-primary-400 focus:ring-2 focus:ring-primary-50 transition-all outline-none" placeholder="เช่น ลืมรหัสผ่าน Admin">
-                        </div>
-                        <div class="flex flex-col gap-1 w-full">
-                            <label class="text-[11px] font-bold text-primary-600 uppercase flex justify-between tracking-wider">
+                            <label class="text-[10px] font-bold text-primary-600 uppercase flex justify-between tracking-wider">
                                 <span>คีย์เวิร์ดค้นหา</span>
-                                <span class="text-[9px] bg-primary-100 px-2 py-0.5 rounded-md">Auto</span>
+                                <span class="text-[8px] bg-primary-100 px-1.5 py-0.5 rounded-md">Auto</span>
                             </label>
-                            <input id="ai-kw" class="w-full p-3 border border-primary-200 bg-primary-50 rounded-xl text-sm outline-none" placeholder="ระบบจะดึงให้อัตโนมัติ">
+                            <input id="ai-kw" class="w-full p-2.5 border border-primary-200 bg-primary-50 rounded-xl text-xs outline-none text-slate-600" placeholder="ระบบจะดึงให้อัตโนมัติ">
                         </div>
+
                         <div class="flex flex-col gap-1 w-full">
-                            <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">วิธีแก้ (ครอบคำด้วย \` \` เพื่อทำไฮไลท์โค้ด)</label>
-                            <textarea id="ai-a" rows="4" class="w-full p-3 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:bg-white focus:border-primary-400 focus:ring-2 focus:ring-primary-50 transition-all custom-scrollbar resize-none outline-none" placeholder="พิมพ์ Step การแก้ปัญหาที่นี่..."></textarea>
+                            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">วิธีแก้ (ครอบคำด้วย \` \` เพื่อไฮไลท์)</label>
+                            <textarea id="ai-a" rows="3" class="w-full p-2.5 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:bg-white focus:border-primary-400 focus:ring-2 focus:ring-primary-50 transition-all custom-scrollbar resize-none outline-none" placeholder="พิมพ์ Step การแก้ปัญหาที่นี่..."></textarea>
                         </div>
-                        <div class="mt-1 p-3 bg-primary-50/50 border border-primary-100 rounded-xl flex items-center gap-3 w-full cursor-pointer hover:bg-primary-50 transition-colors" onclick="document.getElementById('ai-is-faq').click()">
+
+                        <div class="flex flex-col gap-1 w-full">
+                            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">ลิงก์คู่มือ (ถ้ามี)</label>
+                            <input id="ai-link" class="w-full p-2.5 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:bg-white focus:border-primary-400 focus:ring-2 focus:ring-primary-50 transition-all outline-none" placeholder="https://kb.synology.com/...">
+                        </div>
+
+                        <div class="mt-1 p-2.5 bg-primary-50/50 border border-primary-100 rounded-xl flex items-center gap-3 w-full cursor-pointer hover:bg-primary-50 transition-colors" onclick="document.getElementById('ai-is-faq').click()">
                             <input type="checkbox" id="ai-is-faq" class="w-4 h-4 text-primary-600 rounded border-slate-300 focus:ring-primary-500" onclick="event.stopPropagation()">
-                            <label for="ai-is-faq" class="text-sm text-primary-800 font-medium cursor-pointer w-full">📌 ปักหมุดให้แสดงใน Popup FAQ</label>
+                            <label for="ai-is-faq" class="text-xs text-primary-800 font-medium cursor-pointer w-full">📌 ปักหมุดให้แสดงใน Popup FAQ</label>
                         </div>
                     </div>
                 `,
                 showCancelButton: true,
                 confirmButtonColor: '#4f46e5',
                 cancelButtonColor: '#f1f5f9',
-                confirmButtonText: 'บันทึกความรู้',
-                cancelButtonText: '<span class="text-slate-600 font-medium">ยกเลิก</span>',
-                width: '550px',
+                confirmButtonText: 'บันทึกข้อมูล',
+                cancelButtonText: '<span class="text-slate-600 font-medium text-sm">ยกเลิก</span>',
+                customClass: { popup: 'w-[95%] max-w-[420px] p-4 md:p-6' },
                 didOpen: () => lucide.createIcons(),
                 preConfirm: () => {
                     const q = document.getElementById('ai-q').value.trim();
@@ -714,12 +781,12 @@
             }).then(async (result) => {
                 if (result.isConfirmed) {
                     try {
-                        Swal.fire({ title: 'กำลังอัปเดตฐานข้อมูล...', text: 'กรุณารอสักครู่', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+                        Swal.fire({ title: 'กำลังอัปเดต...', text: 'กรุณารอสักครู่', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
                         const payload = { action: "addKnowledge", ...result.value };
                         const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
                         const resJson = await res.json();
                         if(resJson.status === "success") {
-                            Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ!', text: 'AI เรียนรู้ข้อมูลใหม่เรียบร้อยแล้ว', timer: 2000, showConfirmButton: false });
+                            Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ!', text: 'AI เรียนรู้ข้อมูลใหม่แล้ว', timer: 2000, showConfirmButton: false });
                             loadData(); 
                         } else { Swal.fire('ผิดพลาด', 'ไม่สามารถบันทึกข้อมูลได้', 'error'); }
                     } catch (e) { Swal.fire('ผิดพลาด', 'การเชื่อมต่อขัดข้อง กรุณาลองใหม่', 'error'); }
