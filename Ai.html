@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AI Assistant | CubicPlus</title>
+    <title>Synology Admin Support | CubicPlus</title>
     
     <link rel="icon" type="image/png" href="LOGO.png">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -38,191 +38,239 @@
         .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px;}
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         
-        .chat-bubble-ai { background: #eef2ff; color: #1e293b; border-bottom-left-radius: 0; }
-        .chat-bubble-user { background: #4f46e5; color: #ffffff; border-bottom-right-radius: 0; }
-        
         .swal2-popup { font-family: 'Kanit', sans-serif !important; border-radius: 1.5rem !important; }
+        
+        /* สไตล์สำหรับปุ่มหมวดหมู่ที่ถูกเลือก */
+        .cat-btn.active { background-color: #4f46e5; color: white; border-color: #4f46e5; }
     </style>
 </head>
 <body class="p-4 md:p-6 lg:p-10 selection:bg-primary-200 selection:text-primary-900">
 
-    <div class="max-w-4xl mx-auto h-full flex flex-col glass-panel rounded-[2rem] overflow-hidden relative shadow-2xl border border-slate-100">
+    <div class="max-w-5xl mx-auto w-full h-full flex flex-col glass-panel rounded-[2rem] overflow-hidden relative shadow-2xl border border-slate-100">
         
-        <div class="h-20 border-b border-slate-100 flex items-center justify-between px-4 md:px-6 bg-white/60 shrink-0 backdrop-blur-md z-10">
+        <div class="h-20 border-b border-slate-100 flex items-center justify-between px-4 md:px-6 bg-white/80 shrink-0 backdrop-blur-md z-10">
             <div class="flex items-center gap-3 md:gap-4">
                 <a href="dashboard.html" class="p-2 bg-white rounded-xl shadow-sm border border-slate-200 text-slate-500 hover:text-primary-600 transition-colors"><i data-lucide="arrow-left" class="w-5 h-5"></i></a>
                 <div>
                     <h1 class="text-lg md:text-xl font-bold text-slate-800 flex items-center gap-2">
-                        <i data-lucide="sparkles" class="w-5 h-5 text-primary-500"></i> CubicPlus AI
+                        <i data-lucide="server" class="w-5 h-5 text-primary-500"></i> Synology AI Support
                     </h1>
-                    <p class="text-[10px] md:text-xs text-emerald-500 font-bold flex items-center gap-1.5 uppercase tracking-wider"><span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Online System</p>
+                    <p class="text-[10px] md:text-xs text-slate-500 font-medium">Smart Knowledge Base & Quick Reply</p>
                 </div>
             </div>
-            <button onclick="openTeachAI()" class="px-3 py-2 md:px-4 md:py-2.5 bg-white border border-slate-200 text-primary-600 rounded-xl text-xs font-bold hover:bg-primary-50 hover:border-primary-200 transition-colors flex items-center gap-2 shadow-sm">
-                <i data-lucide="book-plus" class="w-4 h-4"></i> <span class="hidden sm:block">สอนบอท</span>
+            <button onclick="openTeachAI()" class="px-3 py-2 md:px-4 md:py-2.5 bg-primary-600 text-white rounded-xl text-xs font-bold hover:bg-primary-700 transition-colors flex items-center gap-2 shadow-md">
+                <i data-lucide="plus-circle" class="w-4 h-4"></i> <span class="hidden sm:block">เพิ่มข้อมูลปัญหา</span>
             </button>
         </div>
 
-        <div id="chatArea" class="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-6 space-y-6 bg-slate-50/50">
-            <div class="flex justify-start">
-                <div class="w-8 h-8 rounded-full bg-primary-100 text-primary-600 flex items-center justify-center shrink-0 mr-3 border border-primary-200 shadow-sm"><i data-lucide="bot" class="w-4 h-4"></i></div>
-                <div class="max-w-[85%] md:max-w-[70%] chat-bubble-ai px-5 py-3 rounded-2xl shadow-sm border border-primary-100 text-sm leading-relaxed">
-                    สวัสดีครับ <b><span id="userNameDisplay"></span></b>! ผมคือผู้ช่วยอัจฉริยะของ CubicPlus มีคำถามอะไรให้ผมช่วยหาคำตอบไหมครับ?
-                </div>
+        <div class="px-4 md:px-6 py-4 bg-white/50 border-b border-slate-100 shrink-0">
+            <div class="relative flex items-center">
+                <i data-lucide="search" class="w-5 h-5 text-slate-400 absolute left-4"></i>
+                <input type="text" id="searchInput" placeholder="พิมพ์อาการ, คีย์เวิร์ด หรือปัญหาที่ลูกค้าแจ้ง..." class="w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-primary-400 focus:ring-4 focus:ring-primary-50 transition-all shadow-sm">
             </div>
         </div>
 
-        <div id="faqContainer" class="px-4 py-3 overflow-x-auto whitespace-nowrap custom-scrollbar flex gap-2 border-t border-slate-100 bg-white/80 shrink-0">
-            <span class="text-xs text-slate-400 italic flex items-center gap-2"><i data-lucide="loader-2" class="w-3 h-3 animate-spin"></i> กำลังโหลดหัวข้อแนะนำ...</span>
+        <div class="flex gap-2 overflow-x-auto custom-scrollbar px-4 md:px-6 py-3 bg-slate-50/50 border-b border-slate-100 shrink-0">
+            <button onclick="filterCat('All', this)" class="cat-btn active whitespace-nowrap px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg text-xs font-bold shadow-sm transition-colors">ทั้งหมด</button>
+            <button onclick="filterCat('Disk/Storage', this)" class="cat-btn whitespace-nowrap px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg text-xs font-bold shadow-sm transition-colors">Disk / Storage</button>
+            <button onclick="filterCat('Network', this)" class="cat-btn whitespace-nowrap px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg text-xs font-bold shadow-sm transition-colors">Network / IP</button>
+            <button onclick="filterCat('Login/Account', this)" class="cat-btn whitespace-nowrap px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg text-xs font-bold shadow-sm transition-colors">Login / Account</button>
+            <button onclick="filterCat('Backup', this)" class="cat-btn whitespace-nowrap px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg text-xs font-bold shadow-sm transition-colors">Backup</button>
+            <button onclick="filterCat('DSM Update', this)" class="cat-btn whitespace-nowrap px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg text-xs font-bold shadow-sm transition-colors">DSM Update</button>
+            <button onclick="filterCat('อื่นๆ', this)" class="cat-btn whitespace-nowrap px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg text-xs font-bold shadow-sm transition-colors">อื่นๆ</button>
         </div>
 
-        <div class="p-4 bg-white/90 border-t border-slate-100 shrink-0">
-            <div class="relative flex items-center">
-                <input type="text" id="chatInput" placeholder="พิมพ์คำถามที่นี่..." onkeypress="if(event.key === 'Enter') sendChat()" class="w-full pl-5 pr-14 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-primary-400 focus:bg-white transition-colors shadow-inner">
-                <button onclick="sendChat()" class="absolute right-2 p-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors shadow-md active:scale-95">
-                    <i data-lucide="send" class="w-5 h-5"></i>
-                </button>
+        <div id="supportContent" class="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-6 bg-slate-50 grid grid-cols-1 md:grid-cols-2 gap-4 content-start">
+            <div class="col-span-1 md:col-span-2 flex flex-col items-center justify-center py-20 text-slate-400">
+                <i data-lucide="loader-2" class="w-8 h-8 animate-spin mb-4 text-primary-500"></i>
+                <p class="text-sm">กำลังโหลดฐานข้อมูล Synology...</p>
             </div>
         </div>
 
     </div>
 
     <script>
-        // ใส่ URL Web App ที่คุณให้มา
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyhzDczt_UxXNIYeKZsu7nvlPrqM17JRU7OHjN_Hk8NiouWbCIoAgcKPx3pkpEl8OWu/exec";
-        
-        // ดึงข้อมูลผู้ใช้จาก Session (ถ้าเปิดเทสต์ตรงๆ ไม่มี Session ระบบจะใช้ชื่อ "พนักงาน" แทน)
-        const username = sessionStorage.getItem("userLoginName") || "User";
-        const name = sessionStorage.getItem("userName") || "พนักงาน";
-        const role = sessionStorage.getItem("userRole") || "User";
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzwlQkDCyNwjYtQ0HwQJxIif-8Z_LkXQN530BaABzBaM7Cj0tukJMEo-WYQ_is_W-tX/exec";
+        let masterData = [];
+        let currentCategory = 'All';
 
         window.onload = () => {
             lucide.createIcons();
-            document.getElementById('userNameDisplay').innerText = name;
-            loadFAQ();
+            loadData();
         };
 
-        async function loadFAQ() {
+        // 1. ดึงข้อมูลจากฐานข้อมูล
+        async function loadData() {
             try {
-                const res = await fetch(WEB_APP_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ action: "getFAQ", role: role })
+                const res = await fetch(WEB_APP_URL, { 
+                    method: 'POST', 
+                    body: JSON.stringify({ action: "getSupportData" }) 
                 });
                 const result = await res.json();
-                
-                const container = document.getElementById('faqContainer');
-                container.innerHTML = '';
-                
-                if(result.status === "success" && result.data.length > 0) {
-                    result.data.forEach(q => {
-                        container.innerHTML += `<button onclick="sendChat('${q}')" class="px-4 py-1.5 bg-white border border-slate-200 text-slate-600 rounded-full text-xs font-bold hover:border-primary-300 hover:text-primary-600 hover:bg-primary-50 shadow-sm transition-all">${q}</button>`;
-                    });
-                } else {
-                    container.innerHTML = `<span class="text-xs text-slate-400 italic">ยังไม่มีข้อมูลหัวข้อแนะนำ (ลองสอนบอทดูสิครับ)</span>`;
-                }
-            } catch (error) {
-                document.getElementById('faqContainer').innerHTML = `<span class="text-xs text-rose-400 italic">ไม่สามารถดึงข้อมูลได้</span>`;
-            }
-        }
-
-        async function sendChat(quickText = null) {
-            const inputEl = document.getElementById('chatInput');
-            const message = quickText || inputEl.value.trim();
-            if (!message) return;
-            
-            inputEl.value = '';
-            appendMessage('user', message);
-            
-            const typingId = appendTypingIndicator();
-            scrollToBottom();
-
-            try {
-                const res = await fetch(WEB_APP_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ action: "askAI", query: message, role: role })
-                });
-                const result = await res.json();
-                removeTypingIndicator(typingId);
                 
                 if(result.status === "success") {
-                    appendMessage('ai', result.answer);
+                    masterData = result.data.reverse(); // เรียงข้อมูลใหม่ล่าสุดขึ้นก่อน
+                    filterData(); // แสดงผลตามหมวดหมู่และคำค้นหาปัจจุบัน
                 } else {
-                    appendMessage('ai', "เกิดข้อผิดพลาดในการค้นหาข้อมูลครับ");
+                    showEmptyState("ไม่พบข้อมูล หรือตั้งค่า Sheet ไม่ถูกต้อง");
                 }
             } catch (error) {
-                removeTypingIndicator(typingId);
-                appendMessage('ai', "ระบบขัดข้อง ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ครับ");
+                showEmptyState("เชื่อมต่อฐานข้อมูลล้มเหลว กรุณารีเฟรชหน้าเว็บ");
             }
         }
 
-        function appendMessage(sender, text) {
-            const chatArea = document.getElementById('chatArea');
-            const msgDiv = document.createElement('div');
-            msgDiv.className = `flex ${sender === 'user' ? 'justify-end' : 'justify-start'} fade-in-up`;
+        // 2. จัดการเรื่องค้นหา และ หมวดหมู่
+        document.getElementById('searchInput').addEventListener('input', filterData);
+
+        function filterCat(cat, btnElement) {
+            currentCategory = cat;
             
-            let html = '';
-            if(sender === 'ai') {
-                html = `
-                    <div class="w-8 h-8 rounded-full bg-primary-100 text-primary-600 flex items-center justify-center shrink-0 mr-3 border border-primary-200 shadow-sm"><i data-lucide="bot" class="w-4 h-4"></i></div>
-                    <div class="max-w-[85%] md:max-w-[70%] chat-bubble-ai px-5 py-3 rounded-2xl shadow-sm border border-primary-100 text-sm leading-relaxed whitespace-pre-wrap">${text}</div>
-                `;
+            // เปลี่ยนสีปุ่มที่ถูกกด
+            document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active', 'bg-primary-600', 'text-white', 'border-primary-600'));
+            if(btnElement) {
+                btnElement.classList.add('active');
             } else {
-                html = `
-                    <div class="max-w-[85%] md:max-w-[70%] chat-bubble-user px-5 py-3 rounded-2xl shadow-sm text-sm leading-relaxed whitespace-pre-wrap">${text}</div>
-                    <div class="w-8 h-8 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center shrink-0 ml-3 shadow-sm text-xs font-bold">${name.charAt(0)}</div>
-                `;
+                document.querySelector('.cat-btn').classList.add('active'); // Default ปุ่มแรก
             }
-            msgDiv.innerHTML = html;
-            chatArea.appendChild(msgDiv);
-            lucide.createIcons();
-            scrollToBottom();
+            
+            filterData();
         }
 
-        function appendTypingIndicator() {
-            const chatArea = document.getElementById('chatArea');
-            const id = 'typing-' + Date.now();
-            const msgDiv = document.createElement('div');
-            msgDiv.id = id;
-            msgDiv.className = `flex justify-start fade-in-up`;
-            msgDiv.innerHTML = `
-                <div class="w-8 h-8 rounded-full bg-primary-100 text-primary-600 flex items-center justify-center shrink-0 mr-3 border border-primary-200"><i data-lucide="bot" class="w-4 h-4"></i></div>
-                <div class="chat-bubble-ai px-5 py-4 rounded-2xl shadow-sm border border-primary-100 flex gap-1 items-center">
-                    <div class="w-2 h-2 bg-primary-400 rounded-full animate-bounce" style="animation-delay: 0s"></div>
-                    <div class="w-2 h-2 bg-primary-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
-                    <div class="w-2 h-2 bg-primary-400 rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
+        function filterData() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            const filtered = masterData.filter(item => {
+                const matchCategory = currentCategory === 'All' || item.category === currentCategory;
+                const matchSearch = item.question.toLowerCase().includes(searchTerm) || 
+                                    item.keywords.toLowerCase().includes(searchTerm) ||
+                                    item.answer.toLowerCase().includes(searchTerm);
+                return matchCategory && matchSearch;
+            });
+
+            renderCards(filtered);
+        }
+
+        // 3. วาดการ์ดแสดงผล
+        function renderCards(data) {
+            const container = document.getElementById('supportContent');
+            if(data.length === 0) {
+                showEmptyState("ไม่พบข้อมูลที่ตรงกับการค้นหา");
+                return;
+            }
+
+            container.innerHTML = data.map(item => {
+                // ป้องกันกรณีไม่มีลิงก์
+                let linkHtml = '';
+                if(item.link && item.link !== '-' && item.link.trim() !== '') {
+                    let url = item.link.startsWith('http') ? item.link : 'https://' + item.link;
+                    linkHtml = `<a href="${url}" target="_blank" class="text-[11px] font-bold text-primary-600 hover:text-primary-800 flex items-center gap-1.5 mt-3 bg-primary-50 px-3 py-1.5 rounded-lg inline-flex"><i data-lucide="external-link" class="w-3 h-3"></i> เปิดคู่มือ / แหล่งอ้างอิง</a>`;
+                }
+
+                return `
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all flex flex-col h-full relative group">
+                    <div class="flex justify-between items-start mb-3">
+                        <span class="text-[10px] bg-slate-100 text-slate-600 border border-slate-200 px-2 py-1 rounded-md font-bold uppercase tracking-wider">${item.category}</span>
+                        <button onclick="copyToClipboard(this, \`${item.answer.replace(/`/g, '\\`')}\`)" class="p-2 -mt-2 -mr-2 bg-slate-50 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-xl transition-all" title="คัดลอกคำตอบ">
+                            <i data-lucide="copy" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                    <h3 class="text-sm font-bold text-slate-800 mb-2 leading-relaxed">${item.question}</h3>
+                    <div class="flex-1 bg-slate-50 border border-slate-100 rounded-xl p-3">
+                        <p class="text-xs text-slate-600 leading-relaxed whitespace-pre-wrap">${item.answer}</p>
+                    </div>
+                    ${linkHtml}
+                </div>
+                `;
+            }).join('');
+            
+            lucide.createIcons();
+        }
+
+        function showEmptyState(msg) {
+            document.getElementById('supportContent').innerHTML = `
+                <div class="col-span-1 md:col-span-2 flex flex-col items-center justify-center py-20 text-slate-400">
+                    <i data-lucide="search-x" class="w-10 h-10 mb-4 opacity-50"></i>
+                    <p class="text-sm font-medium">${msg}</p>
                 </div>
             `;
-            chatArea.appendChild(msgDiv);
-            scrollToBottom();
-            return id;
+            lucide.createIcons();
         }
 
-        function removeTypingIndicator(id) {
-            const el = document.getElementById(id);
-            if(el) el.remove();
+        // 4. ฟังก์ชัน Copy และแจ้งเตือน
+        function copyToClipboard(btn, text) {
+            navigator.clipboard.writeText(text).then(() => {
+                // เด้ง Toast เบาๆ แจ้งเตือนว่า Copy แล้ว
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'คัดลอกข้อความแล้ว',
+                    showConfirmButton: false,
+                    timer: 1500,
+                    customClass: { popup: 'rounded-xl text-sm' }
+                });
+                
+                // เปลี่ยนไอคอนปุ่มชั่วคราว
+                const iconElement = btn.querySelector('i');
+                iconElement.setAttribute('data-lucide', 'check');
+                btn.classList.add('text-emerald-600', 'bg-emerald-50');
+                lucide.createIcons();
+                
+                setTimeout(() => {
+                    iconElement.setAttribute('data-lucide', 'copy');
+                    btn.classList.remove('text-emerald-600', 'bg-emerald-50');
+                    lucide.createIcons();
+                }, 2000);
+            });
         }
 
-        function scrollToBottom() {
-            const chatArea = document.getElementById('chatArea');
-            chatArea.scrollTop = chatArea.scrollHeight;
+        // 5. ระบบเพิ่มข้อมูล (สอน AI)
+        function autoGenerateKeywords() {
+            const question = document.getElementById('ai-q').value;
+            const stopWords = ['วิธี', 'การ', 'ขอ', 'คือ', 'ทำไม', 'อย่างไร', 'ไหม', 'ครับ', 'ค่ะ', 'ระบบ', 'ขั้นตอน', 'ช่วย', 'หน่อย', 'ที่', 'แก้', 'ปัญหา', 'ยังไง'];
+            
+            let words = question.split(/[\s,]+/);
+            let keywords = words.filter(word => word.length > 1 && !stopWords.includes(word));
+            
+            document.getElementById('ai-kw').value = keywords.join(', ');
         }
 
         function openTeachAI() {
             Swal.fire({
-                title: 'สอน AI / เพิ่มความรู้ใหม่',
+                title: 'เพิ่มฐานข้อมูลปัญหา (KB)',
                 html: `
                     <div class="text-left space-y-4 mt-2">
-                        <div>
-                            <label class="text-xs font-bold text-slate-500 uppercase">1. คีย์เวิร์ด (คำค้นหา)</label>
-                            <input id="ai-kw" class="w-full mt-1 p-3 border border-slate-200 rounded-xl text-sm" placeholder="เช่น ขอฟอร์ม, เบิกเงิน, ค่าเดินทาง">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="col-span-2 sm:col-span-1">
+                                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">หมวดหมู่</label>
+                                <select id="ai-cat" class="w-full mt-1 p-3 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:bg-white transition-colors">
+                                    <option value="Disk/Storage">Disk / Storage</option>
+                                    <option value="Network">Network / IP</option>
+                                    <option value="Login/Account">Login / Account</option>
+                                    <option value="Backup">Backup</option>
+                                    <option value="DSM Update">DSM Update</option>
+                                    <option value="อื่นๆ">อื่นๆ</option>
+                                </select>
+                            </div>
+                            <div class="col-span-2 sm:col-span-1">
+                                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">ลิงก์คู่มือ (ถ้ามี)</label>
+                                <input id="ai-link" class="w-full mt-1 p-3 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:bg-white transition-colors" placeholder="https://kb.synology.com/...">
+                            </div>
                         </div>
                         <div>
-                            <label class="text-xs font-bold text-slate-500 uppercase">2. หัวข้อคำถาม (สำหรับขึ้นเป็นปุ่ม)</label>
-                            <input id="ai-q" class="w-full mt-1 p-3 border border-slate-200 rounded-xl text-sm" placeholder="เช่น ขอแบบฟอร์มเบิกค่าเดินทาง">
+                            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">ปัญหา / อาการที่พบ</label>
+                            <input id="ai-q" onkeyup="autoGenerateKeywords()" class="w-full mt-1 p-3 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:bg-white transition-colors" placeholder="เช่น ลืมรหัสผ่าน Admin, ขึ้น Bad Sector">
                         </div>
                         <div>
-                            <label class="text-xs font-bold text-slate-500 uppercase">3. คำตอบที่ให้ AI ตอบ</label>
-                            <textarea id="ai-a" rows="3" class="w-full mt-1 p-3 border border-slate-200 rounded-xl text-sm custom-scrollbar resize-none" placeholder="พิมพ์คำอธิบาย หรือแปะลิงก์ตรงนี้..."></textarea>
+                            <label class="text-[10px] font-bold text-primary-600 uppercase flex justify-between tracking-wider">
+                                <span>คีย์เวิร์ดสำหรับค้นหา</span>
+                                <span class="text-[9px] bg-primary-100 px-2 py-0.5 rounded-md">Auto Gen</span>
+                            </label>
+                            <input id="ai-kw" class="w-full mt-1 p-3 border border-primary-200 bg-primary-50 rounded-xl text-sm" placeholder="ระบบจะวิเคราะห์จากปัญหาด้านบน">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">วิธีแก้ / ข้อความที่ต้องการก๊อปปี้ส่งลูกค้า</label>
+                            <textarea id="ai-a" rows="4" class="w-full mt-1 p-3 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:bg-white transition-colors custom-scrollbar resize-none" placeholder="พิมพ์ Step การแก้ปัญหาที่นี่..."></textarea>
                         </div>
                     </div>
                 `,
@@ -231,15 +279,21 @@
                 cancelButtonColor: '#f1f5f9',
                 confirmButtonText: 'บันทึกข้อมูล',
                 cancelButtonText: '<span class="text-slate-600">ยกเลิก</span>',
+                width: '600px',
                 preConfirm: () => {
-                    const kw = document.getElementById('ai-kw').value.trim();
                     const q = document.getElementById('ai-q').value.trim();
                     const a = document.getElementById('ai-a').value.trim();
-                    if (!kw || !q || !a) {
-                        Swal.showValidationMessage('กรุณากรอกข้อมูลให้ครบทุกช่อง');
+                    if (!q || !a) {
+                        Swal.showValidationMessage('กรุณากรอก ปัญหา และ วิธีแก้ ให้ครบถ้วน');
                         return false;
                     }
-                    return { keywords: kw, question: q, answer: a }
+                    return {
+                        category: document.getElementById('ai-cat').value,
+                        link: document.getElementById('ai-link').value.trim(),
+                        question: q,
+                        keywords: document.getElementById('ai-kw').value.trim(),
+                        answer: a
+                    }
                 }
             }).then(async (result) => {
                 if (result.isConfirmed) {
@@ -248,24 +302,31 @@
                         
                         const payload = {
                             action: "addKnowledge",
-                            keywords: result.value.keywords,
+                            category: result.value.category,
+                            link: result.value.link,
                             question: result.value.question,
-                            answer: result.value.answer,
-                            role: role,
-                            name: name
+                            keywords: result.value.keywords,
+                            answer: result.value.answer
                         };
 
                         const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
                         const resJson = await res.json();
                         
                         if(resJson.status === "success") {
-                            Swal.fire('สำเร็จ', 'บอทเรียนรู้ข้อมูลเรียบร้อย พร้อมใช้งานทันทีครับ', 'success');
-                            loadFAQ(); // รีเฟรชปุ่มด้านล่าง
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'บันทึกสำเร็จ!',
+                                text: 'ข้อมูลถูกเพิ่มเข้าฐานข้อมูลแล้ว',
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
+                            document.getElementById('searchInput').value = ''; // รีเซ็ตการค้นหา
+                            loadData(); // โหลดข้อมูลใหม่ทั้งหมด
                         } else {
                             Swal.fire('ผิดพลาด', 'ไม่สามารถบันทึกข้อมูลได้', 'error');
                         }
                     } catch (e) {
-                        Swal.fire('ผิดพลาด', 'ระบบขัดข้อง', 'error');
+                        Swal.fire('ผิดพลาด', 'การเชื่อมต่อขัดข้อง', 'error');
                     }
                 }
             });
