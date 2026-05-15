@@ -36,7 +36,7 @@
             background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(24px);
             border: 1px solid rgba(255, 255, 255, 1); box-shadow: 0 20px 40px -15px rgba(0,0,0,0.05);
         }
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px;}
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px;}
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         .custom-scrollbar:hover::-webkit-scrollbar-thumb { background: #94a3b8; }
         
@@ -107,12 +107,10 @@
                     <div class="flex flex-col gap-1 max-w-[85%]">
                         <div class="bg-white p-4 md:p-5 rounded-2xl rounded-tl-none shadow-sm text-sm text-slate-700 border border-slate-100">
                             <p id="dynamic-greeting" class="font-bold text-slate-800 mb-1 text-base">สวัสดีครับ! 🤖</p>
-                            <p class="text-slate-600 leading-relaxed mb-4">ผมคือ Synology AI พิมพ์แจ้งปัญหา อาการ หรือข้อผิดพลาดที่พบมาได้เลยครับ ผมจะช่วยค้นหาวิธีแก้ปัญหาให้ทันที</p>
-                            
-                            <div class="flex flex-wrap gap-2 pt-3 border-t border-slate-100">
-                                <button onclick="showFAQPopup()" class="text-xs bg-white border border-slate-200 text-slate-600 hover:text-primary-600 hover:border-primary-200 hover:bg-primary-50 px-4 py-2 rounded-xl transition-all shadow-sm flex items-center gap-2 font-medium">
-                                    <i data-lucide="layers" class="w-4 h-4"></i> เลือกดูตามหมวดหมู่ (FAQ)
-                                </button>
+                            <p class="text-slate-600 leading-relaxed mb-4">ผมคือ Synology AI พิมพ์แจ้งปัญหา อาการ หรือข้อผิดพลาดที่พบมาได้เลยครับ ผมจะช่วยค้นหาวิธีแก้ปัญหาจากฐานข้อมูลให้ทันที</p>
+                            <div class="p-3 bg-primary-50 border border-primary-100 rounded-xl text-xs text-primary-700 flex items-start gap-2">
+                                <i data-lucide="lightbulb" class="w-4 h-4 shrink-0 mt-0.5 text-primary-500"></i>
+                                <span>หากไม่รู้จะเริ่มยังไง ลองกดปุ่ม <b>FAQ</b> ด้านล่างเพื่อดูคำถามยอดฮิตได้เลยครับ</span>
                             </div>
                         </div>
                     </div>
@@ -120,20 +118,23 @@
             </div>
 
             <div class="p-3 md:p-4 bg-white border-t border-slate-100 shrink-0 z-10 pt-4 relative">
-                <div class="relative flex items-end max-w-4xl mx-auto gap-2 md:gap-3">
+                <div class="relative flex items-end max-w-4xl mx-auto gap-2">
                     
-                    <button onclick="clearChat()" class="flex-shrink-0 w-11 h-11 flex items-center justify-center bg-white border border-slate-200 text-slate-400 hover:text-rose-500 hover:bg-rose-50 hover:border-rose-200 rounded-[14px] transition-all shadow-sm" title="ล้างหน้าจอแชท">
+                    <button onclick="showFAQPopup()" class="flex-shrink-0 h-12 px-3 md:px-4 flex items-center justify-center gap-2 bg-slate-800 text-white hover:bg-slate-700 rounded-xl transition-all shadow-sm font-medium text-xs md:text-sm" title="คำถามที่พบบ่อย">
+                        <i data-lucide="layers" class="w-4 h-4"></i> <span class="hidden md:block">FAQ</span>
+                    </button>
+
+                    <button onclick="clearChat()" class="flex-shrink-0 w-12 h-12 flex items-center justify-center bg-white border border-slate-200 text-slate-400 hover:text-rose-500 hover:bg-rose-50 hover:border-rose-200 rounded-xl transition-all shadow-sm" title="ล้างหน้าจอแชท">
                         <i data-lucide="trash-2" class="w-5 h-5"></i>
                     </button>
 
-                    <div class="relative flex-1 bg-white border border-slate-200 rounded-[14px] shadow-sm focus-within:border-primary-400 focus-within:ring-4 focus-within:ring-primary-50 transition-all flex items-end">
-                        
-                        <textarea id="chatInput" rows="1" placeholder="พิมพ์ข้อความ... (Enter เพื่อส่ง, Shift+Enter ขึ้นบรรทัดใหม่)" 
-                               class="w-full pl-4 pr-12 py-3 bg-transparent text-sm focus:outline-none resize-none custom-scrollbar leading-relaxed"
-                               style="min-height: 44px; max-height: 120px;"
+                    <div class="relative flex-1 bg-slate-50 border border-slate-200 rounded-xl shadow-sm focus-within:border-primary-400 focus-within:ring-4 focus-within:ring-primary-50 transition-all flex items-end focus-within:bg-white">
+                        <textarea id="chatInput" rows="1" placeholder="พิมพ์ข้อความ... (Enter เพื่อส่ง)" 
+                               class="w-full pl-4 pr-12 py-3.5 bg-transparent text-sm focus:outline-none resize-none custom-scrollbar leading-relaxed"
+                               style="min-height: 48px; max-height: 120px;"
                                onkeydown="handleInputKeydown(event)"></textarea>
                         
-                        <button onclick="handleChatSubmit()" class="absolute right-1.5 bottom-1.5 p-0 flex items-center justify-center bg-primary-600 text-white rounded-[10px] hover:bg-primary-700 transition-all h-8 w-8 shadow-sm group">
+                        <button onclick="handleChatSubmit()" class="absolute right-1.5 bottom-1.5 p-0 flex items-center justify-center bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-all h-9 w-9 shadow-sm group">
                             <i data-lucide="send" class="w-4 h-4 ml-0.5 group-hover:scale-110 transition-transform"></i>
                         </button>
                     </div>
@@ -179,14 +180,13 @@
             updateDynamicGreeting();
         };
 
-        // ฟังก์ชันทักทายฉลาดๆ ตามเวลา (Smart Logic)
         function updateDynamicGreeting() {
             const hour = new Date().getHours();
             let greeting = 'สวัสดีครับ';
             if (hour >= 5 && hour < 12) greeting = 'สวัสดีตอนเช้าครับ';
             else if (hour >= 12 && hour < 16) greeting = 'สวัสดีตอนบ่ายครับ';
             else if (hour >= 16 && hour < 20) greeting = 'สวัสดีตอนเย็นครับ';
-            else greeting = 'สวัสดีครับ ดึกแล้วยังมีปัญหาเรื่อง NAS ถามผมได้เลยนะ';
+            else greeting = 'สวัสดีครับ ดึกแล้วถ้ามีปัญหาถามผมได้เลยนะ';
             
             const el = document.getElementById('dynamic-greeting');
             if(el) el.innerHTML = `${greeting} 🤖`;
@@ -274,7 +274,7 @@
             lucide.createIcons();
         }
 
-        // --- 2. ระบบ AI Chat ---
+        // --- 2. ระบบ AI Chat แบบฉลาดขึ้น ---
         function getFormattedTime() {
             const now = new Date();
             return `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')} น.`;
@@ -289,44 +289,56 @@
             if (e.key === 'Enter' && !e.shiftKey) { 
                 e.preventDefault(); 
                 handleChatSubmit(); 
-                el.style.height = '44px'; 
+                el.style.height = '48px'; 
             }
         }
 
-        // นำระบบ FAQ แยกหมวดหมู่ Popup กลับมา
+        // ระบบดึงข้อมูล FAQ แบบไดนามิก (ดึงเฉพาะข้อที่มี [FAQ] ในคีย์เวิร์ด)
         function showFAQPopup() {
+            const faqItems = masterData.filter(item => item.keywords.includes('[FAQ]'));
+
+            let htmlContent = '';
+            if (faqItems.length === 0) {
+                htmlContent = `
+                    <div class="py-10 text-center text-slate-500 flex flex-col items-center">
+                        <i data-lucide="database-zap" class="w-12 h-12 mb-3 text-slate-300"></i>
+                        <p class="text-sm font-medium">ยังไม่มีข้อมูลที่ถูกปักหมุดเป็น FAQ ครับ</p>
+                        <p class="text-xs mt-1">คุณสามารถเพิ่มได้โดยกดปุ่ม <b class="text-primary-600">"สอน AI"</b> แล้วติ๊กเลือก <b>FAQ</b></p>
+                    </div>`;
+            } else {
+                // จัดกลุ่มตามหมวดหมู่
+                const grouped = {};
+                faqItems.forEach(item => {
+                    if(!grouped[item.category]) grouped[item.category] = [];
+                    grouped[item.category].push(item);
+                });
+
+                htmlContent = '<div class="mt-4 space-y-5 text-left max-h-[60vh] overflow-y-auto custom-scrollbar pr-2">';
+                for(const cat in grouped) {
+                    htmlContent += `
+                    <div>
+                        <h4 class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-2"><i data-lucide="folder-open" class="w-3.5 h-3.5 text-slate-300"></i> ${cat}</h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">`;
+                    
+                    grouped[cat].forEach(item => {
+                        htmlContent += `
+                            <button onclick="Swal.close(); triggerFAQ('${item.question.replace(/'/g, "\\'")}')" class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl hover:border-primary-300 hover:bg-white hover:shadow-sm transition-all text-sm flex items-center gap-2.5 text-slate-700 text-left group">
+                                <div class="p-1.5 bg-white rounded-lg border border-slate-100 group-hover:border-primary-100 group-hover:bg-primary-50 transition-colors"><i data-lucide="help-circle" class="w-3.5 h-3.5 text-primary-500"></i></div> 
+                                <span class="truncate font-medium">${item.question}</span>
+                            </button>`;
+                    });
+                    
+                    htmlContent += `</div></div>`;
+                }
+                htmlContent += '</div>';
+            }
+
             Swal.fire({
-                title: '<div class="text-lg font-bold text-slate-800 flex items-center justify-center gap-2 border-b pb-3"><i data-lucide="layers" class="w-5 h-5 text-primary-500"></i> หมวดหมู่คำถามที่พบบ่อย</div>',
-                html: `
-                    <div class="mt-4 space-y-5 text-left">
-                        <div>
-                            <h4 class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-2"><i data-lucide="user-circle" class="w-3.5 h-3.5"></i> บัญชีและการเข้าสู่ระบบ</h4>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                <button onclick="Swal.close(); triggerFAQ('ลืมรหัสผ่าน admin')" class="p-2.5 bg-white border border-slate-200 rounded-xl hover:border-primary-300 hover:shadow-sm transition-all text-sm flex items-center gap-2.5 text-slate-700"><div class="p-1.5 bg-primary-50 rounded-lg"><i data-lucide="key" class="w-4 h-4 text-primary-500"></i></div> ลืมรหัสผ่าน Admin</button>
-                                <button onclick="Swal.close(); triggerFAQ('ปลดล็อค IP')" class="p-2.5 bg-white border border-slate-200 rounded-xl hover:border-rose-300 hover:shadow-sm transition-all text-sm flex items-center gap-2.5 text-slate-700"><div class="p-1.5 bg-rose-50 rounded-lg"><i data-lucide="shield-alert" class="w-4 h-4 text-rose-500"></i></div> โดนบล็อค IP</button>
-                            </div>
-                        </div>
-
-                        <div>
-                            <h4 class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-2"><i data-lucide="database" class="w-3.5 h-3.5"></i> ข้อมูลและระบบ</h4>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                <button onclick="Swal.close(); triggerFAQ('ขึ้นแจ้งเตือน Bad Sector')" class="p-2.5 bg-white border border-slate-200 rounded-xl hover:border-amber-300 hover:shadow-sm transition-all text-sm flex items-center gap-2.5 text-slate-700"><div class="p-1.5 bg-amber-50 rounded-lg"><i data-lucide="hard-drive" class="w-4 h-4 text-amber-500"></i></div> แจ้งเตือน Bad Sector</button>
-                                <button onclick="Swal.close(); triggerFAQ('อัปเดต DSM ไม่ได้')" class="p-2.5 bg-white border border-slate-200 rounded-xl hover:border-blue-300 hover:shadow-sm transition-all text-sm flex items-center gap-2.5 text-slate-700"><div class="p-1.5 bg-blue-50 rounded-lg"><i data-lucide="refresh-cw" class="w-4 h-4 text-blue-500"></i></div> อัปเดต DSM ไม่ผ่าน</button>
-                            </div>
-                        </div>
-
-                        <div>
-                            <h4 class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-2"><i data-lucide="network" class="w-3.5 h-3.5"></i> เครือข่ายและการเชื่อมต่อ</h4>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                <button onclick="Swal.close(); triggerFAQ('วิธี Map Drive Windows')" class="p-2.5 bg-white border border-slate-200 rounded-xl hover:border-emerald-300 hover:shadow-sm transition-all text-sm flex items-center gap-2.5 text-slate-700"><div class="p-1.5 bg-emerald-50 rounded-lg"><i data-lucide="folder-kanban" class="w-4 h-4 text-emerald-500"></i></div> วิธี Map Drive บน PC</button>
-                                <button onclick="Swal.close(); triggerFAQ('ตั้งค่า QuickConnect')" class="p-2.5 bg-white border border-slate-200 rounded-xl hover:border-indigo-300 hover:shadow-sm transition-all text-sm flex items-center gap-2.5 text-slate-700"><div class="p-1.5 bg-indigo-50 rounded-lg"><i data-lucide="globe" class="w-4 h-4 text-indigo-500"></i></div> ตั้งค่า QuickConnect</button>
-                            </div>
-                        </div>
-                    </div>
-                `,
+                title: '<div class="text-lg font-bold text-slate-800 flex items-center justify-center gap-2 border-b border-slate-100 pb-3"><i data-lucide="layers" class="w-5 h-5 text-primary-500"></i> คำถามที่พบบ่อย (FAQ)</div>',
+                html: htmlContent,
                 showConfirmButton: false,
                 showCloseButton: true,
-                width: '600px',
+                width: '650px',
                 didOpen: () => lucide.createIcons()
             });
         }
@@ -360,18 +372,29 @@
 
             inputEl.value = '';
             appendChatMessage('user', `<div class="whitespace-pre-wrap">${text}</div>`);
-            const typingId = appendChatPlaceholder();
+            
+            // อัปเกรดความฉลาด: หน่วงเวลาคิดตามความยาวประโยค
+            const thinkTime = Math.min(800 + (text.length * 10), 2000); 
+            const typingId = appendChatPlaceholder("กำลังค้นหาฐานข้อมูล...");
 
             setTimeout(() => {
                 const lowerText = text.toLowerCase();
+                
+                // คำทักทายและคำตอบรับ (Small talk)
                 const greetings = ['สวัสดี', 'ดีจ้า', 'หวัดดี', 'hello', 'hi', 'test', 'เทส'];
+                const thanks = ['ขอบคุณ', 'แต๊งกิ้ว', 'ขอบใจ', 'เยี่ยม', 'ดีมาก', 'สุดยอด', 'thanks', 'thank you'];
+                
                 if(greetings.includes(lowerText)) {
                     replacePlaceholder(typingId, `<p>สวัสดีครับ! มีเรื่องอะไรให้ผมช่วยเกี่ยวกับ NAS Synology วันนี้ไหมครับ? พิมพ์อาการได้เลยครับ</p>`);
                     return;
                 }
+                if(thanks.some(t => lowerText.includes(t)) && lowerText.length < 20) {
+                    replacePlaceholder(typingId, `<p>ยินดีเสมอครับ! 💙 ถ้ามีคำถามอะไรเพิ่มเติมเรียกใช้งานผมได้ตลอดเลยนะครับ</p>`);
+                    return;
+                }
 
-                // AI Fuzzy Search Algorithm (อัปเกรดให้ฉลาดขึ้น)
-                const keywords = lowerText.split(/[\s,]+/).filter(w => w.length > 1); // รับคำที่สั้นลงนิดนึงเผื่อพิมพ์ย่อ
+                // AI Search Algorithm (แม่นยำขึ้น)
+                const keywords = lowerText.split(/[\s,]+/).filter(w => w.length > 1); 
                 let matches = [];
 
                 masterData.forEach(item => {
@@ -380,11 +403,11 @@
                     let kText = item.keywords.toLowerCase(); 
                     let aText = item.answer.toLowerCase();
 
-                    // แมตช์เต็มประโยค (คะแนนสูงสุด)
+                    // แมตช์เป๊ะๆ ให้คะแนนสูงลิ่ว
+                    if(qText === lowerText) score += 100;
                     if(qText.includes(lowerText)) score += 30;
                     if(kText.includes(lowerText)) score += 20;
 
-                    // แมตช์รายคำ
                     let matchedWords = 0;
                     keywords.forEach(word => {
                         if(kText.includes(word)) { score += 5; matchedWords++; }
@@ -392,48 +415,55 @@
                         if(aText.includes(word)) { score += 1; }
                     });
 
-                    // ให้โบนัสพิเศษถ้าคีย์เวิร์ดตรงเกินครึ่งนึง (ป้องกันการดึงมั่ว)
+                    // ถ้าคีย์เวิร์ดตรงเกินครึ่งให้โบนัส
                     if(keywords.length > 0 && matchedWords >= Math.ceil(keywords.length / 2)) score += 10;
 
                     if(score > 0) matches.push({ item: item, score: score });
                 });
 
                 matches.sort((a, b) => b.score - a.score);
-                document.getElementById(typingId).remove();
+                
+                // เปลี่ยนสถานะ Placeholder ก่อนลบ ให้ดูสมจริง
+                const placeholderTextEl = document.getElementById(typingId).querySelector('span.text-slate-400');
+                if(placeholderTextEl) placeholderTextEl.innerText = "กำลังวิเคราะห์คำตอบ...";
 
-                if(matches.length > 0 && matches[0].score >= 12) {
-                    // เจอคำตอบตรงๆ
-                    const bm = matches[0].item;
-                    let html = `<div class="font-bold text-slate-800 mb-2 border-b border-slate-100 pb-2 flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-500"></i> ${bm.question}</div>`;
-                    html += `<div class="whitespace-pre-wrap leading-relaxed text-slate-700 mb-4">${formatCode(bm.answer)}</div>`;
-                    html += `<div class="flex flex-wrap items-center gap-2 pt-3 border-t border-slate-100">`;
-                    if(bm.link && bm.link !== '-') {
-                        let url = bm.link.startsWith('http') ? bm.link : 'https://' + bm.link;
-                        html += `<a href="${url}" target="_blank" class="text-[11px] font-bold text-primary-600 hover:bg-primary-50 px-3 py-1.5 rounded-lg border border-primary-200 transition-colors flex items-center gap-1.5 shadow-sm"><i data-lucide="external-link" class="w-3 h-3"></i> เปิดคู่มือ</a>`;
+                setTimeout(() => {
+                    document.getElementById(typingId).remove();
+
+                    if(matches.length > 0 && matches[0].score >= 12) {
+                        const bm = matches[0].item;
+                        let html = `<div class="font-bold text-slate-800 mb-2 border-b border-slate-100 pb-2 flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-500"></i> ${bm.question}</div>`;
+                        html += `<div class="whitespace-pre-wrap leading-relaxed text-slate-700 mb-4">${formatCode(bm.answer)}</div>`;
+                        html += `<div class="flex flex-wrap items-center gap-2 pt-3 border-t border-slate-100">`;
+                        if(bm.link && bm.link !== '-') {
+                            let url = bm.link.startsWith('http') ? bm.link : 'https://' + bm.link;
+                            html += `<a href="${url}" target="_blank" class="text-[11px] font-bold text-primary-600 hover:bg-primary-50 px-3 py-1.5 rounded-lg border border-primary-200 transition-colors flex items-center gap-1.5 shadow-sm"><i data-lucide="external-link" class="w-3 h-3"></i> เปิดคู่มือ</a>`;
+                        }
+                        html += `<button onclick="copyToClipboard(this, \`${bm.answer.replace(/`/g, '\\`')}\`)" class="text-[11px] text-slate-600 hover:text-primary-600 hover:bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200 transition-colors flex items-center gap-1.5 shadow-sm"><i data-lucide="copy" class="w-3 h-3"></i> คัดลอกคำตอบ</button></div>`;
+                        appendTypewriterMessage(html, bm.category);
+
+                    } else if(matches.length > 0) {
+                        // ไม่เป๊ะ แต่มีเค้าโครง
+                        let html = `<div class="mb-3 text-slate-700 text-sm">ผมค้นหาคำว่า <b>"${text}"</b> แล้วไม่เจอข้อมูลตรงๆ ครับ <br><span class="text-primary-600 font-medium">คุณหมายถึงหัวข้อเหล่านี้ใช่ไหมครับ?</span></div><div class="space-y-2 mt-3">`;
+                        matches.slice(0, 3).forEach((m) => {
+                            html += `<button onclick="triggerFAQ('${m.item.question.replace(/'/g, "\\'")}')" class="w-full text-left bg-white border border-slate-200 p-3 rounded-xl cursor-pointer hover:border-primary-400 hover:ring-2 hover:ring-primary-50 shadow-sm transition-all group flex items-center justify-between">
+                                <div>
+                                    <div class="text-[10px] text-slate-400 font-bold mb-1 uppercase">${m.item.category}</div>
+                                    <div class="text-sm font-medium text-slate-700 group-hover:text-primary-700">${m.item.question}</div>
+                                </div>
+                                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 group-hover:text-primary-500 group-hover:translate-x-1 transition-all"></i>
+                            </button>`;
+                        });
+                        html += `</div>`;
+                        appendTypewriterMessage(html, "Suggestion");
+
+                    } else {
+                        // หาไม่เจอ
+                        appendTypewriterMessage(`<p class="leading-relaxed text-slate-700">ขออภัยครับ ยังไม่มีข้อมูลเรื่อง <b>"${text}"</b> ในระบบเลยครับ ลองกดปุ่ม <b class="text-slate-800 bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded-md text-[11px]"><i data-lucide="brain-circuit" class="w-3 h-3 inline"></i> สอน AI</b> มุมขวาบน เพื่อเพิ่มความรู้ใหม่ให้ผมได้เลยครับ</p>`, "ไม่พบข้อมูล");
                     }
-                    html += `<button onclick="copyToClipboard(this, \`${bm.answer.replace(/`/g, '\\`')}\`)" class="text-[11px] text-slate-600 hover:text-primary-600 hover:bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200 transition-colors flex items-center gap-1.5 shadow-sm"><i data-lucide="copy" class="w-3 h-3"></i> คัดลอกคำตอบ</button></div>`;
-                    appendTypewriterMessage(html, bm.category);
+                }, 400); // ดีเลย์วิเคราะห์คำตอบนิดนึง
 
-                } else if(matches.length > 0) {
-                    // เจอแบบคลุมเครือ (ทำระบบ Did you mean?)
-                    let html = `<div class="mb-3 text-slate-700 text-sm">ผมค้นหาคำว่า <b>"${text}"</b> แล้วไม่เจอข้อมูลตรงๆ ครับ <br><span class="text-primary-600 font-medium">คุณหมายถึงหัวข้อเหล่านี้ใช่ไหมครับ?</span></div><div class="space-y-2 mt-3">`;
-                    matches.slice(0, 3).forEach((m) => {
-                        html += `<button onclick="triggerFAQ('${m.item.question}')" class="w-full text-left bg-white border border-slate-200 p-3 rounded-xl cursor-pointer hover:border-primary-400 hover:ring-2 hover:ring-primary-50 shadow-sm transition-all group flex items-center justify-between">
-                            <div>
-                                <div class="text-[10px] text-slate-400 font-bold mb-1 uppercase">${m.item.category}</div>
-                                <div class="text-sm font-medium text-slate-700 group-hover:text-primary-700">${m.item.question}</div>
-                            </div>
-                            <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 group-hover:text-primary-500 group-hover:translate-x-1 transition-all"></i>
-                        </button>`;
-                    });
-                    html += `</div>`;
-                    appendTypewriterMessage(html, "Suggestion");
-
-                } else {
-                    // ไม่เจอเลย
-                    appendTypewriterMessage(`<p class="leading-relaxed text-slate-700">ขออภัยครับ ยังไม่มีข้อมูลเรื่อง <b>"${text}"</b> ในระบบเลยครับ ลองกดปุ่ม <b class="text-slate-800 bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded-md text-[11px]"><i data-lucide="brain-circuit" class="w-3 h-3 inline"></i> สอน AI</b> มุมขวาบน เพื่อเพิ่มความรู้ใหม่ให้ผมได้เลยครับ</p>`, "ไม่พบข้อมูล");
-                }
-            }, 600);
+            }, thinkTime);
         }
 
         // --- 3. UI Helpers สำหรับ Chat ---
@@ -457,7 +487,7 @@
             lucide.createIcons();
         }
 
-        function appendChatPlaceholder() {
+        function appendChatPlaceholder(statusText = "กำลังพิมพ์...") {
             const container = document.getElementById('chatMessages');
             const msgId = 'typing-' + Date.now();
             const div = document.createElement('div');
@@ -466,12 +496,13 @@
             
             div.innerHTML = `
                 <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gradient-to-tr from-primary-600 to-primary-500 flex items-center justify-center text-white shadow-sm shrink-0 mt-1"><i data-lucide="bot" class="w-5 h-5"></i></div>
-                <div class="bg-white px-5 py-3 rounded-2xl rounded-tl-none shadow-sm border border-slate-100 flex items-center gap-3 mt-1">
-                    <div class="flex gap-1">
+                <div class="bg-white px-5 py-3.5 rounded-2xl rounded-tl-none shadow-sm border border-slate-100 flex items-center gap-3 mt-1">
+                    <div class="flex gap-1 mr-1">
                         <span class="w-1.5 h-1.5 bg-primary-400 rounded-full animate-bounce" style="animation-delay: 0s"></span>
                         <span class="w-1.5 h-1.5 bg-primary-400 rounded-full animate-bounce" style="animation-delay: 0.15s"></span>
                         <span class="w-1.5 h-1.5 bg-primary-400 rounded-full animate-bounce" style="animation-delay: 0.3s"></span>
                     </div>
+                    <span class="text-[10px] font-medium text-slate-400 tracking-wide">${statusText}</span>
                 </div>
             `;
             container.appendChild(div);
@@ -534,7 +565,7 @@
                     const clone = document.createElement(sourceNode.tagName);
                     Array.from(sourceNode.attributes).forEach(attr => clone.setAttribute(attr.name, attr.value));
                     targetNode.appendChild(clone);
-                    const isUI = clone.tagName === 'BUTTON' || clone.tagName === 'A' || clone.tagName === 'I' || clone.classList.contains('bg-white');
+                    const isUI = clone.tagName === 'BUTTON' || clone.tagName === 'A' || clone.tagName === 'I' || clone.classList.contains('bg-white') || clone.classList.contains('inline-code');
                     if (isUI) {
                         clone.innerHTML = sourceNode.innerHTML;
                         if (clone.querySelector('[data-lucide]') || clone.hasAttribute('data-lucide')) lucide.createIcons({ root: clone.parentNode });
@@ -564,7 +595,7 @@
             });
         }
 
-        // --- 4. ระบบสอน AI ---
+        // --- 4. ระบบสอน AI (แก้ Layout บั๊ก และเพิ่ม Checkbox สำหรับ FAQ) ---
         function autoGenerateKeywords() {
             const question = document.getElementById('ai-q').value;
             const stopWords = ['วิธี', 'การ', 'ขอ', 'คือ', 'ทำไม', 'อย่างไร', 'ไหม', 'ครับ', 'ค่ะ', 'ระบบ', 'ขั้นตอน', 'ช่วย', 'หน่อย', 'ที่', 'แก้', 'ปัญหา', 'ยังไง'];
@@ -576,39 +607,47 @@
         function openTeachAI() {
             Swal.fire({
                 title: '<div class="flex items-center gap-2 justify-center"><i data-lucide="brain-circuit" class="w-6 h-6 text-primary-600"></i> เพิ่มข้อมูลให้ AI</div>',
+                // แก้ไข HTML ใหม่ให้เป็น Flex Column (1 คอลัมน์) เพื่อแก้ปัญหา Layout พังบนหน้าจอเล็ก
                 html: `
-                    <div class="text-left space-y-4 mt-4">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="col-span-2 sm:col-span-1">
-                                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">หมวดหมู่</label>
-                                <select id="ai-cat" class="w-full mt-1 p-3 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:bg-white focus:border-primary-400 focus:ring-2 focus:ring-primary-50 transition-all outline-none">
-                                    <option value="Disk/Storage">Disk / Storage</option>
-                                    <option value="Network">Network / IP</option>
-                                    <option value="Login/Account">Login / Account</option>
-                                    <option value="Backup">Backup</option>
-                                    <option value="DSM Update">DSM Update</option>
-                                    <option value="อื่นๆ">อื่นๆ</option>
-                                </select>
-                            </div>
-                            <div class="col-span-2 sm:col-span-1">
-                                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">ลิงก์คู่มือ (ออปชัน)</label>
-                                <input id="ai-link" class="w-full mt-1 p-3 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:bg-white focus:border-primary-400 focus:ring-2 focus:ring-primary-50 transition-all outline-none" placeholder="https://kb.synology.com/...">
-                            </div>
+                    <div class="text-left flex flex-col gap-4 mt-4 w-full box-border">
+                        <div class="flex flex-col gap-1 w-full">
+                            <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">หมวดหมู่</label>
+                            <select id="ai-cat" class="w-full p-3 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:bg-white focus:border-primary-400 focus:ring-2 focus:ring-primary-50 transition-all outline-none">
+                                <option value="Disk/Storage">Disk / Storage</option>
+                                <option value="Network">Network / IP</option>
+                                <option value="Login/Account">Login / Account</option>
+                                <option value="Backup">Backup</option>
+                                <option value="DSM Update">DSM Update</option>
+                                <option value="อื่นๆ">อื่นๆ</option>
+                            </select>
                         </div>
-                        <div>
-                            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">ปัญหา / อาการที่พบ</label>
-                            <input id="ai-q" onkeyup="autoGenerateKeywords()" class="w-full mt-1 p-3 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:bg-white focus:border-primary-400 focus:ring-2 focus:ring-primary-50 transition-all outline-none" placeholder="เช่น ลืมรหัสผ่าน Admin, ขึ้น Bad Sector">
+                        
+                        <div class="flex flex-col gap-1 w-full">
+                            <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">ลิงก์คู่มือ (ออปชัน)</label>
+                            <input id="ai-link" class="w-full p-3 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:bg-white focus:border-primary-400 focus:ring-2 focus:ring-primary-50 transition-all outline-none" placeholder="https://kb.synology.com/...">
                         </div>
-                        <div>
-                            <label class="text-[10px] font-bold text-primary-600 uppercase flex justify-between tracking-wider">
+
+                        <div class="flex flex-col gap-1 w-full">
+                            <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">ปัญหา / อาการที่พบ</label>
+                            <input id="ai-q" onkeyup="autoGenerateKeywords()" class="w-full p-3 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:bg-white focus:border-primary-400 focus:ring-2 focus:ring-primary-50 transition-all outline-none" placeholder="เช่น ลืมรหัสผ่าน Admin">
+                        </div>
+
+                        <div class="flex flex-col gap-1 w-full">
+                            <label class="text-[11px] font-bold text-primary-600 uppercase flex justify-between tracking-wider">
                                 <span>คีย์เวิร์ดค้นหา</span>
                                 <span class="text-[9px] bg-primary-100 px-2 py-0.5 rounded-md">Auto</span>
                             </label>
-                            <input id="ai-kw" class="w-full mt-1 p-3 border border-primary-200 bg-primary-50 rounded-xl text-sm outline-none" placeholder="ระบบจะดึงจากช่องปัญหาให้อัตโนมัติ">
+                            <input id="ai-kw" class="w-full p-3 border border-primary-200 bg-primary-50 rounded-xl text-sm outline-none" placeholder="ระบบจะดึงให้อัตโนมัติ">
                         </div>
-                        <div>
-                            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">วิธีแก้ (ครอบคำด้วย \` \` เพื่อทำไฮไลท์โค้ด)</label>
-                            <textarea id="ai-a" rows="4" class="w-full mt-1 p-3 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:bg-white focus:border-primary-400 focus:ring-2 focus:ring-primary-50 transition-all custom-scrollbar resize-none outline-none" placeholder="พิมพ์ Step การแก้ปัญหาที่นี่..."></textarea>
+
+                        <div class="flex flex-col gap-1 w-full">
+                            <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">วิธีแก้ (ครอบคำด้วย \` \` เพื่อทำไฮไลท์โค้ด)</label>
+                            <textarea id="ai-a" rows="4" class="w-full p-3 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:bg-white focus:border-primary-400 focus:ring-2 focus:ring-primary-50 transition-all custom-scrollbar resize-none outline-none" placeholder="พิมพ์ Step การแก้ปัญหาที่นี่..."></textarea>
+                        </div>
+
+                        <div class="mt-1 p-3 bg-primary-50/50 border border-primary-100 rounded-xl flex items-center gap-3 w-full cursor-pointer hover:bg-primary-50 transition-colors" onclick="document.getElementById('ai-is-faq').click()">
+                            <input type="checkbox" id="ai-is-faq" class="w-4 h-4 text-primary-600 rounded border-slate-300 focus:ring-primary-500" onclick="event.stopPropagation()">
+                            <label for="ai-is-faq" class="text-sm text-primary-800 font-medium cursor-pointer w-full">📌 ปักหมุดให้แสดงใน Popup FAQ</label>
                         </div>
                     </div>
                 `,
@@ -617,7 +656,7 @@
                 cancelButtonColor: '#f1f5f9',
                 confirmButtonText: 'บันทึกความรู้',
                 cancelButtonText: '<span class="text-slate-600 font-medium">ยกเลิก</span>',
-                width: '600px',
+                width: '550px',
                 didOpen: () => lucide.createIcons(),
                 preConfirm: () => {
                     const q = document.getElementById('ai-q').value.trim();
@@ -626,11 +665,19 @@
                         Swal.showValidationMessage('⚠️ กรุณากรอก "ปัญหา" และ "วิธีแก้" ให้ครบถ้วน');
                         return false;
                     }
+
+                    // แทรกลอจิกซ่อนเร้นสำหรับ FAQ โดยไม่ต้องแก้ Backend
+                    let finalKeywords = document.getElementById('ai-kw').value.trim();
+                    const isFaq = document.getElementById('ai-is-faq').checked;
+                    if (isFaq) {
+                        finalKeywords += (finalKeywords ? ', ' : '') + '[FAQ]';
+                    }
+
                     return {
                         category: document.getElementById('ai-cat').value,
                         link: document.getElementById('ai-link').value.trim(),
                         question: q,
-                        keywords: document.getElementById('ai-kw').value.trim(),
+                        keywords: finalKeywords,
                         answer: a
                     }
                 }
@@ -661,7 +708,7 @@
                                 icon: 'success', title: 'บันทึกสำเร็จ!', text: 'AI เรียนรู้ข้อมูลใหม่เรียบร้อยแล้ว',
                                 timer: 2000, showConfirmButton: false
                             });
-                            loadData(); 
+                            loadData(); // โหลดข้อมูลเพื่อให้ FAQ อัปเดตทันที
                         } else {
                             Swal.fire('ผิดพลาด', 'ไม่สามารถบันทึกข้อมูลได้', 'error');
                         }
