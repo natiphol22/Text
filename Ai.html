@@ -111,6 +111,78 @@
         </div>
     </div>
 
+    <div id="customTeachModal" class="fixed inset-0 z-[200] hidden items-center justify-center px-4">
+        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onclick="closeTeachModal()"></div>
+        <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col relative z-10 animate-[chatPopIn_0.3s_ease-out]">
+            <div class="flex items-center justify-between p-5 border-b border-slate-100 shrink-0">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-primary-50 flex items-center justify-center text-primary-600">
+                        <i data-lucide="brain-circuit" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-800">เพิ่มข้อมูลให้ AI</h2>
+                        <p class="text-[10px] text-slate-500">ระบบจะวิเคราะห์คีย์เวิร์ดให้อัตโนมัติ</p>
+                    </div>
+                </div>
+                <button onclick="closeTeachModal()" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:bg-rose-50 hover:text-rose-500 transition-colors">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <div class="p-5 flex-1 overflow-y-auto custom-scrollbar flex flex-col gap-4">
+                <div class="flex flex-col gap-1 w-full">
+                    <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center justify-between">
+                        <span>ปัญหา / อาการที่พบ <span class="text-rose-500">*</span></span>
+                        <span class="text-[9px] bg-primary-100 text-primary-700 px-2 py-0.5 rounded font-bold">Auto Category</span>
+                    </label>
+                    <input id="ai-q" onkeyup="autoAnalyzeKnowledge()" class="w-full p-3 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:bg-white focus:border-primary-400 focus:ring-2 focus:ring-primary-50 transition-all outline-none" placeholder="เช่น ลืมรหัสผ่าน Admin, เข้าใช้งานไม่ได้">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="flex flex-col gap-1 w-full">
+                        <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">หมวดหมู่ (AI ประเมิน)</label>
+                        <select id="ai-cat" class="w-full p-3 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:bg-white focus:border-primary-400 focus:ring-2 focus:ring-primary-50 transition-all outline-none">
+                            <option value="Disk/Storage">Disk / Storage</option>
+                            <option value="Network">Network / IP</option>
+                            <option value="Login/Account">Login / Account</option>
+                            <option value="Backup">Backup</option>
+                            <option value="DSM Update">DSM Update</option>
+                            <option value="อื่นๆ" selected>อื่นๆ</option>
+                        </select>
+                    </div>
+                    <div class="flex flex-col gap-1 w-full">
+                        <label class="text-[11px] font-bold text-primary-600 uppercase flex justify-between tracking-wider">
+                            <span>คีย์เวิร์ดค้นหา</span>
+                        </label>
+                        <input id="ai-kw" class="w-full p-3 border border-primary-200 bg-primary-50 rounded-xl text-xs outline-none text-slate-700 font-medium" placeholder="ระบบจะดึงให้อัตโนมัติ">
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-1 w-full">
+                    <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">วิธีแก้ / คำตอบ <span class="text-rose-500">*</span></label>
+                    <textarea id="ai-a" rows="4" class="w-full p-3 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:bg-white focus:border-primary-400 focus:ring-2 focus:ring-primary-50 transition-all custom-scrollbar resize-none outline-none leading-relaxed" placeholder="พิมพ์วิธีการแก้ไขที่นี่... (ครอบคำด้วย ` ` เพื่อทำไฮไลท์โค้ด)"></textarea>
+                </div>
+
+                <div class="flex flex-col gap-1 w-full">
+                    <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">ลิงก์คู่มือ (ถ้ามี)</label>
+                    <input id="ai-link" class="w-full p-3 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:bg-white focus:border-primary-400 focus:ring-2 focus:ring-primary-50 transition-all outline-none" placeholder="https://kb.synology.com/...">
+                </div>
+
+                <label class="mt-1 p-3.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center gap-3 w-full cursor-pointer hover:bg-primary-50 hover:border-primary-200 transition-colors group">
+                    <input type="checkbox" id="ai-is-faq" class="w-4 h-4 text-primary-600 rounded border-slate-300 focus:ring-primary-500 cursor-pointer">
+                    <span class="text-sm text-slate-700 font-bold group-hover:text-primary-700">📌 ปักหมุดให้แสดงใน Popup FAQ ฮิต</span>
+                </label>
+            </div>
+            
+            <div class="p-5 border-t border-slate-100 shrink-0 bg-slate-50/50 rounded-b-[2rem] flex gap-3">
+                <button onclick="closeTeachModal()" class="flex-1 py-3 bg-white border border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-slate-100 transition-colors">ยกเลิก</button>
+                <button id="btnSaveTeach" onclick="submitTeachAiData()" class="flex-1 py-3 bg-primary-600 text-white font-bold rounded-xl hover:bg-primary-700 shadow-md shadow-primary-200 transition-all flex items-center justify-center gap-2">
+                    <i data-lucide="save" class="w-4 h-4"></i> บันทึกข้อมูล
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div class="max-w-5xl mx-auto w-full h-full flex flex-col glass-panel md:rounded-[2rem] overflow-hidden relative shadow-2xl border-0 md:border md:border-slate-100">
         
         <div class="h-16 md:h-20 border-b border-slate-100 flex items-center justify-between px-4 md:px-6 bg-white/90 shrink-0 backdrop-blur-md z-10">
@@ -129,7 +201,7 @@
                     <button onclick="setMode('kb')" id="btn-mode-kb" class="mode-btn px-4 py-1.5 text-slate-500 rounded-lg text-xs transition-all flex items-center gap-1.5"><i data-lucide="layout-grid" class="w-4 h-4"></i> คลังข้อมูล</button>
                 </div>
                 
-                <button onclick="openTeachAI()" class="px-3 py-2 md:px-4 md:py-2 bg-slate-800 text-white rounded-xl text-xs font-bold hover:bg-slate-700 transition-colors flex items-center gap-2 shadow-sm">
+                <button onclick="openTeachModal()" class="px-3 py-2 md:px-4 md:py-2 bg-slate-800 text-white rounded-xl text-xs font-bold hover:bg-slate-700 transition-colors flex items-center gap-2 shadow-sm">
                     <i data-lucide="brain-circuit" class="w-4 h-4"></i> <span class="hidden sm:block">เพิ่มข้อมูล</span>
                 </button>
                 
@@ -208,7 +280,7 @@
 
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby7qXdK3dC-SH5T4JqNb-GZzwlSnX9hW1-G8e3b47vDJ_skln9GYm6I2HbU6bTy7eR8/exec";
-        const TOOLKIT_APP_URL = "https://script.google.com/macros/s/AKfycbyPywynyQH_Dx3J9jgI1rNtlAoIgbfiKkwgNulbmcoYMYM_bpjWMoRUdi9CrS-KmLbG/exec"; // ดึงข้อมูล ARS
+        const TOOLKIT_APP_URL = "https://script.google.com/macros/s/AKfycbyPywynyQH_Dx3J9jgI1rNtlAoIgbfiKkwgNulbmcoYMYM_bpjWMoRUdi9CrS-KmLbG/exec"; 
         
         let masterData = [];
         let currentCategory = 'All';
@@ -323,8 +395,8 @@
                     <div class="flex justify-between items-start mb-3">
                         <span class="text-[10px] bg-slate-100 text-slate-500 px-2 py-1 rounded font-bold uppercase tracking-wider">${item.category}</span>
                         <div class="flex gap-1">
-                            <button onclick="copyToClipboard(this, \`${item.answer.replace(/`/g, '\\`')}\`)" class="text-slate-400 hover:text-primary-600 p-1 bg-slate-50 rounded hover:bg-primary-50 transition-colors" title="คัดลอกคำตอบ"><i data-lucide="copy" class="w-4 h-4"></i></button>
-                            <button onclick="deleteKnowledge('${item.question.replace(/'/g, '\\\'')}')" class="text-rose-400 hover:text-rose-600 p-1 bg-rose-50 rounded hover:bg-rose-100 transition-colors" title="ลบข้อมูล"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                            <button onclick="copyToClipboard(this, \`${item.answer.replace(/`/g, '\\`')}\`)" class="text-slate-400 hover:text-primary-600 p-1.5 bg-slate-50 rounded-lg hover:bg-primary-50 transition-colors" title="คัดลอกคำตอบ"><i data-lucide="copy" class="w-4 h-4"></i></button>
+                            <button onclick="deleteKnowledge('${item.question.replace(/'/g, '\\\'')}')" class="text-slate-400 hover:text-rose-600 p-1.5 bg-slate-50 rounded-lg hover:bg-rose-50 transition-colors" title="ลบข้อมูล"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                         </div>
                     </div>
                     <h3 class="text-sm font-bold text-slate-800 mb-2 leading-relaxed">${item.question}</h3>
@@ -376,7 +448,6 @@
                         if(resJson.status === "success") {
                             Swal.fire({ icon: 'success', title: 'ลบสำเร็จ', showConfirmButton: false, timer: 1500 });
                             loadData(); 
-                            // ถ้าเปิด Modal FAQ ค้างไว้อยู่ ให้ปิดซะ
                             closeFaqModal();
                         } else {
                             Swal.fire('ลบไม่สำเร็จ', 'ไม่พบข้อมูลในระบบ หรือตั้งค่าผิดพลาด', 'error');
@@ -389,7 +460,7 @@
         }
 
         /* ---------------------------------
-           CUSTOM FAQ MODAL (แทนที่ SweetAlert)
+           🔥 CUSTOM FAQ MODAL 
            --------------------------------- */
         function openCustomFaq() {
             const faqItems = masterData.filter(item => item.keywords.includes('[FAQ]'));
@@ -409,13 +480,11 @@
 
                 const categories = Object.keys(grouped);
                 
-                // Tabs
                 tabsContainer.innerHTML = categories.map((cat, index) => {
                     const catId = cat.replace(/[^a-zA-Z0-9]/g, '');
                     return `<button onclick="switchCustomFaqTab('${catId}')" id="ctab-btn-${catId}" class="faq-ctab-btn whitespace-nowrap px-4 py-2 rounded-lg text-xs font-bold transition-all ${index === 0 ? 'bg-primary-600 text-white shadow-md shadow-primary-200' : 'bg-slate-50 text-slate-500 hover:bg-slate-100'}">${cat}</button>`;
                 }).join('');
 
-                // Content
                 contentContainer.innerHTML = categories.map((cat, index) => {
                     const catId = cat.replace(/[^a-zA-Z0-9]/g, '');
                     let itemsHtml = grouped[cat].map(item => `
@@ -457,6 +526,99 @@
             document.getElementById('ctab-content-' + catId).classList.remove('hidden');
         }
 
+        /* ---------------------------------
+           🔥 CUSTOM TEACH AI MODAL 
+           --------------------------------- */
+        function openTeachModal() {
+            // ล้างข้อมูลเก่า
+            document.getElementById('ai-q').value = '';
+            document.getElementById('ai-cat').value = 'อื่นๆ';
+            document.getElementById('ai-kw').value = '';
+            document.getElementById('ai-a').value = '';
+            document.getElementById('ai-link').value = '';
+            document.getElementById('ai-is-faq').checked = false;
+
+            const modal = document.getElementById('customTeachModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => document.getElementById('ai-q').focus(), 100);
+        }
+
+        function closeTeachModal() {
+            const modal = document.getElementById('customTeachModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function autoAnalyzeKnowledge() {
+            const q = document.getElementById('ai-q').value.toLowerCase();
+            const catEl = document.getElementById('ai-cat');
+            
+            // AI วิเคราะห์หมวดหมู่อัตโนมัติจากคำศัพท์ที่พิมพ์
+            if(q.match(/hdd|ssd|disk|storage|volume|pool|เสื่อม|พัง|แดง|ฮาร์ดดิสก์|ดิสก์|พื้นที่|เต็ม/)) catEl.value = "Disk/Storage";
+            else if(q.match(/ip|network|lan|wifi|port|เชื่อมต่อ|เข้าไม่ได้|ddns|quickconnect|เน็ต|แลน|ไอพี/)) catEl.value = "Network";
+            else if(q.match(/login|password|รหัส|admin|ล็อค|บัญชี|account|otp|2fa|พาส|สแกน/)) catEl.value = "Login/Account";
+            else if(q.match(/backup|hyper|snapshot|drive|sync|สำรอง/)) catEl.value = "Backup";
+            else if(q.match(/update|dsm|อัพเดท|อัพเกรด|patch/)) catEl.value = "DSM Update";
+
+            // แยกและคัดกรอง Keyword
+            const stopWords = ['วิธี', 'การ', 'ขอ', 'คือ', 'ทำไม', 'อย่างไร', 'ไหม', 'มั้ย', 'ครับ', 'ค่ะ', 'ระบบ', 'ขั้นตอน', 'ช่วย', 'หน่อย', 'ที่', 'แก้', 'ปัญหา', 'ยังไง', 'ทำไง', 'ทำไงดี', 'เครื่อง'];
+            let words = q.split(/[\s,]+/);
+            let keywords = words.filter(word => {
+                if(word.match(/^[a-zA-Z0-9]+$/)) return true; // เก็บศัพท์อังกฤษ/ตัวเลขเสมอ
+                return word.length > 1 && !stopWords.includes(word);
+            });
+            document.getElementById('ai-kw').value = keywords.join(', ');
+        }
+
+        async function submitTeachAiData() {
+            const q = document.getElementById('ai-q').value.trim();
+            const a = document.getElementById('ai-a').value.trim();
+            
+            if (!q || !a) {
+                Swal.fire({ icon: 'error', title: 'กรอกข้อมูลไม่ครบ', text: 'กรุณากรอก "ปัญหา" และ "วิธีแก้" ให้ครบถ้วนครับ' });
+                return;
+            }
+
+            let finalKeywords = document.getElementById('ai-kw').value.trim();
+            const isFaq = document.getElementById('ai-is-faq').checked;
+            if (isFaq) finalKeywords += (finalKeywords ? ', ' : '') + '[FAQ]';
+
+            const payload = {
+                action: "addKnowledge",
+                category: document.getElementById('ai-cat').value,
+                link: document.getElementById('ai-link').value.trim(),
+                question: q,
+                keywords: finalKeywords,
+                answer: a
+            };
+
+            const btnSave = document.getElementById('btnSaveTeach');
+            const originalBtnHtml = btnSave.innerHTML;
+            btnSave.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> กำลังบันทึก...`;
+            btnSave.disabled = true;
+            lucide.createIcons();
+
+            try {
+                const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
+                const resJson = await res.json();
+                if(resJson.status === "success") {
+                    Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ!', text: 'AI เรียนรู้ข้อมูลใหม่แล้ว', timer: 2000, showConfirmButton: false });
+                    closeTeachModal();
+                    loadData(); 
+                } else { 
+                    Swal.fire('ผิดพลาด', 'ไม่สามารถบันทึกข้อมูลได้', 'error'); 
+                }
+            } catch (e) { 
+                Swal.fire('ผิดพลาด', 'การเชื่อมต่อขัดข้อง กรุณาลองใหม่', 'error'); 
+            } finally {
+                btnSave.innerHTML = originalBtnHtml;
+                btnSave.disabled = false;
+                lucide.createIcons();
+            }
+        }
+        /* --------------------------------- */
+
         function clearChat() {
             const container = document.getElementById('chatMessages');
             if(container.children.length <= 1) return; 
@@ -487,23 +649,23 @@
                 if(result.status === "success") {
                     const m = result.data;
                     const html = `
-                        <div class="border border-emerald-200 bg-emerald-50/50 p-4 rounded-xl text-sm w-full">
+                        <div class="border border-emerald-200 bg-emerald-50/50 p-4 rounded-xl text-sm w-full shadow-sm">
                             <div class="flex items-center gap-2 text-emerald-700 font-bold mb-3 border-b border-emerald-200/50 pb-2">
-                                <i data-lucide="shield-check" class="w-5 h-5"></i> ข้อมูลสิทธิ์ ARS
+                                <i data-lucide="shield-check" class="w-5 h-5"></i> ข้อมูลสิทธิ์ประกันพิเศษ (ARS)
                             </div>
                             <div class="space-y-2.5 text-slate-700 text-xs">
                                 <div class="flex justify-between items-center"><span class="text-slate-500">S/N:</span> <strong class="text-sm text-slate-800">${m.SN}</strong></div>
                                 <div class="flex justify-between items-center"><span class="text-slate-500">Model:</span> <strong class="text-slate-800">${m.Model}</strong></div>
-                                <div class="flex justify-between items-center"><span class="text-slate-500">Service:</span> <span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-md font-bold text-[10px] uppercase tracking-wider">${m.ServiceType}</span></div>
+                                <div class="flex justify-between items-center"><span class="text-slate-500">Service:</span> <span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-md font-bold text-[10px] uppercase tracking-wider shadow-sm">${m.ServiceType}</span></div>
                                 <div class="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-emerald-200/50">
-                                    <div class="bg-white p-2 rounded-lg border border-slate-100"><span class="text-[10px] text-slate-400 block mb-0.5">Start Date</span><strong class="text-blue-600">${m.StartDate}</strong></div>
-                                    <div class="bg-white p-2 rounded-lg border border-slate-100"><span class="text-[10px] text-slate-400 block mb-0.5">End Date</span><strong class="text-rose-600">${m.EndDate}</strong></div>
+                                    <div class="bg-white p-2 rounded-lg border border-slate-100 shadow-sm"><span class="text-[10px] text-slate-400 block mb-0.5 font-bold uppercase tracking-wide">Start Date</span><strong class="text-blue-600">${m.StartDate}</strong></div>
+                                    <div class="bg-white p-2 rounded-lg border border-slate-100 shadow-sm"><span class="text-[10px] text-slate-400 block mb-0.5 font-bold uppercase tracking-wide">End Date</span><strong class="text-rose-600">${m.EndDate}</strong></div>
                                 </div>
                             </div>
                         </div>`;
                     replacePlaceholder(typingId, html);
                 } else {
-                    replacePlaceholder(typingId, `<div class="p-3 bg-rose-50 border border-rose-100 rounded-xl text-sm text-rose-600"><i data-lucide="alert-circle" class="w-4 h-4 inline mb-0.5 mr-1"></i> ไม่พบข้อมูล S/N: <b>${sn}</b> ในระบบประกันพิเศษ (ARS)</div>`);
+                    replacePlaceholder(typingId, `<div class="p-3 bg-rose-50 border border-rose-100 rounded-xl text-sm text-rose-600 font-medium"><i data-lucide="alert-circle" class="w-4 h-4 inline mb-0.5 mr-1"></i> ไม่พบข้อมูล S/N: <b class="text-rose-700">${sn}</b> ในระบบฐานข้อมูล ARS ครับ</div>`);
                 }
             }).catch(err => {
                 replacePlaceholder(typingId, `<p class="text-rose-500 text-sm">เกิดข้อผิดพลาดในการเชื่อมต่อฐานข้อมูลระบบ ARS</p>`);
@@ -525,14 +687,13 @@
             setTimeout(() => {
                 const lowerText = text.toLowerCase();
                 
-                // ตรวจสอบว่าเป็นคำสั่งเช็ค ARS หรือมี S/N ปนมาหรือไม่
+                // ตรวจสอบ S/N เช็ค ARS ทันที
                 const snRegex = /\b([A-Z0-9]{10,15})\b/i;
                 const snMatch = text.match(snRegex);
                 const isArsIntent = lowerText.match(/(ars|ประกัน|เช็คประกัน|ตรวจสอบ)/);
                 
                 if (snMatch) {
                     const sn = snMatch[1].toUpperCase();
-                    // ถ้าเข้าข่ายว่าเป็น S/N จริงๆ (เช่น มีทั้งเลขและตัวอักษร หรือลูกค้าสั่งเช็ค)
                     if (isArsIntent || (sn.length >= 10 && /[A-Z]/.test(sn) && /[0-9]/.test(sn))) {
                         const placeholderTextEl = document.getElementById(typingId).querySelector('span.text-slate-400');
                         if(placeholderTextEl) placeholderTextEl.innerText = `กำลังเชื่อมต่อระบบ ARS เช็ค S/N: ${sn}...`;
@@ -541,14 +702,19 @@
                     }
                 }
 
-                // AI Dictionary - จัดการคำพ้องความหมาย (Synonyms)
+                // AI Dictionary - จัดการคำพ้องความหมาย (Synonyms) แบบจัดเต็ม
                 const synonyms = {
-                    'พัง': 'เสีย', 'เจ๊ง': 'เสีย', 'เดี้ยง': 'เสีย', 'ซ่อม': 'เคลม',
-                    'รหัส': 'password', 'พาส': 'password', 'ลืมพาส': 'ลืมรหัส',
-                    'เข้าไม่ได้': 'login', 'ล็อคอินไม่ได้': 'login', 'ล็อกอินไม่ได้': 'login',
-                    'เน็ต': 'network', 'แลน': 'lan', 'ไวไฟ': 'wifi',
-                    'อัพเดท': 'update', 'อัพเกรด': 'update',
-                    'ฮาร์ดดิสก์': 'hdd', 'ดิสก์': 'hdd', 'สเปซ': 'storage', 'พื้นที่': 'storage'
+                    'พังแล้ว': 'เสีย', 'พัง': 'เสีย', 'เจ๊ง': 'เสีย', 'เดี้ยง': 'เสีย', 'เปิดไม่ติด': 'เสีย', 'ไหม้': 'เสีย',
+                    'ส่งซ่อม': 'เคลม', 'ซ่อม': 'เคลม',
+                    'รหัสผ่าน': 'password', 'รหัส': 'password', 'พาส': 'password', 'พาสเวิร์ด': 'password', 'ลืมพาส': 'ลืมรหัส',
+                    'เข้าไม่ได้': 'login', 'ล็อคอินไม่ได้': 'login', 'ล็อกอินไม่ได้': 'login', 'เข้าระบบไม่ได้': 'login',
+                    'เน็ต': 'network', 'แลน': 'lan', 'ไวไฟ': 'wifi', 'ไอพี': 'ip', 'ออฟไลน์': 'offline',
+                    'อัพเดท': 'update', 'อัพเกรด': 'update', 'อัพ': 'update',
+                    'ฮาร์ดดิสก์': 'hdd', 'ดิสก์': 'hdd', 'สเปซ': 'storage', 'พื้นที่เต็ม': 'storage', 'ไดร์ฟ': 'drive', 'ความจุ': 'storage',
+                    'ไฟดับ': 'power', 'ไฟไม่เข้า': 'power', 'ปลั๊ก': 'power', 'อะแดปเตอร์': 'adapter',
+                    'เสียงร้อง': 'beep', 'เสียงดัง': 'beep', 'ร้องตี๊ด': 'beep',
+                    'รีเซ็ต': 'reset', 'ล้างเครื่อง': 'reset', 'คืนค่า': 'reset',
+                    'ช้า': 'slow', 'กระตุก': 'slow', 'หน่วง': 'slow'
                 };
                 
                 let processedText = lowerText;
@@ -568,7 +734,6 @@
                     return;
                 }
 
-                // กรองคำสร้อยออกเพื่อให้ AI โฟกัสแต่เนื้อๆ
                 const stopWords = ['วิธี', 'การ', 'ขอ', 'คือ', 'ทำไม', 'อย่างไร', 'ไหม', 'มั้ย', 'ครับ', 'ค่ะ', 'ระบบ', 'ขั้นตอน', 'ช่วย', 'หน่อย', 'ที่', 'แก้', 'ปัญหา', 'ยังไง', 'จะ', 'ให้', 'ทำไง', 'ทำไงดี', 'ดี', 'มี', 'ใคร', 'รู้', 'บ้าง', 'สอบถาม', 'แนะนำ', 'ใช้งาน', 'ไม่ได้'];
                 let words = processedText.split(/[\s,]+/);
                 let keywords = words.filter(w => w.length > 1 && !stopWords.includes(w));
@@ -583,10 +748,10 @@
                     let kText = (item.keywords || "").toLowerCase(); 
                     let aText = (item.answer || "").toLowerCase();
 
-                    // ตรงเป๊ะทั้งประโยค
-                    if(qText === processedText) score += 1000;
-                    if(qText.includes(processedText)) score += 300;
-                    if(kText.includes(processedText)) score += 200;
+                    // การให้คะแนนสุดเนี๊ยบ
+                    if(qText === processedText) score += 5000; // พิมพ์ตรงหัวข้อเป๊ะๆ ได้คะแนนทะลุปรอท
+                    if(qText.includes(processedText)) score += 1000;
+                    if(kText.includes(processedText)) score += 500;
 
                     let matchedWords = 0;
                     let dbKeywords = kText.split(',').map(k => k.trim()).filter(k => k);
@@ -597,9 +762,10 @@
                         else if (dbKeywords.some(kw => kw.length > 1 && word.includes(kw))) { score += 25; hit = true; }
                         else if (kText.includes(word)) { score += 20; hit = true; }
                         else if (qText.includes(word)) { score += 15; hit = true; }
+                        // สแกนในคำตอบ (ให้น้ำหนักน้อยสุด เพื่อป้องกันคำตอบยาวๆ มาดึงคะแนนมั่ว)
                         else if (aText.includes(word)) { score += 2; hit = true; }
                         else if (word.length >= 3) {
-                            // Fuzzy Logic
+                            // ระบบเดาคำผิด พิมพ์สลับตัว 1-2 ตัวอักษร
                             for (let kw of dbKeywords) {
                                 if (Math.abs(kw.length - word.length) <= 1 && levenshteinDistance(word, kw) <= 1) {
                                     score += 10; hit = true; break;
@@ -610,9 +776,8 @@
                         if (hit) matchedWords++;
                     });
 
-                    // ตัวคูณคะแนนตามจำนวนคำที่ตรง
                     let matchRatio = matchedWords / keywords.length;
-                    if (matchRatio === 1 && keywords.length > 1) score += 200; 
+                    if (matchRatio === 1 && keywords.length > 1) score += 300; 
                     else if (matchRatio >= 0.5) score += 50; 
 
                     score = score * (matchedWords || 1);
@@ -661,7 +826,7 @@
                         appendTypewriterMessage(html, "Suggestion");
 
                     } else {
-                        appendTypewriterMessage(`<p class="leading-relaxed text-slate-700 text-sm">ขออภัยครับ ยังไม่มีข้อมูลเรื่อง <b>"${text}"</b> ในระบบเลยครับ ลองกดปุ่ม <b class="text-slate-800 bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded-md text-[11px] inline-flex items-center gap-1"><i data-lucide="brain-circuit" class="w-3 h-3"></i> เพิ่มข้อมูล</b> ที่แถบด้านบน เพื่อสอน AI ได้เลยครับ</p>`, "ไม่พบข้อมูล");
+                        appendTypewriterMessage(`<p class="leading-relaxed text-slate-700 text-sm">ขออภัยครับ ยังไม่มีข้อมูลเรื่อง <b>"${text}"</b> ในระบบเลยครับ ลองกดปุ่ม <b class="text-slate-800 bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded-md text-[11px] inline-flex items-center gap-1"><i data-lucide="brain-circuit" class="w-3 h-3"></i> เพิ่มข้อมูล</b> ที่แถบด้านบน เพื่อสอนระบบให้ผมได้เลยครับ</p>`, "ไม่พบข้อมูล");
                     }
                 }, 400); 
 
@@ -792,121 +957,6 @@
                 btn.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600"></i>`;
                 lucide.createIcons();
                 setTimeout(() => { btn.innerHTML = iconHTML; lucide.createIcons(); }, 2000);
-            });
-        }
-
-        // AI ช่วยประเมินหมวดหมู่และคีย์เวิร์ด
-        function autoAnalyzeKnowledge() {
-            const q = document.getElementById('ai-q').value.toLowerCase();
-            const catEl = document.getElementById('ai-cat');
-            
-            // 1. เลือก Category อัตโนมัติ
-            if(q.match(/hdd|ssd|disk|storage|volume|pool|เสื่อม|พัง|แดง|ฮาร์ดดิส/)) catEl.value = "Disk/Storage";
-            else if(q.match(/ip|network|lan|wifi|port|เชื่อมต่อ|เข้าไม่ได้|ddns|quickconnect|เน็ต/)) catEl.value = "Network";
-            else if(q.match(/login|password|รหัส|admin|ล็อค|บัญชี|account|otp|2fa/)) catEl.value = "Login/Account";
-            else if(q.match(/backup|hyper|snapshot|drive|sync|สำรอง/)) catEl.value = "Backup";
-            else if(q.match(/update|dsm|อัพเดท|อัพเกรด|patch/)) catEl.value = "DSM Update";
-
-            // 2. กรอง Keyword ฉลาดขึ้น (เก็บพวกศัพท์อังกฤษเทคนิคไว้)
-            const stopWords = ['วิธี', 'การ', 'ขอ', 'คือ', 'ทำไม', 'อย่างไร', 'ไหม', 'มั้ย', 'ครับ', 'ค่ะ', 'ระบบ', 'ขั้นตอน', 'ช่วย', 'หน่อย', 'ที่', 'แก้', 'ปัญหา', 'ยังไง', 'ทำไง', 'ทำไงดี'];
-            let words = q.split(/[\s,]+/);
-            let keywords = words.filter(word => {
-                if(word.match(/^[a-zA-Z0-9]+$/)) return true; // เก็บศัพท์อังกฤษ/ตัวเลขทุกตัว
-                return word.length > 1 && !stopWords.includes(word);
-            });
-            document.getElementById('ai-kw').value = keywords.join(', ');
-        }
-
-        function openTeachAI() {
-            Swal.fire({
-                title: '<div class="flex items-center gap-2 justify-center text-lg"><i data-lucide="brain-circuit" class="w-5 h-5 text-primary-600"></i> เพิ่มข้อมูลให้ AI</div>',
-                html: `
-                    <div class="text-left flex flex-col gap-3 mt-2 w-full box-border">
-                        <div class="flex flex-col gap-1 w-full">
-                            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider flex items-center justify-between">
-                                <span>ปัญหา / อาการที่พบ</span>
-                                <span class="text-[8px] bg-primary-100 text-primary-700 px-1.5 py-0.5 rounded">Auto Category</span>
-                            </label>
-                            <input id="ai-q" onkeyup="autoAnalyzeKnowledge()" class="w-full p-2.5 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:bg-white focus:border-primary-400 focus:ring-2 focus:ring-primary-50 transition-all outline-none" placeholder="เช่น ลืมรหัสผ่าน Admin">
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-3">
-                            <div class="flex flex-col gap-1 w-full">
-                                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">หมวดหมู่ (AI ประเมิน)</label>
-                                <select id="ai-cat" class="w-full p-2.5 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:bg-white focus:border-primary-400 focus:ring-2 focus:ring-primary-50 transition-all outline-none">
-                                    <option value="Disk/Storage">Disk / Storage</option>
-                                    <option value="Network">Network / IP</option>
-                                    <option value="Login/Account">Login / Account</option>
-                                    <option value="Backup">Backup</option>
-                                    <option value="DSM Update">DSM Update</option>
-                                    <option value="อื่นๆ" selected>อื่นๆ</option>
-                                </select>
-                            </div>
-                            <div class="flex flex-col gap-1 w-full">
-                                <label class="text-[10px] font-bold text-primary-600 uppercase flex justify-between tracking-wider">
-                                    <span>คีย์เวิร์ดค้นหา</span>
-                                </label>
-                                <input id="ai-kw" class="w-full p-2.5 border border-primary-200 bg-primary-50 rounded-xl text-xs outline-none text-slate-600" placeholder="ระบบจะดึงให้อัตโนมัติ">
-                            </div>
-                        </div>
-
-                        <div class="flex flex-col gap-1 w-full">
-                            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">วิธีแก้ (ครอบคำด้วย \` \` เพื่อไฮไลท์)</label>
-                            <textarea id="ai-a" rows="3" class="w-full p-2.5 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:bg-white focus:border-primary-400 focus:ring-2 focus:ring-primary-50 transition-all custom-scrollbar resize-none outline-none" placeholder="พิมพ์ Step การแก้ปัญหาที่นี่..."></textarea>
-                        </div>
-
-                        <div class="flex flex-col gap-1 w-full">
-                            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">ลิงก์คู่มือ (ถ้ามี)</label>
-                            <input id="ai-link" class="w-full p-2.5 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:bg-white focus:border-primary-400 focus:ring-2 focus:ring-primary-50 transition-all outline-none" placeholder="https://kb.synology.com/...">
-                        </div>
-
-                        <div class="mt-1 p-2.5 bg-primary-50/50 border border-primary-100 rounded-xl flex items-center gap-3 w-full cursor-pointer hover:bg-primary-50 transition-colors" onclick="document.getElementById('ai-is-faq').click()">
-                            <input type="checkbox" id="ai-is-faq" class="w-4 h-4 text-primary-600 rounded border-slate-300 focus:ring-primary-500" onclick="event.stopPropagation()">
-                            <label for="ai-is-faq" class="text-xs text-primary-800 font-medium cursor-pointer w-full">📌 ปักหมุดให้แสดงใน Popup FAQ</label>
-                        </div>
-                    </div>
-                `,
-                showCancelButton: true,
-                confirmButtonColor: '#4f46e5',
-                cancelButtonColor: '#f1f5f9',
-                confirmButtonText: 'บันทึกข้อมูล',
-                cancelButtonText: '<span class="text-slate-600 font-medium text-sm">ยกเลิก</span>',
-                customClass: { popup: 'w-[95%] max-w-[460px] p-4 md:p-6' },
-                didOpen: () => {
-                    lucide.createIcons();
-                    setTimeout(() => document.getElementById('ai-q').focus(), 100);
-                },
-                preConfirm: () => {
-                    const q = document.getElementById('ai-q').value.trim();
-                    const a = document.getElementById('ai-a').value.trim();
-                    if (!q || !a) {
-                        Swal.showValidationMessage('⚠️ กรุณากรอก "ปัญหา" และ "วิธีแก้" ให้ครบถ้วน');
-                        return false;
-                    }
-                    let finalKeywords = document.getElementById('ai-kw').value.trim();
-                    const isFaq = document.getElementById('ai-is-faq').checked;
-                    if (isFaq) finalKeywords += (finalKeywords ? ', ' : '') + '[FAQ]';
-                    return {
-                        category: document.getElementById('ai-cat').value,
-                        link: document.getElementById('ai-link').value.trim(),
-                        question: q,
-                        keywords: finalKeywords,
-                        answer: a
-                    }
-                }
-            }).then(async (result) => {
-                if (result.isConfirmed) {
-                    try {
-                        Swal.fire({ title: 'กำลังอัปเดต...', text: 'กรุณารอสักครู่', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-                        const payload = { action: "addKnowledge", ...result.value };
-                        const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
-                        const resJson = await res.json();
-                        if(resJson.status === "success") {
-                            Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ!', text: 'AI เรียนรู้ข้อมูลใหม่แล้ว', timer: 2000, showConfirmButton: false });
-                            loadData(); 
-                        } else { Swal.fire('ผิดพลาด', 'ไม่สามารถบันทึกข้อมูลได้', 'error'); }
-                    } catch (e) { Swal.fire('ผิดพลาด', 'การเชื่อมต่อขัดข้อง กรุณาลองใหม่', 'error'); }
-                }
             });
         }
     </script>
